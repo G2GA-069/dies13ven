@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CERBERUS — German Catholic Church Critical Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg2: #111827;
+  --card: #1a2236;
+  --card-border: #2a3654;
+  --accent: #f59e0b;
+  --accent2: #ef4444;
+  --accent3: #10b981;
+  --accent4: #6366f1;
+  --accent5: #3b82f6;
+  --text: #e5e7eb;
+  --text-dim: #9ca3af;
+  --text-bright: #ffffff;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --good: #10b981;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.5; }
+.dashboard { max-width: 1600px; margin: 0 auto; padding: 24px; }
+
+/* HEADER */
+.header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:32px; border-bottom: 1px solid var(--card-border); padding-bottom:20px; }
+.header-left h1 { font-size:28px; font-weight:800; color:var(--accent); letter-spacing:2px; }
+.header-left .subtitle { font-size:14px; color:var(--text-dim); margin-top:4px; }
+.header-right { text-align:right; font-size:12px; color:var(--text-dim); }
+.header-right .classification { color:var(--accent2); font-weight:700; font-size:13px; }
+
+/* THESIS BAR */
+.thesis-bar { background: linear-gradient(135deg, #1e1b4b, #312e81); border:1px solid #4338ca; border-radius:12px; padding:20px 28px; margin-bottom:28px; }
+.thesis-bar h2 { font-size:16px; color:var(--accent); margin-bottom:8px; letter-spacing:1px; }
+.thesis-bar p { font-size:14px; color:#c7d2fe; line-height:1.7; }
+.thesis-bar .big-number { font-size:36px; font-weight:800; color:var(--text-bright); }
+.thesis-bar .big-label { font-size:13px; color:#a5b4fc; }
+
+/* KPI STRIP */
+.kpi-strip { display:grid; grid-template-columns: repeat(6, 1fr); gap:16px; margin-bottom:28px; }
+.kpi-card { background:var(--card); border:1px solid var(--card-border); border-radius:10px; padding:16px 20px; position:relative; overflow:hidden; }
+.kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.kpi-card.amber::before { background:var(--warning); }
+.kpi-card.red::before { background:var(--danger); }
+.kpi-card.green::before { background:var(--good); }
+.kpi-card.blue::before { background:var(--accent5); }
+.kpi-card.purple::before { background:var(--accent4); }
+.kpi-card .kpi-label { font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+.kpi-card .kpi-value { font-size:24px; font-weight:800; color:var(--text-bright); }
+.kpi-card .kpi-sub { font-size:11px; color:var(--text-dim); margin-top:4px; }
+
+/* SECTION HEADINGS */
+.section-head { font-size:13px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:1.5px; margin:32px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--card-border); }
+
+/* CHART GRID */
+.chart-row { display:grid; gap:20px; margin-bottom:24px; }
+.chart-row.two { grid-template-columns: 1fr 1fr; }
+.chart-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.chart-row.one { grid-template-columns: 1fr; }
+.chart-box { background:var(--card); border:1px solid var(--card-border); border-radius:10px; padding:20px; }
+.chart-box h3 { font-size:13px; font-weight:700; color:var(--text-bright); margin-bottom:4px; }
+.chart-box .chart-note { font-size:11px; color:var(--text-dim); margin-bottom:12px; }
+.chart-box canvas { width:100%!important; }
+
+/* TABLE */
+.table-wrap { background:var(--card); border:1px solid var(--card-border); border-radius:10px; overflow:hidden; margin-bottom:24px; }
+.table-wrap h3 { font-size:13px; font-weight:700; color:var(--text-bright); padding:16px 20px 8px; }
+.table-wrap .table-note { font-size:11px; color:var(--text-dim); padding:0 20px 12px; }
+table { width:100%; border-collapse:collapse; font-size:12px; }
+thead th { background:#0f172a; color:var(--text-dim); font-weight:600; text-transform:uppercase; font-size:10px; letter-spacing:0.5px; padding:10px 12px; text-align:left; cursor:pointer; user-select:none; position:sticky; top:0; border-bottom:1px solid var(--card-border); }
+thead th:hover { color:var(--accent); }
+thead th.num { text-align:right; }
+tbody td { padding:8px 12px; border-bottom:1px solid rgba(42,54,84,0.5); }
+tbody td.num { text-align:right; font-variant-numeric:tabular-nums; }
+tbody tr:hover { background:rgba(99,102,241,0.08); }
+.badge { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; letter-spacing:0.3px; }
+.badge.distressed { background:rgba(239,68,68,0.2); color:#fca5a5; }
+.badge.reforming { background:rgba(245,158,11,0.2); color:#fcd34d; }
+.badge.stable { background:rgba(16,185,129,0.2); color:#6ee7b7; }
+.badge.opaque { background:rgba(107,114,128,0.2); color:#d1d5db; }
+.neg { color:var(--danger); font-weight:700; }
+.warn { color:var(--warning); }
+.good { color:var(--good); }
+
+/* INSIGHT CALLOUTS */
+.insight-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
+.insight { background:var(--card); border:1px solid var(--card-border); border-radius:10px; padding:16px 20px; border-left:3px solid var(--accent2); }
+.insight.warn-insight { border-left-color:var(--warning); }
+.insight.info-insight { border-left-color:var(--accent5); }
+.insight h4 { font-size:12px; font-weight:700; color:var(--text-bright); margin-bottom:6px; }
+.insight p { font-size:12px; color:var(--text-dim); line-height:1.6; }
+.insight .insight-num { font-size:20px; font-weight:800; color:var(--accent2); }
+.insight.warn-insight .insight-num { color:var(--warning); }
+.insight.info-insight .insight-num { color:var(--accent5); }
+
+/* FOOTER */
+.footer { text-align:center; padding:20px; font-size:11px; color:var(--text-dim); border-top:1px solid var(--card-border); margin-top:24px; }
+
+/* FILTER BAR */
+.filter-bar { display:flex; gap:12px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
+.filter-bar label { font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; }
+.filter-bar select { background:var(--card); color:var(--text); border:1px solid var(--card-border); border-radius:6px; padding:6px 12px; font-size:12px; cursor:pointer; }
+.filter-bar select:focus { outline:none; border-color:var(--accent); }
+
+@media (max-width:1200px) {
+  .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+  .chart-row.two, .chart-row.three { grid-template-columns: 1fr; }
+  .insight-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>CERBERUS</h1>
+    <div class="subtitle">German Catholic Church — PE Forensic Analysis | 27 Dioceses · 7 Layers · €106B IFRS</div>
+  </div>
+  <div class="header-right">
+    <div class="classification">STRICTLY CONFIDENTIAL — G2G ADVISORY</div>
+    <div>March 2026 | 27/27 EXACT</div>
+  </div>
+</div>
+
+<!-- THESIS -->
+<div class="thesis-bar">
+  <h2>Core Thesis</h2>
+  <p>The German Catholic Church is Europe's largest unreported conglomerate. Under IFRS 10, it consolidates to <span class="big-number">€105.8B</span> <span class="big-label">in assets</span> with <span class="big-number">€74.3B</span> <span class="big-label">equity</span>, <span class="big-number">2.0%</span> <span class="big-label">leverage</span>, and <span class="big-number">zero</span> <span class="big-label">tax</span>. It is structurally sound but operationally broken — declining revenue, hidden pensions, €1 property valuations, and no consolidated reporting. The property disposal wave (4,231+ confirmed assets) is the PE opportunity.</p>
+</div>
+
+<!-- KPI STRIP -->
+<div class="kpi-strip">
+  <div class="kpi-card blue">
+    <div class="kpi-label">IFRS Total Assets</div>
+    <div class="kpi-value">€105.8B</div>
+    <div class="kpi-sub">7 layers consolidated</div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-label">IFRS Equity</div>
+    <div class="kpi-value">€74.3B</div>
+    <div class="kpi-sub">70.2% equity ratio</div>
+  </div>
+  <div class="kpi-card red">
+    <div class="kpi-label">IAS 19 Pensions</div>
+    <div class="kpi-value">€12.5B</div>
+    <div class="kpi-sub">Hidden €1.65B off-BS in Emeritenanstalt</div>
+  </div>
+  <div class="kpi-card amber">
+    <div class="kpi-label">KiSt Revenue</div>
+    <div class="kpi-value">€6.8B/yr</div>
+    <div class="kpi-sub">Declining ~2-4%/yr structurally</div>
+  </div>
+  <div class="kpi-card purple">
+    <div class="kpi-label">Real Estate (Market)</div>
+    <div class="kpi-value">€74B</div>
+    <div class="kpi-sub">Booked at €1 · zero leverage</div>
+  </div>
+  <div class="kpi-card amber">
+    <div class="kpi-label">Disposal Pipeline</div>
+    <div class="kpi-value">4,231+</div>
+    <div class="kpi-sub">Properties confirmed for sale</div>
+  </div>
+</div>
+
+<!-- SECTION 1: THE 7 LAYERS -->
+<div class="section-head">1 — The 7-Layer Financial Architecture</div>
+<div class="chart-row two">
+  <div class="chart-box">
+    <h3>Total Assets by Layer — HGB Book vs IFRS Fair Value</h3>
+    <div class="chart-note">€112B confirmed book → €106B consolidated IFRS (net of eliminations)</div>
+    <canvas id="layerChart" height="280"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Where the Hidden Value Sits</h3>
+    <div class="chart-note">Gap between HGB book and IFRS market value by category</div>
+    <canvas id="hiddenValueChart" height="280"></canvas>
+  </div>
+</div>
+
+<!-- SECTION 2: CRITICAL SIGNALS -->
+<div class="section-head">2 — Critical Signals</div>
+<div class="insight-grid">
+  <div class="insight">
+    <h4>Hamburg: Technical Insolvency</h4>
+    <div class="insight-num">EK -€182M</div>
+    <p>KPMG-audited. Pension provisions €893M = 95% of BS. Equity worsening every year. Only diocese with negative equity. Structural deficit from teacher pensions.</p>
+  </div>
+  <div class="insight warn-insight">
+    <h4>Magdeburg: Effectively Insolvent</h4>
+    <div class="insight-num">EK 4.4%</div>
+    <p>Equity €4.6M on €105.5M BS. Pension provisions 78.9% of BS — highest ratio in system. GERO AG scandal losses €40-90M eroded capital. 70K Catholics.</p>
+  </div>
+  <div class="insight warn-insight">
+    <h4>R-Stuttgart: Pension Bomb</h4>
+    <div class="insight-num">€922M</div>
+    <p>Largest absolute pension provision in the system. 61.6% of BS. No external auditor — internal Stabsstelle only. KiSt €666M tied with Cologne as #1.</p>
+  </div>
+  <div class="insight info-insight">
+    <h4>Augsburg: Off-BS 2.7×</h4>
+    <div class="insight-num">€2,239M</div>
+    <p>Diocese €828M. But Stuhl €675M + KPV St.Ulrich €1,564M sit off-balance-sheet. Combined €3,067M — diocese is just 27% of the real entity.</p>
+  </div>
+  <div class="insight info-insight">
+    <h4>Paderborn: Untouchable Wealth</h4>
+    <div class="insight-num">€1.52B</div>
+    <p>Grundstockvermögen (legally restricted capital) in 7 foundations. Cannot be distributed. Total Stiftungen €2.73B. Diocese itself €4,993M = richest by BS.</p>
+  </div>
+  <div class="insight">
+    <h4>Cologne: Structural Deficit</h4>
+    <div class="insight-num">-€63.7M</div>
+    <p>Operational deficit masked by €43.4M securities income. Planned deficit -€20.6M. KiSt fell 5.7% in 9mo 2023. The system's bellwether is burning cash.</p>
+  </div>
+</div>
+
+<!-- SECTION 3: DIOCESE BS RANKING -->
+<div class="section-head">3 — Diocese Balance Sheet Ranking (Layer 1 Only)</div>
+<div class="chart-row two">
+  <div class="chart-box">
+    <h3>Balance Sheet Size — All 27 Dioceses (€M)</h3>
+    <div class="chart-note">Entity-level KdöR only. Sub-entities, banks, pensions EXCLUDED. Click bars for detail.</div>
+    <canvas id="bsChart" height="500"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Equity vs Pension Provisions (€M)</h3>
+    <div class="chart-note">Red = pensions eating equity. Hamburg is off-chart negative.</div>
+    <canvas id="ekPensionChart" height="500"></canvas>
+  </div>
+</div>
+
+<!-- SECTION 4: PENSION CRISIS -->
+<div class="section-head">4 — The Pension Crisis</div>
+<div class="chart-row two">
+  <div class="chart-box">
+    <h3>Pension Provisions as % of Balance Sheet</h3>
+    <div class="chart-note">System average 20%. >50% = structural crisis. Hamburg at 95%.</div>
+    <canvas id="pensionRatioChart" height="320"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>True Pension Burden — Including Off-BS Emeritenanstalt</h3>
+    <div class="chart-note">HGB on-BS: €5.7B. Add Layer 2 off-BS: €1.65B. IAS 19 remeasure: €12.5B total.</div>
+    <canvas id="pensionWaterfallChart" height="320"></canvas>
+  </div>
+</div>
+
+<!-- SECTION 5: REVENUE PRESSURE -->
+<div class="section-head">5 — KiSt Revenue & Structural Decline</div>
+<div class="chart-row two">
+  <div class="chart-box">
+    <h3>Church Tax Revenue by Diocese (€M, 2024)</h3>
+    <div class="chart-note">Total €6.8B/yr. R-Stuttgart and Cologne tied at €666M. Declining structurally.</div>
+    <canvas id="kistChart" height="400"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>KiSt per Catholic (€) — Efficiency Metric</h3>
+    <div class="chart-note">Higher = richer tax base. Berlin €593/head despite small flock. Görlitz €309.</div>
+    <canvas id="kistPerCapChart" height="400"></canvas>
+  </div>
+</div>
+
+<!-- SECTION 6: LEVERAGE GAP -->
+<div class="section-head">6 — The Leverage Gap</div>
+<div class="chart-row two">
+  <div class="chart-box">
+    <h3>Leverage Comparison — Church vs Corporates</h3>
+    <div class="chart-note">The church is the most underleveraged large entity in Europe.</div>
+    <canvas id="leverageChart" height="260"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>IFRS Consolidated — Asset Composition</h3>
+    <div class="chart-note">70% real estate. Zero leverage. Zero tax. A real estate conglomerate disguised as a church.</div>
+    <canvas id="assetPieChart" height="260"></canvas>
+  </div>
+</div>
+
+<!-- SECTION 7: CONTROL STRUCTURE -->
+<div class="section-head">7 — IFRS 10 Consolidation Map</div>
+<div class="chart-row one">
+  <div class="chart-box">
+    <h3>Hypothetical Consolidated Balance Sheet — All 7 Layers (€B)</h3>
+    <div class="chart-note">HGB Book vs IFRS Fair Value. The revaluation surplus alone (€60.4B) exceeds many DAX companies' total market cap.</div>
+    <canvas id="consolidatedBSChart" height="300"></canvas>
+  </div>
+</div>
+
+<!-- SECTION 8: DATA TABLE -->
+<div class="section-head">8 — Full Diocese Data Table</div>
+<div class="filter-bar">
+  <label>Thesis:</label>
+  <select id="filterThesis">
+    <option value="all">All</option>
+    <option value="distressed">Distressed</option>
+    <option value="reforming">Reforming</option>
+    <option value="stable">Stable</option>
+    <option value="opaque">Opaque</option>
+  </select>
+  <label>Sort:</label>
+  <select id="filterSort">
+    <option value="bs">Balance Sheet ↓</option>
+    <option value="ek">Equity ↓</option>
+    <option value="pension">Pensions ↓</option>
+    <option value="pensionPct">Pension % ↓</option>
+    <option value="kist">KiSt ↓</option>
+    <option value="ekRatio">EK Ratio ↓</option>
+  </select>
+</div>
+<div class="table-wrap" style="max-height:600px;overflow-y:auto;">
+  <table id="dioceseTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Diocese</th>
+        <th>Thesis</th>
+        <th class="num">Catholics</th>
+        <th class="num">KiSt (€M)</th>
+        <th class="num">BS (€M)</th>
+        <th class="num">EK (€M)</th>
+        <th class="num">EK %</th>
+        <th class="num">Pensions (€M)</th>
+        <th class="num">Pension %</th>
+        <th class="num">KiSt/Cap (€)</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="footer">
+  CERBERUS RESEARCH DIVISION · G2G ADVISORY · MARCH 2026 · ALL FIGURES FROM AUDITED SOURCES · 27/27 EXACT · CONFIDENTIAL
+</div>
+
+</div><!-- .dashboard -->
+
+<script>
+// =================================================================
+// DATA
+// =================================================================
+const DIOCESES = [
+  {name:"Köln",type:"Erzbistum",catholics:1627401,kist:666.1,bs:4396.5,ek:2773,pensions:822.5,sa:733.5,fa:3423.2,thesis:"stable",tier:"T1"},
+  {name:"Paderborn",type:"Erzbistum",catholics:1290308,kist:420.5,bs:4992.8,ek:4076.2,pensions:553.2,sa:292.4,fa:4568,thesis:"stable",tier:"T2"},
+  {name:"München",type:"Erzbistum",catholics:1414021,kist:644.6,bs:4024.8,ek:3254.5,pensions:14.3,sa:1587.6,fa:1300.9,thesis:"stable",tier:"T1"},
+  {name:"Münster",type:"Bistum",catholics:1630544,kist:380,bs:2381.2,ek:1477.5,pensions:920.1,sa:749.8,fa:1616,thesis:"stable",tier:"T2"},
+  {name:"Freiburg",type:"Erzbistum",catholics:1554348,kist:522.8,bs:1716.2,ek:1026.1,pensions:84.7,sa:138.4,fa:1.6,thesis:"reforming",tier:"T2"},
+  {name:"R-Stuttgart",type:"Bistum",catholics:1567800,kist:666.3,bs:1495.5,ek:520.6,pensions:922.1,sa:5.7,fa:1313.1,thesis:"stable",tier:"T1"},
+  {name:"Trier",type:"Bistum",catholics:1141615,kist:326.5,bs:1089.8,ek:204.4,pensions:758,sa:160.6,fa:763.7,thesis:"distressed",tier:"T2"},
+  {name:"Augsburg",type:"Bistum",catholics:1128367,kist:369.7,bs:828,ek:null,pensions:null,sa:null,fa:null,thesis:"stable",tier:"T2"},
+  {name:"Regensburg",type:"Bistum",catholics:1028036,kist:310,bs:1718.1,ek:962.8,pensions:2.6,sa:null,fa:null,thesis:"stable",tier:"T3"},
+  {name:"Aachen",type:"Bistum",catholics:866641,kist:277.4,bs:1138.6,ek:679.2,pensions:284.6,sa:95.1,fa:934.8,thesis:"reforming",tier:"T2"},
+  {name:"Essen",type:"Bistum",catholics:642378,kist:185,bs:577.4,ek:373.1,pensions:0.7,sa:null,fa:342.2,thesis:"reforming",tier:"T1"},
+  {name:"Würzburg",type:"Bistum",catholics:634106,kist:178.2,bs:318.6,ek:184.5,pensions:108.8,sa:77.9,fa:182,thesis:"reforming",tier:"T3"},
+  {name:"Mainz",type:"Bistum",catholics:605263,kist:221.3,bs:1509.6,ek:468.5,pensions:null,sa:null,fa:null,thesis:"distressed",tier:"T1"},
+  {name:"Bamberg",type:"Erzbistum",catholics:582692,kist:173.2,bs:867.7,ek:597.2,pensions:0.5,sa:243.7,fa:555.4,thesis:"stable",tier:"T3"},
+  {name:"Hildesheim",type:"Bistum",catholics:511893,kist:185.5,bs:594.8,ek:254.7,pensions:172.6,sa:535.3,fa:null,thesis:"reforming",tier:"T2"},
+  {name:"Limburg",type:"Bistum",catholics:520023,kist:215.4,bs:1357.9,ek:922.7,pensions:238.2,sa:96.1,fa:1093.2,thesis:"reforming",tier:"T1"},
+  {name:"Osnabrück",type:"Bistum",catholics:497910,kist:179.6,bs:347.1,ek:59.5,pensions:144.2,sa:95.5,fa:207.9,thesis:"reforming",tier:"T3"},
+  {name:"Speyer",type:"Bistum",catholics:440125,kist:138.4,bs:244.5,ek:116.6,pensions:26,sa:34.9,fa:115.1,thesis:"stable",tier:"T3"},
+  {name:"Passau",type:"Bistum",catholics:415703,kist:104.7,bs:486.5,ek:376.6,pensions:0,sa:67.1,fa:310.4,thesis:"stable",tier:"T3"},
+  {name:"Berlin",type:"Erzbistum",catholics:351166,kist:208.1,bs:1166,ek:598.1,pensions:453.1,sa:157.6,fa:24.7,thesis:"stable",tier:"T1"},
+  {name:"Eichstätt",type:"Bistum",catholics:343007,kist:102.1,bs:617.1,ek:null,pensions:null,sa:117.8,fa:346.5,thesis:"distressed",tier:"T3"},
+  {name:"Hamburg",type:"Erzbistum",catholics:342143,kist:136.5,bs:940.3,ek:-182.4,pensions:893.2,sa:146.6,fa:401.7,thesis:"distressed",tier:"T1"},
+  {name:"Fulda",type:"Bistum",catholics:330380,kist:96.1,bs:801.7,ek:427.5,pensions:292.8,sa:87.8,fa:674.8,thesis:"stable",tier:"T3"},
+  {name:"Erfurt",type:"Bistum",catholics:130303,kist:null,bs:491.7,ek:390.8,pensions:87.7,sa:20.7,fa:451.4,thesis:"stable",tier:"T4"},
+  {name:"Dresden-Meißen",type:"Bistum",catholics:127611,kist:32,bs:539.7,ek:89.9,pensions:82.8,sa:null,fa:25.8,thesis:"opaque",tier:"T4"},
+  {name:"Magdeburg",type:"Bistum",catholics:70133,kist:18.3,bs:105.5,ek:4.6,pensions:83.3,sa:6.9,fa:86,thesis:"distressed",tier:"T4"},
+  {name:"Görlitz",type:"Bistum",catholics:28165,kist:8.7,bs:65.4,ek:33.2,pensions:28.7,sa:2.2,fa:58.7,thesis:"stable",tier:"T4"}
+];
+
+const LAYERS = [
+  {name:"L1: Diocesan KdöR (27)",hgb:34.8,ifrs:34.8,market:57},
+  {name:"L2: Shadow KdöR (~120)",hgb:9.9,ifrs:9.9,market:14},
+  {name:"L3: Church Banks (4)",hgb:26.9,ifrs:26.9,market:26.9},
+  {name:"L4: KZVK Pension",hgb:35.9,ifrs:35.9,market:35.9},
+  {name:"L5: Housing (~20)",hgb:2.9,ifrs:2.9,market:6},
+  {name:"L6: Parishes (~9,291)",hgb:0,ifrs:12.1,market:30},
+  {name:"L7: Land & Erbbaurecht",hgb:0,ifrs:0,market:33.8}
+];
+
+// Chart defaults
+Chart.defaults.color = '#9ca3af';
+Chart.defaults.borderColor = 'rgba(42,54,84,0.5)';
+Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+Chart.defaults.font.size = 11;
+
+// Helpers
+function fmt(n) { return n == null ? '—' : n.toLocaleString('en-GB', {maximumFractionDigits:1}); }
+function pct(n, d) { return (d && d !== 0) ? ((n/d)*100).toFixed(1) + '%' : '—'; }
+
+// =================================================================
+// CHART 1: 7 LAYERS
+// =================================================================
+new Chart(document.getElementById('layerChart'), {
+  type: 'bar',
+  data: {
+    labels: LAYERS.map(l => l.name),
+    datasets: [
+      {label:'HGB Book (€B)',data:LAYERS.map(l=>l.hgb),backgroundColor:'rgba(99,102,241,0.7)',borderRadius:4},
+      {label:'IFRS / Market (€B)',data:LAYERS.map(l=>l.market),backgroundColor:'rgba(245,158,11,0.7)',borderRadius:4}
+    ]
+  },
+  options: {
+    indexAxis:'y',
+    responsive:true,
+    plugins:{legend:{position:'top',labels:{boxWidth:12}},datalabels:{display:false}},
+    scales:{x:{grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'€ Billions'}},y:{grid:{display:false}}}
+  }
+});
+
+// =================================================================
+// CHART 2: HIDDEN VALUE
+// =================================================================
+new Chart(document.getElementById('hiddenValueChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Investment\nProperty','Land &\nForest','Erbbaurecht','Securities\nMTM','Parishes\n(unrecorded)'],
+    datasets: [
+      {label:'HGB Book (€B)',data:[8.3, 0.2, 0, 28.4, 0],backgroundColor:'rgba(99,102,241,0.6)',borderRadius:4},
+      {label:'Fair Value Uplift (€B)',data:[33.7, 26.9, 4.9, 1.7, 12.1],backgroundColor:'rgba(239,68,68,0.6)',borderRadius:4}
+    ]
+  },
+  options: {
+    responsive:true,
+    plugins:{legend:{position:'top',labels:{boxWidth:12}},datalabels:{display:false}},
+    scales:{x:{stacked:true,grid:{color:'rgba(42,54,84,0.3)'}},y:{stacked:true,title:{display:true,text:'€ Billions'},grid:{color:'rgba(42,54,84,0.3)'}}}
+  }
+});
+
+// =================================================================
+// CHART 3: BS RANKING
+// =================================================================
+const sortedBS = [...DIOCESES].sort((a,b) => b.bs - a.bs);
+const thesisColors = {distressed:'rgba(239,68,68,0.8)',reforming:'rgba(245,158,11,0.7)',stable:'rgba(16,185,129,0.7)',opaque:'rgba(107,114,128,0.6)'};
+new Chart(document.getElementById('bsChart'), {
+  type: 'bar',
+  data: {
+    labels: sortedBS.map(d => d.name),
+    datasets: [{
+      label:'BS (€M)',
+      data: sortedBS.map(d => d.bs),
+      backgroundColor: sortedBS.map(d => thesisColors[d.thesis]),
+      borderRadius:3
+    }]
+  },
+  options: {
+    indexAxis:'y',
+    responsive:true,
+    plugins:{legend:{display:false},datalabels:{display:false}},
+    scales:{x:{grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'€M'}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+  }
+});
+
+// =================================================================
+// CHART 4: EK vs PENSIONS
+// =================================================================
+const ekPData = [...DIOCESES].filter(d => d.ek !== null && d.pensions !== null).sort((a,b) => b.bs - a.bs);
+new Chart(document.getElementById('ekPensionChart'), {
+  type: 'bar',
+  data: {
+    labels: ekPData.map(d => d.name),
+    datasets: [
+      {label:'Equity (€M)',data:ekPData.map(d=>d.ek),backgroundColor:'rgba(16,185,129,0.7)',borderRadius:3},
+      {label:'Pensions (€M)',data:ekPData.map(d=>d.pensions),backgroundColor:'rgba(239,68,68,0.7)',borderRadius:3}
+    ]
+  },
+  options: {
+    indexAxis:'y',
+    responsive:true,
+    plugins:{legend:{position:'top',labels:{boxWidth:12}},datalabels:{display:false}},
+    scales:{x:{grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'€M'}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+  }
+});
+
+// =================================================================
+// CHART 5: PENSION % RATIO
+// =================================================================
+const pensionPctData = DIOCESES.filter(d => d.pensions !== null && d.pensions > 0 && d.bs > 0)
+  .map(d => ({name:d.name, ratio:(d.pensions/d.bs)*100, pensions:d.pensions}))
+  .sort((a,b) => b.ratio - a.ratio).slice(0, 15);
+new Chart(document.getElementById('pensionRatioChart'), {
+  type: 'bar',
+  data: {
+    labels: pensionPctData.map(d => d.name),
+    datasets: [{
+      label:'Pension/BS %',
+      data: pensionPctData.map(d => d.ratio),
+      backgroundColor: pensionPctData.map(d => d.ratio > 50 ? 'rgba(239,68,68,0.8)' : d.ratio > 30 ? 'rgba(245,158,11,0.7)' : 'rgba(59,130,246,0.6)'),
+      borderRadius:3
+    }]
+  },
+  options: {
+    indexAxis:'y',
+    responsive:true,
+    plugins:{legend:{display:false},datalabels:{display:false}},
+    scales:{x:{grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'%'},max:100},y:{grid:{display:false}}}
+  }
+});
+
+// =================================================================
+// CHART 6: PENSION WATERFALL
+// =================================================================
+new Chart(document.getElementById('pensionWaterfallChart'), {
+  type: 'bar',
+  data: {
+    labels: ['L1 On-BS\n(HGB)','+ L2 Off-BS\n(Emeritenanst.)','+ KZVK\nUnderfunding','= Total\n(HGB basis)','IAS 19\nRemeasure','= Total\n(IFRS)'],
+    datasets: [
+      {label:'Base',data:[0,5.7,7.35,0,7.35,0],backgroundColor:'transparent',borderWidth:0},
+      {label:'Addition',data:[5.7,1.65,0,7.35,5.15,12.5],backgroundColor:['rgba(59,130,246,0.7)','rgba(245,158,11,0.7)','rgba(239,68,68,0.7)','rgba(99,102,241,0.7)','rgba(239,68,68,0.7)','rgba(239,68,68,0.9)'],borderRadius:3}
+    ]
+  },
+  options: {
+    responsive:true,
+    plugins:{legend:{display:false},datalabels:{display:false}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'€ Billions'}}}
+  }
+});
+
+// =================================================================
+// CHART 7: KiSt BY DIOCESE
+// =================================================================
+const kistData = DIOCESES.filter(d => d.kist && d.kist > 0).sort((a,b) => b.kist - a.kist);
+new Chart(document.getElementById('kistChart'), {
+  type: 'bar',
+  data: {
+    labels: kistData.map(d => d.name),
+    datasets: [{
+      label:'KiSt 2024 (€M)',
+      data: kistData.map(d => d.kist),
+      backgroundColor: kistData.map(d => d.kist > 400 ? 'rgba(245,158,11,0.8)' : d.kist > 200 ? 'rgba(59,130,246,0.6)' : 'rgba(99,102,241,0.5)'),
+      borderRadius:3
+    }]
+  },
+  options: {
+    indexAxis:'y',
+    responsive:true,
+    plugins:{legend:{display:false},datalabels:{display:false}},
+    scales:{x:{grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'€M'}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+  }
+});
+
+// =================================================================
+// CHART 8: KiSt PER CAPITA
+// =================================================================
+const kistCapData = DIOCESES.filter(d => d.kist && d.kist > 0 && d.catholics > 0)
+  .map(d => ({name:d.name, kpc: (d.kist * 1e6 / d.catholics)}))
+  .sort((a,b) => b.kpc - a.kpc);
+new Chart(document.getElementById('kistPerCapChart'), {
+  type: 'bar',
+  data: {
+    labels: kistCapData.map(d => d.name),
+    datasets: [{
+      label:'€/Catholic',
+      data: kistCapData.map(d => d.kpc),
+      backgroundColor: kistCapData.map(d => d.kpc > 500 ? 'rgba(16,185,129,0.7)' : d.kpc > 350 ? 'rgba(59,130,246,0.6)' : 'rgba(239,68,68,0.6)'),
+      borderRadius:3
+    }]
+  },
+  options: {
+    indexAxis:'y',
+    responsive:true,
+    plugins:{legend:{display:false},datalabels:{display:false}},
+    scales:{x:{grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'€ per Catholic'}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+  }
+});
+
+// =================================================================
+// CHART 9: LEVERAGE COMPARISON
+// =================================================================
+new Chart(document.getElementById('leverageChart'), {
+  type: 'bar',
+  data: {
+    labels: ['German Catholic\nChurch (IFRS)','Avg. German\nMittelstand','German\nBundesländer','Vonovia SE','ThyssenKrupp'],
+    datasets: [{
+      label:'Debt / Total Assets %',
+      data: [2.0, 35, 25, 45, 52],
+      backgroundColor: ['rgba(16,185,129,0.8)','rgba(59,130,246,0.6)','rgba(59,130,246,0.6)','rgba(245,158,11,0.7)','rgba(239,68,68,0.7)'],
+      borderRadius:4
+    }]
+  },
+  options: {
+    responsive:true,
+    plugins:{legend:{display:false},datalabels:{display:false}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'%'},max:60}}
+  }
+});
+
+// =================================================================
+// CHART 10: ASSET COMPOSITION PIE
+// =================================================================
+new Chart(document.getElementById('assetPieChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Real Estate (market)','Securities & Funds','Cash & Deposits','Church Bank Net Assets','Other'],
+    datasets: [{
+      data: [74.0, 30.1, 5.2, 1.9, 0.6],
+      backgroundColor: ['rgba(245,158,11,0.8)','rgba(99,102,241,0.8)','rgba(16,185,129,0.8)','rgba(59,130,246,0.8)','rgba(107,114,128,0.6)'],
+      borderWidth:2,
+      borderColor:'#1a2236'
+    }]
+  },
+  options: {
+    responsive:true,
+    plugins:{legend:{position:'right',labels:{boxWidth:12,padding:12}},datalabels:{display:false}}
+  }
+});
+
+// =================================================================
+// CHART 11: CONSOLIDATED BS
+// =================================================================
+new Chart(document.getElementById('consolidatedBSChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Cash &\nDeposits','Securities\n& Funds','Investment\nProperty','Land &\nForest','Erbbaurecht','PPE &\nOther','Church Bank\n(net)'],
+    datasets: [
+      {label:'HGB Book (€B)',data:[5.2,28.4,8.3,0.2,0,9.2,8.9],backgroundColor:'rgba(99,102,241,0.6)',borderRadius:4},
+      {label:'IFRS Fair Value Uplift (€B)',data:[0,1.7,33.7,26.9,4.9,0,0],backgroundColor:'rgba(245,158,11,0.6)',borderRadius:4}
+    ]
+  },
+  options: {
+    responsive:true,
+    plugins:{legend:{position:'top',labels:{boxWidth:12}},datalabels:{display:false}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'rgba(42,54,84,0.3)'},title:{display:true,text:'€ Billions'}}}
+  }
+});
+
+// =================================================================
+// DATA TABLE
+// =================================================================
+function renderTable() {
+  const thesis = document.getElementById('filterThesis').value;
+  const sortKey = document.getElementById('filterSort').value;
+
+  let data = [...DIOCESES];
+  if (thesis !== 'all') data = data.filter(d => d.thesis === thesis);
+
+  const sortFns = {
+    bs: (a,b) => b.bs - a.bs,
+    ek: (a,b) => (b.ek||0) - (a.ek||0),
+    pension: (a,b) => (b.pensions||0) - (a.pensions||0),
+    pensionPct: (a,b) => ((b.pensions||0)/b.bs) - ((a.pensions||0)/a.bs),
+    kist: (a,b) => (b.kist||0) - (a.kist||0),
+    ekRatio: (a,b) => ((b.ek||0)/b.bs) - ((a.ek||0)/a.bs)
+  };
+  data.sort(sortFns[sortKey]);
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = data.map((d, i) => {
+    const ekRatio = d.ek !== null ? (d.ek / d.bs * 100) : null;
+    const penPct = d.pensions !== null ? (d.pensions / d.bs * 100) : null;
+    const kpc = d.kist && d.catholics ? Math.round(d.kist * 1e6 / d.catholics) : null;
+    const ekClass = d.ek !== null && d.ek < 0 ? 'neg' : (ekRatio !== null && ekRatio < 20 ? 'warn' : '');
+    const penClass = penPct !== null && penPct > 50 ? 'neg' : (penPct !== null && penPct > 30 ? 'warn' : '');
+    return `<tr>
+      <td>${i+1}</td>
+      <td><strong>${d.name}</strong><br><span style="font-size:10px;color:#6b7280">${d.type}</span></td>
+      <td><span class="badge ${d.thesis}">${d.thesis.toUpperCase()}</span></td>
+      <td class="num">${d.catholics ? d.catholics.toLocaleString('en-GB') : '—'}</td>
+      <td class="num">${d.kist ? fmt(d.kist) : '—'}</td>
+      <td class="num"><strong>${fmt(d.bs)}</strong></td>
+      <td class="num ${ekClass}">${d.ek !== null ? fmt(d.ek) : '—'}</td>
+      <td class="num ${ekClass}">${ekRatio !== null ? ekRatio.toFixed(1)+'%' : '—'}</td>
+      <td class="num ${penClass}">${d.pensions !== null ? fmt(d.pensions) : '—'}</td>
+      <td class="num ${penClass}">${penPct !== null ? penPct.toFixed(1)+'%' : '—'}</td>
+      <td class="num">${kpc !== null ? '€'+kpc : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+document.getElementById('filterThesis').addEventListener('change', renderTable);
+document.getElementById('filterSort').addEventListener('change', renderTable);
+renderTable();
+</script>
+</body>
+</html>
