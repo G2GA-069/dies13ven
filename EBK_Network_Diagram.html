@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EBK Financial Architecture — Closed-Loop Analysis</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0e17; color: #e2e8f0; overflow-x: hidden; }
+
+  .header { padding: 24px 40px; border-bottom: 1px solid #1e293b; background: #0f1524; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #f8fafc; letter-spacing: -0.5px; }
+  .header .subtitle { font-size: 13px; color: #64748b; margin-top: 4px; }
+  .header .classification { display: inline-block; background: #dc2626; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 2px; margin-left: 12px; letter-spacing: 0.5px; }
+
+  .controls { padding: 12px 40px; background: #0f1524; border-bottom: 1px solid #1e293b; display: flex; gap: 8px; }
+  .controls button { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 6px 14px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+  .controls button:hover, .controls button.active { background: #334155; color: #f8fafc; border-color: #475569; }
+  .controls button.active { border-color: #3b82f6; color: #3b82f6; }
+
+  .main { display: flex; height: calc(100vh - 110px); }
+
+  .canvas { flex: 1; position: relative; overflow: hidden; }
+
+  svg { width: 100%; height: 100%; }
+
+  .sidebar { width: 360px; background: #0f1524; border-left: 1px solid #1e293b; overflow-y: auto; padding: 20px; }
+  .sidebar h2 { font-size: 14px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .sidebar .metric { margin-bottom: 16px; }
+  .sidebar .metric .label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px; }
+  .sidebar .metric .value { font-size: 24px; font-weight: 700; color: #f8fafc; margin-top: 2px; }
+  .sidebar .metric .note { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .sidebar .metric .value.red { color: #ef4444; }
+  .sidebar .metric .value.green { color: #22c55e; }
+  .sidebar .metric .value.amber { color: #f59e0b; }
+
+  .detail-card { background: #1e293b; border-radius: 6px; padding: 14px; margin-bottom: 12px; border: 1px solid #334155; }
+  .detail-card h3 { font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 8px; }
+  .detail-card p { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+  .detail-card .tag { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 2px; margin-right: 4px; margin-top: 4px; }
+  .tag-owner { background: #1e3a5f; color: #60a5fa; }
+  .tag-lender { background: #3b1f1f; color: #f87171; }
+  .tag-borrower { background: #3b2f1f; color: #fbbf24; }
+  .tag-depositor { background: #1f3b2f; color: #4ade80; }
+  .tag-guarantor { background: #3b1f3b; color: #c084fc; }
+
+  .entity-node { cursor: pointer; transition: all 0.2s; }
+  .entity-node:hover .node-bg { filter: brightness(1.3); }
+  .entity-node text { pointer-events: none; }
+
+  .flow-line { fill: none; stroke-linecap: round; }
+  .flow-line.money { stroke: #22c55e; opacity: 0.4; }
+  .flow-line.debt { stroke: #ef4444; opacity: 0.4; }
+  .flow-line.guarantee { stroke: #a855f7; opacity: 0.4; stroke-dasharray: 8 4; }
+  .flow-line.governance { stroke: #f59e0b; opacity: 0.3; stroke-dasharray: 4 4; }
+  .flow-line.deposit { stroke: #3b82f6; opacity: 0.4; }
+
+  .flow-line:hover, .flow-line.highlighted { opacity: 0.9; stroke-width: 4px !important; }
+
+  .flow-label { font-size: 10px; fill: #64748b; }
+  .flow-label.highlighted { fill: #f8fafc; font-weight: 600; }
+
+  .sobbeck-badge { fill: #f59e0b; }
+
+  .legend { position: absolute; bottom: 20px; left: 20px; background: rgba(15, 21, 36, 0.95); border: 1px solid #334155; border-radius: 6px; padding: 12px 16px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; color: #94a3b8; }
+  .legend-item:last-child { margin-bottom: 0; }
+  .legend-line { width: 24px; height: 3px; border-radius: 2px; }
+  .legend-line.dashed { background: repeating-linear-gradient(90deg, currentColor 0, currentColor 6px, transparent 6px, transparent 10px); height: 2px; }
+
+  .finding-box { background: #1a1225; border: 1px solid #7c3aed; border-radius: 6px; padding: 14px; margin-bottom: 12px; }
+  .finding-box h3 { font-size: 13px; font-weight: 600; color: #a78bfa; margin-bottom: 6px; }
+  .finding-box p { font-size: 12px; color: #c4b5fd; line-height: 1.5; }
+
+  @keyframes flowPulse { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -24; } }
+  .animated-flow { stroke-dasharray: 12 6; animation: flowPulse 2s linear infinite; }
+
+  .tooltip { position: absolute; background: #1e293b; border: 1px solid #475569; border-radius: 4px; padding: 8px 12px; font-size: 11px; color: #e2e8f0; pointer-events: none; z-index: 100; max-width: 280px; display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Erzbistum Köln — Financial Architecture Map <span class="classification">FORENSIC ANALYSIS</span></h1>
+  <div class="subtitle">Closed-loop banking system: money flows, governance links, and circular guarantees — G2G Advisory, March 2025</div>
+</div>
+
+<div class="controls">
+  <button class="active" onclick="showLayer('all')">All Flows</button>
+  <button onclick="showLayer('money')">Money Flows</button>
+  <button onclick="showLayer('debt')">Debt / Lending</button>
+  <button onclick="showLayer('guarantee')">Guarantees</button>
+  <button onclick="showLayer('governance')">Governance</button>
+  <button onclick="showLayer('deposit')">Deposits</button>
+</div>
+
+<div class="main">
+  <div class="canvas" id="canvas">
+    <svg id="diagram" viewBox="0 0 900 680">
+      <defs>
+        <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e" opacity="0.7"/></marker>
+        <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ef4444" opacity="0.7"/></marker>
+        <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#a855f7" opacity="0.7"/></marker>
+        <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#3b82f6" opacity="0.7"/></marker>
+        <marker id="arrowAmber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f59e0b" opacity="0.7"/></marker>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="nodeGradEBK" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#0f2744"/></linearGradient>
+        <linearGradient id="nodeGradBank" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b1f1f"/><stop offset="100%" stop-color="#2a1515"/></linearGradient>
+        <linearGradient id="nodeGradOp" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1f3b2f"/><stop offset="100%" stop-color="#152a20"/></linearGradient>
+        <linearGradient id="nodeGradParish" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2d2440"/><stop offset="100%" stop-color="#1a1530"/></linearGradient>
+        <linearGradient id="nodeGradFund" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b351f"/><stop offset="100%" stop-color="#2a2515"/></linearGradient>
+      </defs>
+
+      <!-- FLOW LINES (drawn first, under nodes) -->
+      <g id="flows">
+        <!-- DEPOSITS: EBK → Pax-Bank -->
+        <path class="flow-line deposit animated-flow" d="M260,130 C350,130 350,270 440,270" stroke-width="3" marker-end="url(#arrowBlue)" data-type="deposit" data-label="~€800M/yr KSt deposits"/>
+        <!-- DEPOSITS: Parishes → Pax-Bank -->
+        <path class="flow-line deposit animated-flow" d="M200,540 C300,540 350,380 440,310" stroke-width="2.5" marker-end="url(#arrowBlue)" data-type="deposit" data-label="~€1B Kapitalvermögen deposited"/>
+
+        <!-- LENDING: Pax-Bank → CBT -->
+        <path class="flow-line debt" d="M600,250 C650,200 680,170 720,145" stroke-width="3" marker-end="url(#arrowRed)" data-type="debt" data-label="€66M bank debt"/>
+        <!-- LENDING: Pax-Bank → ASW -->
+        <path class="flow-line debt" d="M600,290 C680,290 700,290 720,290" stroke-width="2.5" marker-end="url(#arrowRed)" data-type="debt" data-label="~€50M bank debt (est.)"/>
+        <!-- LENDING: Pax-Bank → VKKD -->
+        <path class="flow-line debt" d="M600,310 C650,360 680,400 720,430" stroke-width="2" marker-end="url(#arrowRed)" data-type="debt" data-label="~€30M bank debt (est.)"/>
+
+        <!-- GUARANTEES: EBK → Pax-Bank (for subsidiaries) -->
+        <path class="flow-line guarantee" d="M260,160 C360,200 400,240 440,260" stroke-width="2.5" marker-end="url(#arrowPurple)" data-type="guarantee" data-label="€83-133M guarantees (CIRCULAR!)"/>
+
+        <!-- MONEY: KSt from Finanzamt → EBK -->
+        <path class="flow-line money animated-flow" d="M50,50 C100,70 130,90 155,110" stroke-width="3" marker-end="url(#arrowGreen)" data-type="money" data-label="€800M/yr Kirchensteuer"/>
+        <!-- MONEY: EBK → Parishes (Zuweisungen) -->
+        <path class="flow-line money animated-flow" d="M180,180 C180,300 180,420 180,500" stroke-width="2.5" marker-end="url(#arrowGreen)" data-type="money" data-label="~€350M/yr Zuweisungen"/>
+        <!-- MONEY: Interest/dividends Pax-Bank → EBK -->
+        <path class="flow-line money" d="M440,255 C380,220 320,170 260,145" stroke-width="1.5" marker-end="url(#arrowGreen)" data-type="money" data-label="Interest + dividends"/>
+
+        <!-- GOVERNANCE: EBK → all (canonical control) -->
+        <path class="flow-line governance" d="M260,140 C350,140 400,140 440,260" stroke-width="1.5" marker-end="url(#arrowAmber)" data-type="governance" data-label="Board appointments"/>
+        <path class="flow-line governance" d="M260,150 C400,150 550,120 720,130" stroke-width="1.5" marker-end="url(#arrowAmber)" data-type="governance" data-label="Canonical authority"/>
+        <path class="flow-line governance" d="M260,160 C400,250 550,280 720,280" stroke-width="1.5" marker-end="url(#arrowAmber)" data-type="governance" data-label=""/>
+        <path class="flow-line governance" d="M260,170 C400,350 550,400 720,420" stroke-width="1.5" marker-end="url(#arrowAmber)" data-type="governance" data-label=""/>
+        <path class="flow-line governance" d="M180,180 C180,300 180,420 180,500" stroke-width="1" marker-end="url(#arrowAmber)" data-type="governance" data-label="Parish council appointments"/>
+
+        <!-- Fund management: Aachener GV -->
+        <path class="flow-line deposit" d="M530,330 C530,400 500,480 470,530" stroke-width="1.5" marker-end="url(#arrowBlue)" data-type="deposit" data-label="€355M AuM"/>
+      </g>
+
+      <!-- ENTITY NODES -->
+      <g class="entity-node" id="node-finanzamt" data-entity="finanzamt">
+        <rect class="node-bg" x="20" y="20" width="120" height="50" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="80" y="42" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600">FINANZAMT</text>
+        <text x="80" y="56" text-anchor="middle" fill="#64748b" font-size="9">Tax Collection</text>
+      </g>
+
+      <g class="entity-node" id="node-ebk" data-entity="ebk">
+        <rect class="node-bg" x="115" y="95" width="150" height="90" rx="6" fill="url(#nodeGradEBK)" stroke="#3b82f6" stroke-width="2" filter="url(#glow)"/>
+        <text x="190" y="118" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="700">ERZBISTUM KÖLN</text>
+        <text x="190" y="133" text-anchor="middle" fill="#93c5fd" font-size="9">Archdiocese (KdöR)</text>
+        <text x="190" y="152" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">€4.3B HGB</text>
+        <text x="190" y="167" text-anchor="middle" fill="#94a3b8" font-size="9">€8.5-21.5B Fair Value</text>
+        <text x="190" y="180" text-anchor="middle" fill="#60a5fa" font-size="8">OWNER · GUARANTOR · DEPOSITOR</text>
+      </g>
+
+      <g class="entity-node" id="node-paxbank" data-entity="paxbank">
+        <rect class="node-bg" x="410" y="230" width="200" height="110" rx="6" fill="url(#nodeGradBank)" stroke="#ef4444" stroke-width="2" filter="url(#glow)"/>
+        <text x="510" y="253" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="700">PAX-BANK / BKC</text>
+        <text x="510" y="268" text-anchor="middle" fill="#fca5a5" font-size="9">(post-merger eG)</text>
+        <text x="510" y="290" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">€8.1B Balance Sheet</text>
+        <text x="510" y="306" text-anchor="middle" fill="#f8fafc" font-size="10">€560M+ Equity · CET1 15-21%</text>
+        <text x="510" y="322" text-anchor="middle" fill="#ef4444" font-size="9" font-weight="600">THE CLOSED LOOP</text>
+        <text x="510" y="335" text-anchor="middle" fill="#f87171" font-size="8">Sole client: the Church</text>
+      </g>
+
+      <!-- Sobbeck badge on Pax-Bank -->
+      <circle cx="415" cy="235" r="8" fill="#f59e0b" stroke="#fbbf24" stroke-width="1"/>
+      <text x="415" y="238" text-anchor="middle" fill="#1a1530" font-size="8" font-weight="700">GS</text>
+
+      <g class="entity-node" id="node-cbt" data-entity="cbt">
+        <rect class="node-bg" x="700" y="100" width="170" height="70" rx="5" fill="url(#nodeGradOp)" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="785" y="120" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="600">CBT (Caritas BT)</text>
+        <text x="785" y="135" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="700">€137M Assets</text>
+        <text x="785" y="150" text-anchor="middle" fill="#fca5a5" font-size="9">€66M bank debt → Pax</text>
+        <text x="785" y="163" text-anchor="middle" fill="#94a3b8" font-size="8">1,912 employees</text>
+        <!-- Sobbeck badge -->
+        <circle cx="705" cy="105" r="8" fill="#f59e0b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="705" y="108" text-anchor="middle" fill="#1a1530" font-size="8" font-weight="700">GS</text>
+      </g>
+
+      <g class="entity-node" id="node-asw" data-entity="asw">
+        <rect class="node-bg" x="700" y="250" width="170" height="70" rx="5" fill="url(#nodeGradOp)" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="785" y="270" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="600">ASW (Augustinus)</text>
+        <text x="785" y="285" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="700">€321M Assets</text>
+        <text x="785" y="300" text-anchor="middle" fill="#fca5a5" font-size="9">~€50M bank debt → Pax</text>
+        <text x="785" y="313" text-anchor="middle" fill="#94a3b8" font-size="8">4,800 employees</text>
+        <circle cx="705" cy="255" r="8" fill="#f59e0b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="705" y="258" text-anchor="middle" fill="#1a1530" font-size="8" font-weight="700">GS</text>
+      </g>
+
+      <g class="entity-node" id="node-vkkd" data-entity="vkkd">
+        <rect class="node-bg" x="700" y="395" width="170" height="70" rx="5" fill="url(#nodeGradOp)" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="785" y="415" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="600">VKKD (Hospitals)</text>
+        <text x="785" y="430" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="700">€147M Assets</text>
+        <text x="785" y="445" text-anchor="middle" fill="#fca5a5" font-size="9">~€30M bank debt → Pax</text>
+        <text x="785" y="458" text-anchor="middle" fill="#94a3b8" font-size="8">IFRS 5: Disposal group</text>
+      </g>
+
+      <g class="entity-node" id="node-parishes" data-entity="parishes">
+        <rect class="node-bg" x="80" y="500" width="200" height="90" rx="6" fill="url(#nodeGradParish)" stroke="#a855f7" stroke-width="1.5"/>
+        <text x="180" y="523" text-anchor="middle" fill="#c084fc" font-size="11" font-weight="700">517 KIRCHENSTIFTUNGEN</text>
+        <text x="180" y="538" text-anchor="middle" fill="#c084fc" font-size="9">(Parishes — each a KdöR)</text>
+        <text x="180" y="558" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">€6.0B Fair Value (est.)</text>
+        <text x="180" y="573" text-anchor="middle" fill="#94a3b8" font-size="9">Book: €1.0B (property at €1 each!)</text>
+        <text x="180" y="585" text-anchor="middle" fill="#a855f7" font-size="8">30,000 employees · 33,000 Erbbaurechte</text>
+      </g>
+
+      <g class="entity-node" id="node-aachener" data-entity="aachener">
+        <rect class="node-bg" x="380" y="510" width="170" height="60" rx="5" fill="url(#nodeGradFund)" stroke="#f59e0b" stroke-width="1"/>
+        <text x="465" y="530" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="600">Aachener GV KVG</text>
+        <text x="465" y="545" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="700">€355M AuM</text>
+        <text x="465" y="560" text-anchor="middle" fill="#94a3b8" font-size="9">Church securities fund mgr</text>
+        <circle cx="385" cy="515" r="8" fill="#f59e0b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="385" y="518" text-anchor="middle" fill="#1a1530" font-size="8" font-weight="700">GS</text>
+      </g>
+
+      <!-- KZVK node -->
+      <g class="entity-node" id="node-kzvk" data-entity="kzvk">
+        <rect class="node-bg" x="700" y="530" width="170" height="60" rx="5" fill="#1a1520" stroke="#64748b" stroke-width="1" stroke-dasharray="4 2"/>
+        <text x="785" y="550" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600">KZVK (Pension)</text>
+        <text x="785" y="565" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700">€2.2B Liability (est.)</text>
+        <text x="785" y="580" text-anchor="middle" fill="#64748b" font-size="8">57,712 employees · funding ratio unknown</text>
+      </g>
+
+      <!-- GORDON SOBBECK central node -->
+      <g class="entity-node" id="node-sobbeck" data-entity="sobbeck">
+        <circle cx="580" cy="180" r="28" fill="#f59e0b" stroke="#fbbf24" stroke-width="2" filter="url(#glow)" opacity="0.9"/>
+        <text x="580" y="175" text-anchor="middle" fill="#1a1530" font-size="9" font-weight="700">GORDON</text>
+        <text x="580" y="187" text-anchor="middle" fill="#1a1530" font-size="9" font-weight="700">SOBBECK</text>
+        <text x="580" y="218" text-anchor="middle" fill="#fbbf24" font-size="8" font-weight="600">5 BOARDS</text>
+      </g>
+      <!-- Sobbeck connections -->
+      <line x1="560" y1="200" x2="510" y2="230" stroke="#f59e0b" stroke-width="1" opacity="0.5" stroke-dasharray="3 3" data-type="governance"/>
+      <line x1="600" y1="168" x2="700" y2="130" stroke="#f59e0b" stroke-width="1" opacity="0.5" stroke-dasharray="3 3" data-type="governance"/>
+      <line x1="605" y1="190" x2="700" y2="270" stroke="#f59e0b" stroke-width="1" opacity="0.5" stroke-dasharray="3 3" data-type="governance"/>
+      <line x1="565" y1="207" x2="465" y2="510" stroke="#f59e0b" stroke-width="1" opacity="0.3" stroke-dasharray="3 3" data-type="governance"/>
+
+      <!-- Flow labels -->
+      <text x="60" y="40" fill="#22c55e" font-size="9" font-weight="600">€800M/yr Kirchensteuer</text>
+      <text x="330" y="120" fill="#3b82f6" font-size="8" font-weight="500">Deposits</text>
+      <text x="310" y="220" fill="#a855f7" font-size="8" font-weight="500">Guarantees (CIRCULAR)</text>
+      <text x="640" y="180" fill="#ef4444" font-size="8" font-weight="500">€66M</text>
+      <text x="650" y="282" fill="#ef4444" font-size="8" font-weight="500">~€50M</text>
+      <text x="645" y="385" fill="#ef4444" font-size="8" font-weight="500">~€30M</text>
+      <text x="95" y="370" fill="#22c55e" font-size="8" font-weight="500">€350M/yr Zuweisungen</text>
+      <text x="280" y="460" fill="#3b82f6" font-size="8" font-weight="500">€1B+ deposits</text>
+
+      <!-- THE LOOP annotation -->
+      <rect x="340" y="140" width="230" height="28" rx="3" fill="#1a0a0a" stroke="#ef4444" stroke-width="1" opacity="0.9"/>
+      <text x="455" y="158" text-anchor="middle" fill="#ef4444" font-size="10" font-weight="700">⟳ MONEY NEVER LEAVES THE SYSTEM</text>
+
+    </svg>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-line" style="background: #22c55e;"></div>Money flow (KSt, allocations)</div>
+      <div class="legend-item"><div class="legend-line" style="background: #ef4444;"></div>Bank debt / lending</div>
+      <div class="legend-item"><div class="legend-line dashed" style="color: #a855f7;"></div>Guarantees (circular)</div>
+      <div class="legend-item"><div class="legend-line" style="background: #3b82f6;"></div>Deposits</div>
+      <div class="legend-item"><div class="legend-line dashed" style="color: #f59e0b;"></div>Governance / board links</div>
+      <div class="legend-item"><svg width="18" height="18"><circle cx="9" cy="9" r="7" fill="#f59e0b"/><text x="9" y="12" text-anchor="middle" fill="#1a1530" font-size="7" font-weight="700">GS</text></svg>Gordon Sobbeck board seat</div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <h2>System Overview</h2>
+
+    <div class="metric">
+      <div class="label">Total System Assets (Fair Value)</div>
+      <div class="value">€8.5–21.5B</div>
+      <div class="note">HGB reports only €4.3B</div>
+    </div>
+
+    <div class="metric">
+      <div class="label">Hidden Equity</div>
+      <div class="value green">€2.1–15.1B</div>
+      <div class="note">Silent reserves in property at €1</div>
+    </div>
+
+    <div class="metric">
+      <div class="label">Hidden Pension Liability</div>
+      <div class="value red">€1.9B</div>
+      <div class="note">57,712 employees in KZVK — not on any balance sheet</div>
+    </div>
+
+    <div class="metric">
+      <div class="label">Circular Guarantee Exposure</div>
+      <div class="value amber">€83–133M</div>
+      <div class="note">Diocese → Pax-Bank (its own bank)</div>
+    </div>
+
+    <h2 style="margin-top: 16px;">The Closed Loop</h2>
+
+    <div class="finding-box">
+      <h3>1. Single-Counterparty Ecosystem</h3>
+      <p>Pax-Bank's €8.1B balance sheet has one client: the Catholic Church. Every loan, every deposit, every payment — all within the same canonical hierarchy. A corporate analyst would call this <strong>Klumpenrisiko</strong>.</p>
+    </div>
+
+    <div class="finding-box">
+      <h3>2. Circular Guarantees</h3>
+      <p>The diocese guarantees CBT/ASW/VKKD bank debt. The bank that holds the debt is owned by... the diocese. If a borrower defaults, the loss hits the bank, whose largest depositor is the guarantor. Risk never transfers — it just rotates.</p>
+    </div>
+
+    <div class="finding-box">
+      <h3>3. Governance Conflict</h3>
+      <p><strong>Gordon Sobbeck</strong> sits on Pax-Bank Aufsichtsrat (lender) AND CBT Verwaltungsrat (borrower). Same individual oversees both sides of a €66M lending relationship. Also on ASW, Aachener GV, and RWB boards.</p>
+    </div>
+
+    <div class="finding-box">
+      <h3>4. Banking Secrecy Shield</h3>
+      <p>§26 KWG protects Pax-Bank's loan book from external access. This loan book IS the consolidated debt schedule of the entire church. The one document that would reveal everything is legally shielded.</p>
+    </div>
+
+    <div class="finding-box">
+      <h3>5. Accounting Arbitrage</h3>
+      <p>Each entity files independently under HGB. Nobody consolidates. The diocese's cooperative shares in Pax-Bank are booked at cost (~€5M) while the economic value of its stake in a €560M-equity bank is ~€110M. Parish property at €1 per building. €1.9B KZVK liability on nobody's books.</p>
+    </div>
+
+    <h2 style="margin-top: 16px;">Single Point of Failure</h2>
+    <div class="detail-card">
+      <h3>Kirchensteuer Dependency</h3>
+      <p>The entire loop depends on one cash inflow: <strong>€800M/yr Kirchensteuer</strong>. Church membership declining 3–4%/yr. Every entity — diocese, bank, hospitals, parishes — is correlated to the same variable. No diversification, no external capital, no independent oversight.</p>
+      <div class="tag tag-owner">Owner</div>
+      <div class="tag tag-lender">Lender</div>
+      <div class="tag tag-borrower">Borrower</div>
+      <div class="tag tag-depositor">Depositor</div>
+      <div class="tag tag-guarantor">Guarantor</div>
+      <p style="margin-top: 8px;">All five roles held by the same institution wearing different legal hats.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function showLayer(layer) {
+  document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  document.querySelectorAll('.flow-line, line[data-type]').forEach(el => {
+    const type = el.getAttribute('data-type') || el.classList[1];
+    if (layer === 'all') {
+      el.style.opacity = '';
+      el.style.display = '';
+    } else if (type === layer || el.classList.contains(layer)) {
+      el.style.opacity = '0.8';
+      el.style.display = '';
+    } else {
+      el.style.opacity = '0.05';
+    }
+  });
+
+  // Also handle the Sobbeck connection lines
+  document.querySelectorAll('line[data-type]').forEach(el => {
+    const type = el.getAttribute('data-type');
+    if (layer === 'all') {
+      el.style.opacity = '';
+    } else if (type === layer) {
+      el.style.opacity = '0.7';
+    } else {
+      el.style.opacity = '0.03';
+    }
+  });
+}
+
+// Tooltip handling
+const tooltip = document.getElementById('tooltip');
+document.querySelectorAll('.entity-node').forEach(node => {
+  node.addEventListener('mouseenter', (e) => {
+    const entity = node.dataset.entity;
+    const info = {
+      ebk: '<strong>Erzbistum Köln</strong><br>HGB: €4.3B · Fair Value: €8.5-21.5B<br>Owner of ecosystem. Controls all entities through canonical authority and board appointments. Primary depositor at Pax-Bank. Guarantor of subsidiary debt.',
+      paxbank: '<strong>Pax-Bank / BKC (merged)</strong><br>€8.1B BS · €560M+ equity · CET1 15-21%<br>Church-only cooperative bank. Sole lender to all church entities. Deposit-taker for all church cash. Loan book = shadow consolidated debt schedule. Protected by §26 KWG banking secrecy.',
+      cbt: '<strong>CBT (Caritas Betriebsführungs- und Trägergesellschaft)</strong><br>€137M assets · €66M bank debt · 1,912 employees<br>Elderly care operator. Borrows from Pax-Bank. Gordon Sobbeck on both CBT board AND Pax-Bank board.',
+      asw: '<strong>ASW / Augustinus Group</strong><br>€321M assets · ~€50M bank debt · 4,800 employees<br>Largest welfare provider. Controlled via AWF Stiftungsrat. Gordon Sobbeck on Stiftungsrat.',
+      vkkd: '<strong>VKKD (Hospital Group)</strong><br>€147M assets · ~€30M bank debt · IFRS 5 disposal<br>Hospital network in financial distress. Marked for disposal in EBK accounts. Potential commercial bank exposure.',
+      parishes: '<strong>517 Kirchenstiftungen</strong><br>Book: €1.0B · Fair Value: €2.4-11.4B<br>All property at €1 memorandum values. 33,000 Erbbaurechte. 30,000 employees in KZVK (pension liability on nobody\'s books). Never consolidated by anyone.',
+      aachener: '<strong>Aachener Grundvermögen KVG</strong><br>€355M AuM · Church securities fund<br>Manages investment portfolios for church entities. Gordon Sobbeck on Aufsichtsrat.',
+      kzvk: '<strong>KZVK (Kirchliche Zusatzversorgungskasse)</strong><br>Est. liability: €2.2B (actuarial/buyout)<br>Multi-employer DB pension. 57,712 employees. Funding ratio unknown (not published). HGB: employers book €0. Exit penalty: ~€28K/employee.',
+      sobbeck: '<strong>Gordon Sobbeck</strong><br>5 board positions across lender AND borrowers:<br>• Pax-Bank Aufsichtsrat (LENDER)<br>• CBT Verwaltungsrat (BORROWER — €66M debt!)<br>• ASW Stiftungsrat<br>• Aachener GV Aufsichtsrat<br>• RWB',
+      finanzamt: '<strong>Finanzamt (Tax Office)</strong><br>Collects Kirchensteuer via payroll.<br>~€800M/yr flows to EBK. This is the single external cash input that keeps the entire loop solvent.'
+    };
+    tooltip.innerHTML = info[entity] || '';
+    tooltip.style.display = 'block';
+  });
+
+  node.addEventListener('mousemove', (e) => {
+    tooltip.style.left = (e.clientX + 15) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+  });
+
+  node.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+  });
+});
+</script>
+
+</body>
+</html>

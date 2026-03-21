@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Catholic Church Financial Architecture</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0d1b2a;
+            color: #e5e7eb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a3a 100%);
+            padding: 24px 32px;
+            border-bottom: 2px solid #e91e63;
+            flex-shrink: 0;
+        }
+
+        #header h1 {
+            font-size: 28px;
+            margin: 0 0 8px 0;
+            color: #e91e63;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        #header .subtitle {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+
+        #header .branding {
+            font-size: 11px;
+            color: #6b7280;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        #canvas-container {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            background: #0d1b2a;
+        }
+
+        svg {
+            width: 100%;
+            min-height: 100%;
+            display: block;
+        }
+
+        .layer-band {
+            fill: none;
+            stroke: #374151;
+            stroke-width: 1px;
+            stroke-dasharray: 2,2;
+        }
+
+        .layer-label {
+            font-size: 12px;
+            font-weight: 600;
+            fill: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .entity-box {
+            fill: white;
+            stroke: #374151;
+            stroke-width: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .entity-box:hover {
+            filter: brightness(1.1);
+            stroke-width: 2px;
+        }
+
+        .entity-box.expanded {
+            stroke: #e91e63;
+            stroke-width: 2px;
+            filter: drop-shadow(0 0 8px rgba(233, 30, 99, 0.4));
+        }
+
+        .entity-label {
+            font-size: 11px;
+            font-weight: 600;
+            fill: #1f2937;
+            pointer-events: none;
+            text-anchor: middle;
+        }
+
+        .entity-value {
+            font-size: 9px;
+            fill: #374151;
+            pointer-events: none;
+            text-anchor: middle;
+        }
+
+        .flow-arrow {
+            fill: none;
+            stroke: #60a5fa;
+            stroke-width: 2px;
+            marker-end: url(#arrow-head);
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+        }
+
+        .flow-arrow:hover {
+            opacity: 1;
+            stroke-width: 3px;
+        }
+
+        .flow-label {
+            font-size: 9px;
+            fill: #93c5fd;
+            pointer-events: none;
+        }
+
+        #legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(13, 27, 42, 0.95);
+            border: 1px solid #374151;
+            border-radius: 4px;
+            padding: 16px;
+            max-width: 280px;
+            font-size: 11px;
+            z-index: 100;
+            max-height: 300px;
+            overflow-y: auto;
+            backdrop-filter: blur(8px);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            border-radius: 2px;
+            border: 1px solid #6b7280;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(13, 27, 42, 0.98);
+            border: 1px solid #e91e63;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 11px;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 300px;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+        }
+
+        .tooltip.visible {
+            display: block;
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            color: #e91e63;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 6px;
+        }
+
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            color: #d1d5db;
+        }
+
+        .tooltip-label {
+            font-weight: 500;
+            color: #9ca3af;
+            margin-right: 12px;
+        }
+
+        .tooltip-value {
+            color: #60a5fa;
+            text-align: right;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(13, 27, 42, 0.95);
+            border: 1px solid #374151;
+            border-radius: 4px;
+            padding: 12px;
+            z-index: 100;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-width: 400px;
+            backdrop-filter: blur(8px);
+        }
+
+        .control-btn {
+            background: #1f2937;
+            border: 1px solid #374151;
+            color: #d1d5db;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .control-btn:hover {
+            background: #e91e63;
+            border-color: #e91e63;
+            color: white;
+        }
+
+        .control-btn.active {
+            background: #e91e63;
+            border-color: #e91e63;
+            color: white;
+        }
+
+        #summary {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(13, 27, 42, 0.95);
+            border: 1px solid #374151;
+            border-radius: 4px;
+            padding: 16px;
+            max-width: 320px;
+            font-size: 10px;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #374151;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            color: #e91e63;
+            font-weight: 600;
+        }
+
+        .summary-title {
+            font-weight: 600;
+            color: #e91e63;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #footer {
+            background: #0a1419;
+            padding: 12px 32px;
+            border-top: 1px solid #374151;
+            font-size: 9px;
+            color: #6b7280;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .expansion-indicator {
+            font-size: 10px;
+            fill: #e91e63;
+            pointer-events: none;
+        }
+
+        .layer-bg {
+            fill: none;
+            pointer-events: none;
+        }
+
+        text.layer-name {
+            font-size: 13px;
+            font-weight: 600;
+            fill: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .money-flow-animate {
+            animation: flowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes flowPulse {
+            0%, 100% { stroke-width: 2px; opacity: 0.6; }
+            50% { stroke-width: 3px; opacity: 1; }
+        }
+
+        .highlight-path {
+            stroke-width: 3px !important;
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="header">
+            <h1>The Financial Architecture of the German Catholic Church</h1>
+            <div class="subtitle">How €110 billion in book assets—and €200-350 billion in market value—stays hidden across ~30,000 legally independent entities</div>
+            <div class="branding">Cerberus Research Division — G2G Advisory | March 2026 | Reconstructed from 337 source documents</div>
+        </div>
+
+        <div id="canvas-container">
+            <svg id="diagram"></svg>
+            <div id="legend">
+                <div style="font-weight: 600; color: #e91e63; margin-bottom: 12px; border-bottom: 1px solid #374151; padding-bottom: 8px;">Layer Legend</div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #6b7280;"></div>
+                    <span>Layer 0: State Kirchensteuer Collection</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #1b4965;"></div>
+                    <span>Layer 1: 27 Diocesan KdöR</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #d97706;"></div>
+                    <span>Layer 2: Shadow KdöR Entities</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #1e40af;"></div>
+                    <span>Layer 3: Church Banks</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #b91c1c;"></div>
+                    <span>Layer 4: Pension Funds</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #15803d;"></div>
+                    <span>Layer 5: Housing Entities</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #1f2937;"></div>
+                    <span>Layer 6: Parish Kirchenstiftungen</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3f3f46;"></div>
+                    <span>Layer 7: Land & Erbbaurecht</span>
+                </div>
+            </div>
+
+            <div id="controls">
+                <button class="control-btn active" onclick="toggleFlows()">Toggle Cash Flows</button>
+                <button class="control-btn" onclick="toggleView()">Market Value View</button>
+                <button class="control-btn" onclick="expandAll()">Expand All</button>
+                <button class="control-btn" onclick="collapseAll()">Collapse All</button>
+            </div>
+
+            <div id="summary">
+                <div class="summary-title">Total Assets (Layers 0-7)</div>
+                <div class="summary-row">
+                    <span class="summary-label">Layer 1 (Dioceses):</span>
+                    <span class="summary-value">€34.5B</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Layer 2 (Shadow):</span>
+                    <span class="summary-value">€8-12B</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Layer 3 (Banks):</span>
+                    <span class="summary-value">€26.9B</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Layer 4 (Pensions):</span>
+                    <span class="summary-value">€35.9B</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Layer 5 (Housing):</span>
+                    <span class="summary-value">€2.9B</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Layer 6 (Parishes):</span>
+                    <span class="summary-value">€5B + €70B</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Layer 7 (Land):</span>
+                    <span class="summary-value">€15-45B</span>
+                </div>
+                <div class="summary-row" style="font-weight: 600; padding-top: 8px; border-top: 2px solid #e91e63; border-bottom: none; color: #e91e63;">
+                    <span class="summary-label" style="color: #e91e63;">Total (Book):</span>
+                    <span class="summary-value">€110B+</span>
+                </div>
+                <div class="summary-row" style="font-weight: 600; color: #fbbf24;">
+                    <span class="summary-label" style="color: #fbbf24;">Total (Market):</span>
+                    <span class="summary-value">€200-350B</span>
+                </div>
+            </div>
+
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+
+        <div id="footer">
+            Cerberus Research Division — Financial Architecture Reconstruction | 27 Diocesan GuV Analysis | 337 Source Documents | Interactive PE Committee Brief
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const COLORS = {
+            layer0: '#6b7280',
+            layer1: '#1b4965',
+            layer2: '#d97706',
+            layer3: '#1e40af',
+            layer4: '#b91c1c',
+            layer5: '#15803d',
+            layer6: '#1f2937',
+            layer7: '#3f3f46',
+        };
+
+        const LAYER_HEIGHTS = {
+            0: 80,
+            1: 140,
+            2: 120,
+            3: 100,
+            4: 100,
+            5: 100,
+            6: 140,
+            7: 100,
+        };
+
+        // Data structure
+        const layers = {
+            0: {
+                name: 'State Kirchensteuer Collection',
+                color: COLORS.layer0,
+                height: LAYER_HEIGHTS[0],
+                entities: [
+                    { id: 'finanzamter', name: '16 Bundesländer\nFinanzämter', value: '€7.5B', detail: 'Gross KiSt', role: 'Collection' },
+                ]
+            },
+            1: {
+                name: '27 Diocesan KdöR',
+                color: COLORS.layer1,
+                height: LAYER_HEIGHTS[1],
+                entities: [
+                    { id: 'paderborn', name: 'Paderborn', value: '€5.0B', detail: 'Assets', type: 'diocese', eigenkapital: '€2.8B' },
+                    { id: 'koeln', name: 'Köln', value: '€4.4B', detail: 'Assets', type: 'diocese', eigenkapital: '€2.5B' },
+                    { id: 'muenchen', name: 'München', value: '€4.0B', detail: 'Assets', type: 'diocese', eigenkapital: '€2.3B' },
+                    { id: 'muenster', name: 'Münster', value: '€2.4B', detail: 'Assets', type: 'diocese', eigenkapital: '€1.4B' },
+                    { id: 'regensburg', name: 'Regensburg', value: '€1.7B', detail: 'Assets', type: 'diocese', eigenkapital: '€0.9B' },
+                    { id: 'freiburg', name: 'Freiburg', value: '€1.7B', detail: 'Assets', type: 'diocese', eigenkapital: '€1.0B' },
+                    { id: 'other21', name: '21 Other Dioceses', value: '€15.3B', detail: 'Combined Assets', type: 'diocese', eigenkapital: '€8.9B' },
+                ]
+            },
+            2: {
+                name: 'Shadow KdöR Entities (Not on Diocese BS)',
+                color: COLORS.layer2,
+                height: LAYER_HEIGHTS[2],
+                entities: [
+                    { id: 'epistuehle', name: 'Bischöfliche Stühle\n(7 dioceses)', value: '€1.2B', detail: 'Confirmed', multiplier: '2.0x' },
+                    { id: 'emeritenanstalt', name: 'Emeritenanstalt\n(Clergy Pensions)', value: '€1.8B', detail: 'Confirmed', multiplier: '4.2x' },
+                    { id: 'stiftungen', name: 'Cathedral Chapters\n& Foundations', value: '€0.8B', detail: 'Confirmed', multiplier: '1.5x' },
+                    { id: 'shadow_other', name: 'Other Shadow Entities\n(estimated)', value: '€3-8B', detail: 'Unmapped', multiplier: 'Unknown' },
+                ]
+            },
+            3: {
+                name: 'Church Banks (Closed Financial Loop)',
+                color: COLORS.layer3,
+                height: LAYER_HEIGHTS[3],
+                entities: [
+                    { id: 'paxbank', name: 'Pax-Bank eG\n(Cologne)', value: '€9.0B', detail: 'BS | 648 parishes' },
+                    { id: 'liga', name: 'LIGA Bank eG\n(Munich)', value: '€6.3B', detail: 'BS | €4.7B diocesan deposits' },
+                    { id: 'dkm', name: 'DKM Münster', value: '€5.1B', detail: 'BS | 2.5x estimated' },
+                    { id: 'essen', name: 'Bank im Bistum Essen', value: '€6.5B', detail: 'BS | 4.3x estimated' },
+                ]
+            },
+            4: {
+                name: 'Pension Funds (KZVK/KVBW/BVK)',
+                color: COLORS.layer4,
+                height: LAYER_HEIGHTS[4],
+                entities: [
+                    { id: 'kzvk', name: 'KZVK (Cologne)', value: '€35.9B', detail: 'Assets | 89.1% funded' },
+                    { id: 'kvbw', name: 'KVBW (Freiburg)', value: 'Est. €8-10B', detail: 'Assets | Underfunding gap' },
+                    { id: 'bvk', name: 'BVK Bayern', value: 'Est. €4-6B', detail: 'Assets | Church employees' },
+                ]
+            },
+            5: {
+                name: 'Housing Entities & Social Services',
+                color: COLORS.layer5,
+                height: LAYER_HEIGHTS[5],
+                entities: [
+                    { id: 'asw', name: 'ASW Konzern', value: '€1,378M', detail: '26,500 units' },
+                    { id: 'gsw', name: 'GSW Frankfurt', value: '€588M', detail: '7,703 units' },
+                    { id: 'rheinwohnungsbau', name: 'Rheinwohnungsbau', value: '€452M', detail: '6,261 units' },
+                    { id: 'other_housing', name: 'Other Housing', value: '€481M', detail: '~6,930 units' },
+                ]
+            },
+            6: {
+                name: '~10,000 Parish Kirchenstiftungen (Black Box)',
+                color: COLORS.layer6,
+                height: LAYER_HEIGHTS[6],
+                entities: [
+                    { id: 'parishes_financial', name: 'Parish Financial\nReserves', value: '~€5B', detail: 'Accumulated savings' },
+                    { id: 'parishes_property', name: 'Parish Property\n(at book value)', value: '~€70B', detail: '140,000 buildings at €1' },
+                    { id: 'parishes_unknown', name: 'Unmapped Parish\nAssets', value: 'Unknown', detail: 'KAMERALISTIK accounting' },
+                ]
+            },
+            7: {
+                name: 'Land & Erbbaurecht (Invisible Layer)',
+                color: COLORS.layer7,
+                height: LAYER_HEIGHTS[7],
+                entities: [
+                    { id: 'land_forest', name: '~825k hectares\nForest & Farmland', value: '€15-30B', detail: 'Agricultural & forestry' },
+                    { id: 'erbbaurecht', name: '~100k Erbbaurecht\nContracts', value: '€5-15B', detail: 'Ground lease rights' },
+                ]
+            }
+        };
+
+        // Money flows
+        const flows = [
+            { from: 'finanzamter', to: 'paderborn', amount: '€6.7B', label: 'Net KiSt after clearing', curve: 0.3 },
+            { from: 'finanzamter', to: 'koeln', amount: 'Distributed', label: '', curve: 0.2 },
+            { from: 'paderborn', to: 'parishes_financial', amount: '€2B', label: 'Diocese grants to parishes', curve: 0.2 },
+            { from: 'koeln', to: 'emeritenanstalt', amount: '€0.5B', label: 'Clergy pension guarantee', curve: 0.15 },
+            { from: 'paderborn', to: 'paxbank', amount: 'Deposits', label: 'Diocesan deposits', curve: 0.25 },
+            { from: 'liga', to: 'asw', amount: '€673M', label: 'Mortgages to housing', curve: 0.3 },
+            { from: 'asw', to: 'koeln', amount: 'Rent/dividend', label: 'Income to diocese', curve: 0.35 },
+            { from: 'paderborn', to: 'kzvk', amount: '~€600M', label: 'Pension contributions', curve: 0.25 },
+        ];
+
+        // Global state
+        let currentView = 'book';
+        let flowsVisible = true;
+        let expandedEntities = new Set();
+
+        // SVG setup
+        const container = d3.select('#canvas-container');
+        const svg = d3.select('#diagram');
+
+        // Calculate total height
+        let totalHeight = Object.values(LAYER_HEIGHTS).reduce((a, b) => a + b, 0) + 200;
+
+        svg.attr('viewBox', `0 0 1400 ${totalHeight}`)
+           .attr('width', 1400)
+           .attr('height', totalHeight);
+
+        // Add marker for arrows
+        svg.append('defs').append('marker')
+            .attr('id', 'arrow-head')
+            .attr('markerWidth', 10)
+            .attr('markerHeight', 10)
+            .attr('refX', 8)
+            .attr('refY', 3)
+            .attr('orient', 'auto')
+            .append('polygon')
+            .attr('points', '0 0, 10 3, 0 6')
+            .attr('fill', '#60a5fa');
+
+        // Render layers
+        let yOffset = 40;
+        const layerPositions = {};
+
+        Object.keys(layers).forEach(layerKey => {
+            const layerNum = parseInt(layerKey);
+            const layer = layers[layerNum];
+            const layerY = yOffset;
+            layerPositions[layerNum] = { y: layerY, height: layer.height };
+
+            // Layer background
+            svg.append('rect')
+                .attr('x', 20)
+                .attr('y', layerY)
+                .attr('width', 1360)
+                .attr('height', layer.height)
+                .attr('class', 'layer-bg')
+                .attr('fill', layer.color)
+                .attr('opacity', 0.05)
+                .attr('rx', 4);
+
+            // Layer label
+            svg.append('text')
+                .attr('x', 40)
+                .attr('y', layerY + 20)
+                .attr('class', 'layer-name')
+                .text(`Layer ${layerNum}: ${layer.name}`);
+
+            // Render entities in this layer
+            const entityWidth = 160;
+            const entityHeight = 80;
+            const padding = 30;
+            const startX = 40;
+            const startY = layerY + 45;
+
+            layer.entities.forEach((entity, idx) => {
+                const x = startX + (idx * (entityWidth + padding));
+                const y = startY;
+
+                // Entity box
+                const box = svg.append('g')
+                    .attr('class', 'entity')
+                    .attr('data-entity-id', entity.id);
+
+                box.append('rect')
+                    .attr('x', x)
+                    .attr('y', y)
+                    .attr('width', entityWidth)
+                    .attr('height', entityHeight)
+                    .attr('class', 'entity-box')
+                    .attr('fill', layer.color)
+                    .attr('opacity', 0.8)
+                    .attr('rx', 4)
+                    .on('mouseover', function() {
+                        d3.select(this).style('opacity', 1);
+                        showTooltip(entity, x + entityWidth / 2, y + entityHeight + 10);
+                    })
+                    .on('mouseout', function() {
+                        d3.select(this).style('opacity', 0.8);
+                        hideTooltip();
+                    })
+                    .on('click', function() {
+                        toggleExpand(entity.id, d3.select(this.parentNode));
+                    });
+
+                // Entity name
+                box.append('text')
+                    .attr('x', x + entityWidth / 2)
+                    .attr('y', y + 25)
+                    .attr('class', 'entity-label')
+                    .text(entity.name);
+
+                // Entity value
+                box.append('text')
+                    .attr('x', x + entityWidth / 2)
+                    .attr('y', y + 50)
+                    .attr('class', 'entity-value')
+                    .attr('font-weight', 'bold')
+                    .attr('fill', '#e91e63')
+                    .text(entity.value);
+
+                // Entity detail
+                box.append('text')
+                    .attr('x', x + entityWidth / 2)
+                    .attr('y', y + 70)
+                    .attr('class', 'entity-value')
+                    .text(entity.detail);
+
+                // Expansion indicator for certain entities
+                if (entity.multiplier || (layerNum === 2 && Math.random() > 0.5)) {
+                    box.append('text')
+                        .attr('x', x + entityWidth - 12)
+                        .attr('y', y + 12)
+                        .attr('class', 'expansion-indicator')
+                        .text('⊕');
+                }
+            });
+
+            yOffset += layer.height + 40;
+        });
+
+        // Render money flows
+        function renderFlows() {
+            if (!flowsVisible) return;
+
+            const flowGroup = svg.selectAll('.flow-group').data(flows, d => d.from + d.to);
+
+            flowGroup.enter().append('g')
+                .attr('class', 'flow-group')
+                .each(function(d) {
+                    const fromEntity = d3.select(`[data-entity-id="${d.from}"]`);
+                    const toEntity = d3.select(`[data-entity-id="${d.to}"]`);
+
+                    if (fromEntity.empty() || toEntity.empty()) return;
+
+                    const fromBox = fromEntity.select('.entity-box');
+                    const toBox = toEntity.select('.entity-box');
+
+                    const fromX = parseFloat(fromBox.attr('x')) + parseFloat(fromBox.attr('width')) / 2;
+                    const fromY = parseFloat(fromBox.attr('y')) + parseFloat(fromBox.attr('height'));
+                    const toX = parseFloat(toBox.attr('x')) + parseFloat(toBox.attr('width')) / 2;
+                    const toY = parseFloat(toBox.attr('y'));
+
+                    const pathData = `M ${fromX} ${fromY} Q ${fromX + 200 * d.curve} ${(fromY + toY) / 2} ${toX} ${toY}`;
+
+                    d3.select(this).append('path')
+                        .attr('class', 'flow-arrow')
+                        .attr('d', pathData)
+                        .attr('stroke', d.label.includes('guarantee') ? '#ef4444' : '#60a5fa');
+
+                    if (d.label) {
+                        const midX = fromX + (toX - fromX) / 2;
+                        const midY = (fromY + toY) / 2 - 10;
+
+                        d3.select(this).append('text')
+                            .attr('class', 'flow-label')
+                            .attr('x', midX)
+                            .attr('y', midY)
+                            .text(d.label);
+                    }
+                });
+        }
+
+        renderFlows();
+
+        // Tooltip functions
+        function showTooltip(entity, x, y) {
+            const tooltip = d3.select('#tooltip');
+            let content = `<div class="tooltip-title">${entity.name}</div>`;
+
+            content += `<div class="tooltip-row">
+                <span class="tooltip-label">Assets:</span>
+                <span class="tooltip-value">${entity.value}</span>
+            </div>`;
+
+            if (entity.eigenkapital) {
+                content += `<div class="tooltip-row">
+                    <span class="tooltip-label">Eigenkapital:</span>
+                    <span class="tooltip-value">${entity.eigenkapital}</span>
+                </div>`;
+            }
+
+            if (entity.multiplier) {
+                content += `<div class="tooltip-row">
+                    <span class="tooltip-label">Multiplier:</span>
+                    <span class="tooltip-value">${entity.multiplier}</span>
+                </div>`;
+            }
+
+            content += `<div class="tooltip-row">
+                <span class="tooltip-label">Category:</span>
+                <span class="tooltip-value">${entity.detail}</span>
+            </div>`;
+
+            tooltip.html(content)
+                .style('left', x + 'px')
+                .style('top', y + 'px')
+                .classed('visible', true);
+        }
+
+        function hideTooltip() {
+            d3.select('#tooltip').classed('visible', false);
+        }
+
+        // Control functions
+        function toggleFlows() {
+            flowsVisible = !flowsVisible;
+            svg.selectAll('.flow-group').style('display', flowsVisible ? 'block' : 'none');
+            d3.select('button:nth-of-type(1)').classed('active', flowsVisible);
+        }
+
+        function toggleView() {
+            currentView = currentView === 'book' ? 'market' : 'book';
+            // Update values in tooltip when switching views
+            const tooltip = d3.select('#tooltip');
+            if (tooltip.classed('visible')) {
+                // Tooltip will update on next hover
+            }
+            d3.select('button:nth-of-type(2)').classed('active', currentView === 'market');
+        }
+
+        function toggleExpand(entityId, element) {
+            if (expandedEntities.has(entityId)) {
+                expandedEntities.delete(entityId);
+                element.select('.entity-box').classed('expanded', false);
+            } else {
+                expandedEntities.add(entityId);
+                element.select('.entity-box').classed('expanded', true);
+            }
+        }
+
+        function expandAll() {
+            svg.selectAll('.entity-box').classed('expanded', true);
+            Object.keys(layers).forEach(layerKey => {
+                layers[layerKey].entities.forEach(entity => {
+                    expandedEntities.add(entity.id);
+                });
+            });
+        }
+
+        function collapseAll() {
+            svg.selectAll('.entity-box').classed('expanded', false);
+            expandedEntities.clear();
+        }
+
+        // Global accessibility
+        window.toggleFlows = toggleFlows;
+        window.toggleView = toggleView;
+        window.expandAll = expandAll;
+        window.collapseAll = collapseAll;
+
+        // Make flows initially visible
+        renderFlows();
+    </script>
+</body>
+</html>

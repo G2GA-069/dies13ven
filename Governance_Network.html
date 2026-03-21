@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Closed System: German Catholic Church Governance Network</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1b2a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(to right, #0d1b2a, #1a2a3a);
+            border-bottom: 2px solid #2a4a6a;
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .branding {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .branding-mark {
+            font-weight: bold;
+            color: #4a9eff;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #a0c0e0;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        #network-container {
+            flex: 1;
+            position: relative;
+            background: #0d1b2a;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: #1a2a3a;
+            border-left: 2px solid #2a4a6a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .legend-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            border-bottom: 1px solid #2a4a6a;
+        }
+
+        .legend-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4a9eff;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .legend-group {
+            margin-bottom: 18px;
+        }
+
+        .legend-group-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #c0d0e0;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            font-size: 11px;
+        }
+
+        .legend-swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-text {
+            color: #a0c0e0;
+        }
+
+        .detail-panel {
+            flex: 1;
+            padding: 20px;
+            border-top: 1px solid #2a4a6a;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4a9eff;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .detail-empty {
+            color: #606a7a;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .detail-content {
+            font-size: 11px;
+            line-height: 1.6;
+            color: #a0c0e0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            color: #a0c0e0;
+            margin-bottom: 8px;
+            padding-left: 8px;
+            border-left: 2px solid #2a4a6a;
+        }
+
+        .detail-risk {
+            background: rgba(255, 80, 80, 0.1);
+            border: 1px solid rgba(255, 80, 80, 0.3);
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 12px;
+            color: #ff6060;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .controls {
+            padding: 16px;
+            border-top: 1px solid #2a4a6a;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            background: #2a5a8a;
+            border: 1px solid #3a7aaa;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background: #3a7aaa;
+            border-color: #4a9aaa;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: #0d1b2a;
+            border: 1px solid #2a4a6a;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: #a0c0e0;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 220px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 4px;
+        }
+
+        /* Node styling */
+        circle {
+            cursor: pointer;
+            stroke-width: 2px;
+        }
+
+        circle.node-hub {
+            stroke-width: 3px;
+        }
+
+        circle.selected {
+            stroke: #4a9eff;
+            stroke-width: 3px;
+            filter: drop-shadow(0 0 8px rgba(74, 158, 255, 0.6));
+        }
+
+        circle.risk-high {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 4px rgba(255, 80, 80, 0.4));
+            }
+            50% {
+                filter: drop-shadow(0 0 12px rgba(255, 80, 80, 0.8));
+            }
+        }
+
+        /* Link styling */
+        line {
+            stroke-width: 1px;
+            opacity: 0.5;
+        }
+
+        line.link-ownership {
+            stroke: #4a9eff;
+        }
+
+        line.link-audit {
+            stroke: #80c080;
+        }
+
+        line.link-influence {
+            stroke: #ff8040;
+            stroke-dasharray: 4,4;
+        }
+
+        line.link-financial {
+            stroke: #ffa040;
+        }
+
+        line.highlighted {
+            stroke-width: 2px;
+            opacity: 1;
+        }
+
+        text.node-label {
+            font-size: 10px;
+            font-weight: 500;
+            text-anchor: middle;
+            pointer-events: none;
+            fill: #e0e0e0;
+        }
+
+        text.node-label.small {
+            font-size: 8px;
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            background: #1a2a3a;
+            border: 2px solid #2a4a6a;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #2a4a6a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #a0c0e0;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #e0e0e0;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .forensic-section {
+            margin-bottom: 20px;
+        }
+
+        .forensic-heading {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a9eff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .forensic-text {
+            font-size: 11px;
+            color: #a0c0e0;
+            line-height: 1.7;
+        }
+
+        .forensic-stat {
+            background: rgba(74, 158, 255, 0.1);
+            border-left: 3px solid #4a9eff;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            background: rgba(255, 80, 80, 0.2);
+            border: 1px solid rgba(255, 80, 80, 0.5);
+            color: #ff6060;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        @media print {
+            .sidebar, header {
+                display: none;
+            }
+            #network-container {
+                width: 100%;
+                height: 100%;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0d1b2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2a4a6a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a5a7a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="branding">
+                    <span class="branding-mark">CERBERUS RESEARCH</span>
+                </div>
+                <h1>The Closed System: Where €110B Stays Hidden</h1>
+                <p class="subtitle">Governance Bermuda Triangles in the German Catholic Church</p>
+            </div>
+        </header>
+
+        <main>
+            <div id="network-container">
+                <svg></svg>
+                <div class="tooltip" id="tooltip" style="display: none;"></div>
+                <div class="modal-backdrop" id="modal-backdrop">
+                    <div class="modal" id="modal">
+                        <div class="modal-header">
+                            <div class="modal-title" id="modal-title"></div>
+                            <button class="modal-close" id="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body" id="modal-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="legend-panel">
+                    <div class="legend-title">Legend</div>
+
+                    <div class="legend-group">
+                        <div class="legend-group-title">Node Types</div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background: #4a9eff;"></div>
+                            <div class="legend-text">Hub Entity</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background: #7a5aff;"></div>
+                            <div class="legend-text">Bermuda Triangle 1</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background: #ff8040;"></div>
+                            <div class="legend-text">Bermuda Triangle 2</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background: #40c040;"></div>
+                            <div class="legend-text">Bermuda Triangle 3</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background: #ff6060;"></div>
+                            <div class="legend-text">Bermuda Triangle 4</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background: #ffc040;"></div>
+                            <div class="legend-text">Bermuda Triangle 5</div>
+                        </div>
+                    </div>
+
+                    <div class="legend-group">
+                        <div class="legend-group-title">Edge Types</div>
+                        <div class="legend-item">
+                            <div style="width: 20px; height: 1px; background: #4a9eff;"></div>
+                            <div class="legend-text">Ownership</div>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 20px; height: 1px; background: #80c080;"></div>
+                            <div class="legend-text">Audit</div>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 20px; height: 1px; background: #ffa040; stroke-dasharray: 3,3;"></div>
+                            <div class="legend-text">Influence</div>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 20px; height: 1px; background: #ffa040;"></div>
+                            <div class="legend-text">Financial Flow</div>
+                        </div>
+                    </div>
+
+                    <div class="legend-group">
+                        <div class="legend-group-title">Risk Levels</div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background: #ff0000; animation: pulse 1.5s ease-in-out infinite;"></div>
+                            <div class="legend-text">Critical Risk</div>
+                        </div>
+                    </div>
+
+                    <div class="legend-group">
+                        <div class="legend-group-title">Interaction</div>
+                        <div class="legend-text" style="color: #80a0c0;">Click nodes for details. Drag to explore.</div>
+                    </div>
+                </div>
+
+                <div class="detail-panel">
+                    <div class="detail-title">Node Details</div>
+                    <div class="detail-empty" id="detail-placeholder">Select a node to view details</div>
+                    <div id="detail-content" class="detail-content" style="display: none;"></div>
+                </div>
+
+                <div class="controls">
+                    <button onclick="resetZoom()">Reset View</button>
+                    <button onclick="togglePhysics()">Toggle Physics</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ==================== DATA MODEL ====================
+        const nodeData = [
+            // Hub
+            { id: "hub", name: "Deutsche Katholische Kirche", type: "hub", category: "hub", assets: "€110B", risk: "critical" },
+
+            // BERMUDA TRIANGLE 1 - COLOGNE
+            { id: "cologne-arch", name: "Erzbistum Köln", type: "diocese", category: "bt1", assets: "€4.4B", risk: "critical" },
+            { id: "sobbeck", name: "Gordon Sobbeck", type: "person", category: "bt1", title: "Finanzdirektor/Chairman", risk: "critical" },
+            { id: "rwb", name: "RWB Köln", type: "housing", category: "bt1", assets: "€452M", units: "6,261", risk: "high" },
+            { id: "asw", name: "ASW Köln", type: "housing", category: "bt1", assets: "€1.4B", units: "26,500", risk: "high" },
+            { id: "dewog", name: "DEWOG", type: "subsidiary", category: "bt1", assets: "€197M", parent: "ASW", risk: "high" },
+            { id: "forvis-mazars", name: "Forvis Mazars", type: "auditor", category: "bt1", risk: "medium" },
+
+            // BERMUDA TRIANGLE 2 - BAVARIAN SHADOW
+            { id: "bavaria-shadow", name: "Bavarian Shadow System", type: "system", category: "bt2", risk: "critical" },
+            { id: "wuerzburg-stuhl", name: "Würzburg Bischöflicher Stuhl", type: "episcopal", category: "bt2", assets: "€438M", risk: "high" },
+            { id: "wuerzburg-diocese", name: "Würzburg Diocese", type: "diocese", category: "bt2", assets: "€319M", risk: "high" },
+            { id: "bamberg-emerit", name: "Bamberg Emeritenanstalt", type: "pension", category: "bt2", assets: "€220M", equity: "€1", risk: "critical" },
+            { id: "regensburg-konzern", name: "Regensburg Konzern", type: "housing", category: "bt2", assets: "€2.5B", entities: "22", risk: "high" },
+            { id: "augsburg-kpv", name: "KPV St. Ulrichswerk", type: "housing", category: "bt2", assets: "€1.56B", risk: "high" },
+
+            // BERMUDA TRIANGLE 3 - AUDITOR ECOSYSTEM
+            { id: "solidaris", name: "Solidaris", type: "auditor", category: "bt3", dioceses: "~15", risk: "medium" },
+            { id: "curacon", name: "CURACON", type: "auditor", category: "bt3", dioceses: "~8", risk: "medium" },
+            { id: "kpmg", name: "KPMG", type: "auditor-b4", category: "bt3", clients: "Freiburg", risk: "low" },
+            { id: "deloitte", name: "Deloitte", type: "auditor-b4", category: "bt3", clients: "Görlitz Stuhl", risk: "low" },
+
+            // BERMUDA TRIANGLE 4 - PENSIONS
+            { id: "kzvk", name: "KZVK", type: "pension", category: "bt4", assets: "€35.9B", funding: "89.1%", risk: "high" },
+            { id: "rottenburg", name: "Rottenburg-Stuttgart", type: "diocese", category: "bt4", pension_prov: "€922M", bs_pct: "61.6%", risk: "high" },
+            { id: "muenster", name: "Münster Diocese", type: "diocese", category: "bt4", pension_prov: "€920M", risk: "high" },
+            { id: "trier", name: "Trier Diocese", type: "diocese", category: "bt4", pension_prov_pct: "70.5%", risk: "high" },
+
+            // BERMUDA TRIANGLE 5 - PROPERTY DISPOSAL
+            { id: "property-system", name: "Property Disposal System", type: "system", category: "bt5", properties: "6,000-10,000", risk: "high" },
+
+            // FINANCIAL ECOSYSTEM
+            { id: "pax-bank", name: "Pax-Bank", type: "bank", category: "financial", risk: "medium" },
+            { id: "liga-bank", name: "LIGA-Bank", type: "bank", category: "financial", risk: "medium" },
+            { id: "dkm", name: "DKM", type: "bank", category: "financial", risk: "medium" },
+            { id: "bibe", name: "BiBE", type: "bank", category: "financial", risk: "medium" },
+            { id: "aachen-gv", name: "Aachener GV KVG", type: "asset-manager", category: "financial", risk: "medium" },
+            { id: "kirchenstiftung", name: "Parishes (~10,000 Kirchenstiftungen)", type: "parish", category: "financial", entities: "~10,000", risk: "medium" }
+        ];
+
+        const linkData = [
+            // Hub connections
+            { source: "hub", target: "cologne-arch", type: "ownership", value: 1 },
+            { source: "hub", target: "bavaria-shadow", type: "ownership", value: 1 },
+            { source: "hub", target: "kzvk", type: "financial", value: 1 },
+
+            // Cologne Triangle
+            { source: "cologne-arch", target: "sobbeck", type: "influence", value: 2 },
+            { source: "sobbeck", target: "rwb", type: "influence", value: 2 },
+            { source: "sobbeck", target: "asw", type: "influence", value: 2 },
+            { source: "cologne-arch", target: "rwb", type: "ownership", value: 70.5 },
+            { source: "cologne-arch", target: "asw", type: "ownership", value: 41.5 },
+            { source: "asw", target: "dewog", type: "ownership", value: 100 },
+            { source: "rwb", target: "forvis-mazars", type: "audit", value: 1 },
+
+            // Bavarian Shadow
+            { source: "wuerzburg-diocese", target: "wuerzburg-stuhl", type: "influence", value: 2 },
+            { source: "wuerzburg-stuhl", target: "wuerzburg-diocese", type: "influence", value: 2 },
+            { source: "bamberg-emerit", target: "wuerzburg-diocese", type: "influence", value: 1 },
+            { source: "regensburg-konzern", target: "wuerzburg-diocese", type: "influence", value: 1 },
+            { source: "augsburg-kpv", target: "wuerzburg-diocese", type: "influence", value: 1 },
+
+            // Auditor ecosystem
+            { source: "cologne-arch", target: "solidaris", type: "audit", value: 1 },
+            { source: "wuerzburg-diocese", target: "curacon", type: "audit", value: 1 },
+            { source: "rottenburg", target: "solidaris", type: "audit", value: 1 },
+            { source: "muenster", target: "solidaris", type: "audit", value: 1 },
+            { source: "trier", target: "curacon", type: "audit", value: 1 },
+
+            // Pensions
+            { source: "kzvk", target: "aachen-gv", type: "financial", value: 1 },
+            { source: "rottenburg", target: "kzvk", type: "financial", value: 1 },
+            { source: "muenster", target: "kzvk", type: "financial", value: 1 },
+            { source: "trier", target: "kzvk", type: "financial", value: 1 },
+            { source: "bamberg-emerit", target: "kzvk", type: "financial", value: 1 },
+
+            // Financial flows
+            { source: "cologne-arch", target: "pax-bank", type: "financial", value: 1 },
+            { source: "cologne-arch", target: "liga-bank", type: "financial", value: 1 },
+            { source: "pax-bank", target: "rwb", type: "financial", value: 1 },
+            { source: "liga-bank", target: "asw", type: "financial", value: 1 },
+            { source: "cologne-arch", target: "aachen-gv", type: "financial", value: 1 },
+            { source: "kirchenstiftung", target: "cologne-arch", type: "financial", value: 0.5 },
+
+            // Property disposal
+            { source: "cologne-arch", target: "property-system", type: "influence", value: 1 },
+            { source: "property-system", target: "sobbeck", type: "influence", value: 1 }
+        ];
+
+        const nodeDetails = {
+            "hub": {
+                category: "Deutsche Katholische Kirche",
+                data: "Central governance hub for German Catholic Church",
+                finances: "Total assets €110 billion across all entities",
+                risk: "CRITICAL: Fragmented into 30,000+ independent legal entities"
+            },
+            "cologne-arch": {
+                category: "Erzbistum Köln",
+                data: "€4.4B balance sheet, largest archdiocese in Germany",
+                governance: "Episcopal corporation (KdöR) under civil law",
+                risk: "CRITICAL: Gordon Sobbeck controls multiple billions across fragmented entities with no external board oversight"
+            },
+            "sobbeck": {
+                category: "Gordon Sobbeck",
+                title: "Finanzdirektor of Erzbistum Köln + Chairman RWB + Board ASW",
+                conflict: "Single individual with decision authority over €4.4B+ across archbishop's office, €452M housing corporation, and €1.4B subsidiary housing entity",
+                risk: "CRITICAL: No independent oversight. Plans for €20.6M deficit. Controls asset disposal decisions.",
+                impact: "Planned deficit -€20.6M. Who decides which assets to sell? Sobbeck on both sides."
+            },
+            "rwb": {
+                category: "RWB Köln",
+                data: "€452M assets, 6,261 residential units in Düsseldorf",
+                ownership: "70.5% owned by Erzbistum Köln",
+                audit: "Audited by Forvis Mazars (NOT Solidaris/CURACON - different from diocese audit)",
+                risk: "HIGH: Separate audit trail. Planned deficit -€20.6M. Opaque valuation practices."
+            },
+            "asw": {
+                category: "ASW Köln",
+                data: "€1.4B assets, 26,500 residential units",
+                ownership: "41.5% owned by Erzbistum Köln",
+                subsidiary: "DEWOG (€197M, 4,400 units) = 100% ASW subsidiary",
+                risk: "HIGH: Multi-layer structure obscures true ownership and control. Finanzdirektor influence chain."
+            },
+            "bamberg-emerit": {
+                category: "Bamberg Emeritenanstalt",
+                data: "€220M pension obligations, €1 equity capital",
+                pensions: "€185M+ pension liabilities",
+                guarantee: "Losses guaranteed by diocese via Verlustübernahmevertrag (loss assumption contract)",
+                risk: "CRITICAL: Shell entity structure. Negative equity masked by diocesan guarantee. No external actuarial oversight."
+            },
+            "kzvk": {
+                category: "KZVK (Church Pension Fund)",
+                data: "€35.9B total pension assets for German Catholic clergy",
+                funding: "89.1% funded but €4.4B underfunding gap",
+                decline: "Declining KiSt (church tax) revenue threatens future solvency",
+                risk: "HIGH: Massive underfunding. Dependent on declining revenue source. Limited transparency in actuarial assumptions."
+            },
+            "solidaris": {
+                category: "Solidaris",
+                data: "Audits approximately 15 dioceses + multiple sub-entities",
+                marketshare: "~50% of church auditing market",
+                independence: "No rotation requirement (not subject to EU audit regulation for PIEs)",
+                risk: "MEDIUM: Captive auditor with 90%+ market concentration. Same firm audits diocese AND pension fund AND housing GmbH."
+            },
+            "curacon": {
+                category: "CURACON",
+                data: "Audits approximately 8 dioceses",
+                marketshare: "~40% of church auditing market",
+                independence: "Same captive auditor dynamics as Solidaris",
+                risk: "MEDIUM: Concentrated market. No meaningful competition. Dependent on church client base."
+            },
+            "property-system": {
+                category: "Property Disposal System",
+                data: "6,000-10,000 properties identified for disposal nationally",
+                valuation: "No central register. No unified valuation methodology.",
+                governance: "Each diocese decides independently when/how/to whom to sell",
+                risk: "HIGH: Price discovery doesn't happen. Internal transfers at book value. No market discipline."
+            },
+            "wuerzburg-stuhl": {
+                category: "Würzburg Bischöflicher Stuhl",
+                data: "€438M assets - LARGER than the diocese itself",
+                diocese: "Würzburg Diocese only €319M",
+                control: "Same Ökonom (CFO) governs both entities and all related bodies",
+                risk: "HIGH: Shadow structure bigger than main entity. No consolidated accounts."
+            },
+            "pax-bank": {
+                category: "Pax-Bank",
+                data: "Church bank. Deposits from KiSt (church tax) collections",
+                role: "Lends to church housing GmbH which pays rent to diocese - circular flows",
+                risk: "MEDIUM: Financial system entirely self-contained. Money never leaves ecosystem."
+            }
+        };
+
+        // ==================== D3 VISUALIZATION ====================
+        const width = document.getElementById('network-container').clientWidth;
+        const height = document.getElementById('network-container').clientHeight;
+
+        const svg = d3.select('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+        const g = svg.append('g');
+
+        const colorScale = {
+            "hub": "#4a9eff",
+            "bt1": "#7a5aff",
+            "bt2": "#ff8040",
+            "bt3": "#40c040",
+            "bt4": "#ff6060",
+            "bt5": "#ffc040"
+        };
+
+        const sizeScale = {
+            "hub": 50,
+            "diocese": 35,
+            "person": 28,
+            "housing": 30,
+            "bank": 25,
+            "auditor": 22,
+            "auditor-b4": 20,
+            "pension": 32,
+            "system": 30,
+            "episcopal": 28,
+            "subsidiary": 24,
+            "parish": 18,
+            "asset-manager": 20
+        };
+
+        // Create force simulation
+        const simulation = d3.forceSimulation(nodeData)
+            .force('link', d3.forceLink(linkData)
+                .id(d => d.id)
+                .distance(d => {
+                    if (d.type === 'ownership') return 100;
+                    if (d.type === 'audit') return 120;
+                    if (d.type === 'influence') return 80;
+                    return 110;
+                })
+                .strength(d => {
+                    if (d.type === 'ownership') return 0.7;
+                    if (d.type === 'audit') return 0.5;
+                    return 0.4;
+                }))
+            .force('charge', d3.forceManyBody()
+                .strength(-400)
+                .distanceMax(500))
+            .force('center', d3.forceCenter(width / 2, height / 2))
+            .force('collision', d3.forceCollide()
+                .radius(d => sizeScale[d.type] + 15))
+            .alpha(1)
+            .alphaDecay(0.01);
+
+        let physicsEnabled = true;
+
+        // Draw links
+        const links = g.selectAll('line')
+            .data(linkData)
+            .enter()
+            .append('line')
+            .attr('class', d => `link-${d.type}`)
+            .attr('stroke-width', d => {
+                if (d.type === 'ownership') return 2;
+                if (d.type === 'audit') return 1.5;
+                return 1;
+            });
+
+        // Draw nodes
+        const nodes = g.selectAll('circle')
+            .data(nodeData)
+            .enter()
+            .append('circle')
+            .attr('class', d => {
+                let cls = 'node-' + d.type;
+                if (d.category === 'hub') cls += ' node-hub';
+                if (d.risk === 'critical') cls += ' risk-high';
+                return cls;
+            })
+            .attr('r', d => sizeScale[d.type])
+            .attr('fill', d => colorScale[d.category])
+            .attr('stroke', d => {
+                if (d.category === 'hub') return '#ffffff';
+                return colorScale[d.category];
+            })
+            .call(drag(simulation))
+            .on('click', showDetail)
+            .on('mouseover', function(event, d) {
+                showTooltip(event, d);
+                highlightConnections(d.id, true);
+            })
+            .on('mouseout', function(event, d) {
+                hideTooltip();
+                highlightConnections(d.id, false);
+            });
+
+        // Draw labels
+        const labels = g.selectAll('text')
+            .data(nodeData)
+            .enter()
+            .append('text')
+            .attr('class', d => d.type === 'person' || d.type === 'parish' ? 'node-label small' : 'node-label')
+            .attr('text-anchor', 'middle')
+            .attr('dy', '0.3em')
+            .text(d => {
+                if (d.id === 'kirchenstiftung') return 'Parishes';
+                if (d.type === 'person') return d.name.split(' ')[1];
+                if (d.name.length > 20) return d.name.substring(0, 18) + '...';
+                return d.name;
+            });
+
+        // Update positions on simulation tick
+        simulation.on('tick', () => {
+            links
+                .attr('x1', d => d.source.x)
+                .attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x)
+                .attr('y2', d => d.target.y);
+
+            nodes
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y);
+
+            labels
+                .attr('x', d => d.x)
+                .attr('y', d => d.y);
+        });
+
+        // ==================== INTERACTIONS ====================
+        function drag(simulation) {
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+
+            return d3.drag()
+                .on('start', dragstarted)
+                .on('drag', dragged)
+                .on('end', dragended);
+        }
+
+        function showTooltip(event, d) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = `<div class="tooltip-title">${d.name}</div>
+                <div>${d.type.replace('-', ' ').toUpperCase()}</div>
+                ${d.assets ? `<div>Assets: ${d.assets}</div>` : ''}
+                ${d.risk ? `<div>Risk: ${d.risk.toUpperCase()}</div>` : ''}`;
+            tooltip.style.display = 'block';
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY + 10 + 'px';
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
+        }
+
+        function highlightConnections(nodeId, highlight) {
+            const connectedIds = new Set([nodeId]);
+            linkData.forEach(link => {
+                if (link.source.id === nodeId) connectedIds.add(link.target.id);
+                if (link.target.id === nodeId) connectedIds.add(link.source.id);
+            });
+
+            nodes.style('opacity', d => {
+                return highlight && !connectedIds.has(d.id) ? 0.2 : 1;
+            });
+
+            links.style('opacity', d => {
+                return highlight && d.source.id !== nodeId && d.target.id !== nodeId ? 0.1 : 0.5;
+            })
+            .classed('highlighted', d => highlight && (d.source.id === nodeId || d.target.id === nodeId));
+
+            labels.style('opacity', d => {
+                return highlight && !connectedIds.has(d.id) ? 0.2 : 1;
+            });
+        }
+
+        function showDetail(event, d) {
+            event.stopPropagation();
+
+            const details = nodeDetails[d.id];
+            let content = '';
+
+            if (details) {
+                Object.entries(details).forEach(([key, value]) => {
+                    if (key !== 'category') {
+                        content += `<div class="forensic-section">
+                            <div class="forensic-heading">${key}</div>
+                            <div class="forensic-text">${value}</div>
+                        </div>`;
+                    }
+                });
+            } else {
+                content = `<div class="forensic-text">
+                    <div class="forensic-section">
+                        <div class="forensic-heading">Entity</div>
+                        <div class="forensic-text">${d.name}</div>
+                    </div>
+                    ${d.assets ? `<div class="forensic-section">
+                        <div class="forensic-heading">Assets</div>
+                        <div class="forensic-text">${d.assets}</div>
+                    </div>` : ''}
+                    ${d.type ? `<div class="forensic-section">
+                        <div class="forensic-heading">Type</div>
+                        <div class="forensic-text">${d.type}</div>
+                    </div>` : ''}
+                </div>`;
+            }
+
+            document.getElementById('modal-title').textContent = d.name;
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('modal-backdrop').classList.add('active');
+
+            nodes.classed('selected', n => n.id === d.id);
+        }
+
+        document.getElementById('modal-close').onclick = () => {
+            document.getElementById('modal-backdrop').classList.remove('active');
+            nodes.classed('selected', false);
+        };
+
+        document.getElementById('modal-backdrop').onclick = (e) => {
+            if (e.target.id === 'modal-backdrop') {
+                document.getElementById('modal-backdrop').classList.remove('active');
+                nodes.classed('selected', false);
+            }
+        };
+
+        // ==================== CONTROLS ====================
+        window.resetZoom = function() {
+            svg.transition()
+                .duration(750)
+                .call(d3.zoom().transform, d3.zoomIdentity.translate(0, 0).scale(1));
+            simulation.alpha(1).restart();
+        };
+
+        window.togglePhysics = function() {
+            physicsEnabled = !physicsEnabled;
+            if (physicsEnabled) {
+                simulation.alpha(1).restart();
+            } else {
+                simulation.stop();
+            }
+        };
+
+        // Add zoom behavior
+        svg.call(d3.zoom()
+            .scaleExtent([0.5, 8])
+            .on('zoom', (event) => {
+                g.attr('transform', event.transform);
+            }));
+
+        // Initialize
+        simulation.alpha(1).restart();
+    </script>
+</body>
+</html>
