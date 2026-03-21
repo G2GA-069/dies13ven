@@ -3,62 +3,318 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>G2G Advisory — German Catholic Church Analysis</title>
+<title>G2G Advisory — German Catholic Church Financial Analysis</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f6f8;color:#1a1a2e;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.container{max-width:720px;width:100%;padding:40px 24px}
-.brand{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
-.brand h1{font-size:32px;font-weight:800;color:#0d1b2a;letter-spacing:-0.5px}
-.brand span{font-size:12px;color:#6B21A8;font-weight:700;letter-spacing:3px;text-transform:uppercase}
-.subtitle{font-size:13px;color:#666;margin-bottom:32px}
-.cards{display:grid;gap:12px}
-a.card{display:block;background:#fff;border-radius:10px;padding:20px 24px;border:1px solid #e0e0e0;text-decoration:none;color:inherit;transition:all .15s ease;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-a.card:hover{border-color:#6B21A8;box-shadow:0 4px 12px rgba(107,33,168,.12);transform:translateY(-1px)}
-.card-title{font-size:15px;font-weight:700;color:#0d1b2a;margin-bottom:4px}
-.card-desc{font-size:11px;color:#666;line-height:1.5}
-.card-badge{display:inline-block;font-size:9px;font-weight:700;color:#6B21A8;background:#f3e8ff;padding:2px 8px;border-radius:4px;margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase}
-.footer{text-align:center;margin-top:32px;font-size:9px;color:#aaa}
+:root{
+  --bg:#06080d;--surface:#0c1017;--card:#111820;--card-hover:#171f2b;
+  --border:#1e2a3a;--border-glow:#2a3f5f;
+  --purple:#8b5cf6;--purple-dim:#6d3fd4;--purple-glow:rgba(139,92,246,.15);
+  --cyan:#22d3ee;--cyan-dim:#0ea5c8;--cyan-glow:rgba(34,211,238,.08);
+  --amber:#f59e0b;--red:#ef4444;--green:#22c55e;
+  --text:#e2e8f0;--text-dim:#64748b;--text-muted:#334155;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* Animated grid background */
+.grid-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.grid-bg::before{content:'';position:absolute;inset:-50%;
+  background-image:
+    linear-gradient(rgba(139,92,246,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(139,92,246,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  animation:gridMove 20s linear infinite;
+  transform:perspective(500px) rotateX(60deg);
+  transform-origin:center top;
+}
+@keyframes gridMove{from{background-position:0 0}to{background-position:60px 60px}}
+
+/* Gradient orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.orb-1{width:600px;height:600px;background:rgba(139,92,246,.08);top:-200px;right:-100px;animation:orbFloat 12s ease-in-out infinite}
+.orb-2{width:500px;height:500px;background:rgba(34,211,238,.05);bottom:-150px;left:-100px;animation:orbFloat 15s ease-in-out infinite reverse}
+.orb-3{width:300px;height:300px;background:rgba(245,158,11,.04);top:50%;left:50%;transform:translate(-50%,-50%);animation:orbPulse 8s ease-in-out infinite}
+@keyframes orbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-40px)}}
+@keyframes orbPulse{0%,100%{opacity:.6;scale:1}50%{opacity:1;scale:1.15}}
+
+.container{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:40px 24px 60px}
+
+/* Header */
+.hero{text-align:center;padding:60px 0 50px}
+.logo-row{display:flex;align-items:baseline;justify-content:center;gap:12px;margin-bottom:6px}
+.logo-row h1{font-size:52px;font-weight:900;letter-spacing:-2px;
+  background:linear-gradient(135deg,#fff 0%,var(--purple) 50%,var(--cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:logoShimmer 4s ease-in-out infinite alternate}
+@keyframes logoShimmer{0%{filter:brightness(1)}50%{filter:brightness(1.3)}100%{filter:brightness(1)}}
+.logo-row span{font-size:13px;font-weight:700;color:var(--purple);letter-spacing:5px;text-transform:uppercase}
+.hero-sub{font-size:14px;color:var(--text-dim);letter-spacing:.3px;margin-bottom:8px}
+.hero-line{width:80px;height:2px;margin:16px auto 20px;
+  background:linear-gradient(90deg,transparent,var(--purple),var(--cyan),transparent);
+  animation:lineGlow 3s ease-in-out infinite}
+@keyframes lineGlow{0%,100%{opacity:.5;width:80px}50%{opacity:1;width:140px}}
+.hero-conf{font-size:10px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase}
+
+/* Stats bar */
+.stats-bar{display:flex;justify-content:center;gap:40px;padding:24px 0;margin-bottom:10px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .val{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;
+  background:linear-gradient(135deg,#fff,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat .lbl{font-size:8px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
+
+/* Section headers */
+.section-header{margin:36px 0 18px;display:flex;align-items:center;gap:14px}
+.section-header h2{font-size:13px;font-weight:700;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase}
+.section-header .line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+/* Cards grid */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:28px 28px 24px;text-decoration:none;color:inherit;
+  transition:all .35s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.card::before{content:'';position:absolute;inset:0;border-radius:16px;opacity:0;
+  background:linear-gradient(135deg,var(--purple-glow),var(--cyan-glow));
+  transition:opacity .35s ease}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--purple),var(--cyan));
+  transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.card:hover{border-color:var(--border-glow);transform:translateY(-4px);
+  box-shadow:0 20px 60px rgba(139,92,246,.08),0 8px 24px rgba(0,0,0,.3)}
+.card:hover::before{opacity:1}
+.card:hover::after{transform:scaleX(1)}
+.card:hover .card-icon{transform:scale(1.1);filter:drop-shadow(0 0 12px var(--purple))}
+.card:hover .card-arrow{opacity:1;transform:translateX(0)}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;position:relative;z-index:1}
+.card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;transition:all .35s ease}
+.card-badge{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;border:1px solid}
+.badge-primary{color:var(--purple);border-color:rgba(139,92,246,.25);background:rgba(139,92,246,.08)}
+.badge-financial{color:var(--cyan);border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.08)}
+.badge-network{color:var(--amber);border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.08)}
+.badge-legacy{color:var(--text-muted);border-color:rgba(51,65,85,.4);background:rgba(51,65,85,.15)}
+.icon-primary{background:rgba(139,92,246,.12);color:var(--purple)}
+.icon-financial{background:rgba(34,211,238,.12);color:var(--cyan)}
+.icon-network{background:rgba(245,158,11,.12);color:var(--amber)}
+.icon-legacy{background:rgba(51,65,85,.2);color:var(--text-muted)}
+
+.card-title{font-size:17px;font-weight:700;margin-bottom:8px;position:relative;z-index:1;letter-spacing:-.2px}
+.card-desc{font-size:11.5px;color:var(--text-dim);line-height:1.7;position:relative;z-index:1;flex:1}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;position:relative;z-index:1;
+  padding-top:12px;border-top:1px solid var(--border)}
+.card-meta{font-size:9px;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase}
+.card-arrow{font-size:14px;color:var(--purple);opacity:0;transform:translateX(-8px);transition:all .35s ease}
+
+/* Full-width card */
+.card-full{grid-column:1/-1}
+
+/* Feature tags on primary cards */
+.card-features{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;position:relative;z-index:1}
+.feature-tag{font-size:9px;font-weight:600;padding:3px 8px;border-radius:6px;letter-spacing:.3px}
+.tag-cyan{color:var(--cyan);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.15)}
+.tag-purple{color:var(--purple);background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15)}
+.tag-amber{color:var(--amber);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15)}
+.tag-green{color:var(--green);background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15)}
+
+/* Legacy cards are smaller/dimmer */
+.card-legacy{padding:20px 22px 18px}
+.card-legacy .card-title{font-size:14px;margin-bottom:5px}
+.card-legacy .card-desc{font-size:10.5px;line-height:1.6}
+.card-legacy .card-footer{margin-top:12px;padding-top:10px}
+
+/* Footer */
+.footer{text-align:center;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:40px}
+.footer-brand{font-size:18px;font-weight:800;letter-spacing:-1px;
+  background:linear-gradient(135deg,var(--text-dim),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.footer-info{font-size:9px;color:var(--text-muted);letter-spacing:.5px;line-height:2}
+.footer-info a{color:var(--purple-dim);text-decoration:none}
+.footer-info a:hover{color:var(--purple)}
+.pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);
+  margin-right:6px;animation:pulse 2s ease-in-out infinite;vertical-align:middle}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+
+@media(max-width:700px){
+  .cards{grid-template-columns:1fr}
+  .card-full{grid-column:1}
+  .hero h1{font-size:36px}
+  .stats-bar{gap:24px}
+  .stat .val{font-size:22px}
+}
+
+/* Entrance animations */
+.fade-up{opacity:0;transform:translateY(20px);animation:fadeUp .6s ease-out forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}
+.delay-4{animation-delay:.4s}.delay-5{animation-delay:.5s}.delay-6{animation-delay:.6s}
+.delay-7{animation-delay:.7s}.delay-8{animation-delay:.8s}
 </style>
 </head>
 <body>
+
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
 <div class="container">
-    <div class="brand"><h1>G2G</h1><span>Advisory</span></div>
-    <div class="subtitle">German Catholic Church — Forensic Financial Analysis | March 2026 | Strictly Confidential</div>
 
-    <div class="cards">
-        <a class="card" href="Cerberus_Critical_Dashboard.html">
-            <div class="card-badge">Primary Dashboard</div>
-            <div class="card-title">Critical Analysis Dashboard</div>
-            <div class="card-desc">27 dioceses, investment thesis classifications, pension crisis analysis, forced-seller identification. Interactive filters by thesis and RE market tier. Full methodology notes.</div>
-        </a>
-
-        <a class="card" href="National_Dashboard.html">
-            <div class="card-badge">National View</div>
-            <div class="card-title">National Consolidated Dashboard</div>
-            <div class="card-desc">Market-value balance sheets, PE-style consolidated BS, hidden value waterfall (HGB to MV bridge), church banking system, housing portfolio, KiSt revenue flow analysis. 27/27 dioceses EXACT.</div>
-        </a>
-
-        <a class="card" href="EBK_Network_Diagram.html">
-            <div class="card-badge">Entity Map</div>
-            <div class="card-title">Cologne Closed-Loop Network</div>
-            <div class="card-desc">Interactive entity relationship diagram showing the Erzbistum Köln financial network: ASW, RWB, Pax-Bank, Stiftungen, Metropolitankapitel. Board interlocks and capital flows.</div>
-        </a>
-
-        <a class="card" href="Financial_Architecture.html">
-            <div class="card-badge">Architecture</div>
-            <div class="card-title">7-Layer Financial Architecture</div>
-            <div class="card-desc">Visual decomposition of the seven asset layers: diocesan KdöR, shadow KdöR, church banks, KZVK pension, housing GmbH, parishes, land. From €34.8B published to €121-130B market value.</div>
-        </a>
-
-        <a class="card" href="Governance_Network.html">
-            <div class="card-badge">Governance</div>
-            <div class="card-title">Governance Network Map</div>
-            <div class="card-desc">Ökonomen / Finanzdirektoren map across 27 dioceses. Board interlocks, banking relationships, LIGA Bank pipeline, reform vs opacity indicators.</div>
-        </a>
+<div class="hero fade-up">
+    <div class="logo-row">
+        <h1>G2G</h1>
+        <span>Advisory</span>
     </div>
+    <div class="hero-sub">German Catholic Church &mdash; Forensic Financial Analysis</div>
+    <div class="hero-line"></div>
+    <div class="hero-conf">Strictly Confidential &bull; March 2026</div>
+</div>
 
-    <div class="footer">G2G Advisory Limited | admin@g2gadvisory.co.uk | 394 Source Documents | 27/27 Dioceses Confirmed from Audited Sources</div>
+<div class="stats-bar fade-up delay-1">
+    <div class="stat"><div class="val">27</div><div class="lbl">Dioceses</div></div>
+    <div class="stat"><div class="val">&euro;121&ndash;130B</div><div class="lbl">Consolidated MV Total Assets</div></div>
+    <div class="stat"><div class="val">&euro;78&ndash;88B</div><div class="lbl">Consolidated MV Equity</div></div>
+    <div class="stat"><div class="val">394</div><div class="lbl">Source Documents</div></div>
+</div>
+
+<!-- PRIMARY DASHBOARDS -->
+<div class="section-header fade-up delay-2">
+    <h2>Consolidated Dashboards</h2>
+    <div class="line"></div>
+</div>
+
+<div class="cards">
+
+    <a class="card card-full fade-up delay-2" href="Consolidated_Financial_Analysis.html">
+        <div class="card-top">
+            <div class="card-icon icon-financial">&#9670;</div>
+            <div class="card-badge badge-financial">Financial Analysis</div>
+        </div>
+        <div class="card-title">Consolidated Financial Analysis</div>
+        <div class="card-desc">Full market-value balance sheet, 7-layer asset decomposition, HGB&rarr;MV bridge, all 27 dioceses with sortable/filterable tables, pension crisis analysis (HGB &euro;7.0B &rarr; buyout &euro;16&ndash;19B), KiSt revenue dynamics, and methodology documentation. Single consistent basis throughout: consolidated market value after intercompany eliminations.</div>
+        <div class="card-features">
+            <span class="feature-tag tag-cyan">MV Balance Sheet</span>
+            <span class="feature-tag tag-cyan">7-Layer Breakdown</span>
+            <span class="feature-tag tag-purple">HGB&rarr;MV Bridge</span>
+            <span class="feature-tag tag-amber">Pension Analysis</span>
+            <span class="feature-tag tag-green">27 Dioceses</span>
+            <span class="feature-tag tag-cyan">KiSt Revenue</span>
+            <span class="feature-tag tag-purple">Methodology</span>
+        </div>
+        <div class="card-footer">
+            <div class="card-meta">8 Sections &bull; Interactive Charts &bull; All 27 Dioceses</div>
+            <div class="card-arrow">&rarr;</div>
+        </div>
+    </a>
+
+    <a class="card card-full fade-up delay-3" href="Network_Governance.html">
+        <div class="card-top">
+            <div class="card-icon icon-network">&#9733;</div>
+            <div class="card-badge badge-network">Network &amp; Governance</div>
+        </div>
+        <div class="card-title">Network, Governance &amp; Structural Analysis</div>
+        <div class="card-desc">K&ouml;ln closed-loop capital network case study with interactive entity diagram, church bank consolidation analysis (&euro;26.9B total assets), Finanzdirektor governance mapping across 27 dioceses, auditor coverage analysis, and 8 structural findings including IFRS 10 consolidation gaps, board interlocks, and PE opportunity framing.</div>
+        <div class="card-features">
+            <span class="feature-tag tag-amber">K&ouml;ln Network</span>
+            <span class="feature-tag tag-amber">Church Banks</span>
+            <span class="feature-tag tag-green">FD Governance</span>
+            <span class="feature-tag tag-purple">Auditor Map</span>
+            <span class="feature-tag tag-cyan">Structural Findings</span>
+        </div>
+        <div class="card-footer">
+            <div class="card-meta">5 Sections &bull; Network Diagrams &bull; Governance Map</div>
+            <div class="card-arrow">&rarr;</div>
+        </div>
+    </a>
+
+</div>
+
+<!-- LEGACY DASHBOARDS -->
+<div class="section-header fade-up delay-5">
+    <h2>Legacy Dashboards</h2>
+    <div class="line"></div>
+</div>
+
+<div class="cards">
+
+    <a class="card card-legacy fade-up delay-5" href="Cerberus_Critical_Dashboard.html">
+        <div class="card-top">
+            <div class="card-icon icon-legacy">&#9670;</div>
+            <div class="card-badge badge-legacy">V1</div>
+        </div>
+        <div class="card-title">Critical Analysis Dashboard</div>
+        <div class="card-desc">Original 27-diocese breakdown with thesis classifications and forced-seller identification.</div>
+        <div class="card-footer">
+            <div class="card-meta">Superseded by Consolidated Financial Analysis</div>
+            <div class="card-arrow">&rarr;</div>
+        </div>
+    </a>
+
+    <a class="card card-legacy fade-up delay-5" href="National_Dashboard.html">
+        <div class="card-top">
+            <div class="card-icon icon-legacy">&#9673;</div>
+            <div class="card-badge badge-legacy">V1</div>
+        </div>
+        <div class="card-title">National Consolidated Dashboard</div>
+        <div class="card-desc">Earlier national view with MV balance sheets and KiSt revenue flow.</div>
+        <div class="card-footer">
+            <div class="card-meta">Superseded by Consolidated Financial Analysis</div>
+            <div class="card-arrow">&rarr;</div>
+        </div>
+    </a>
+
+    <a class="card card-legacy fade-up delay-6" href="EBK_Network_Diagram.html">
+        <div class="card-top">
+            <div class="card-icon icon-legacy">&#9724;</div>
+            <div class="card-badge badge-legacy">V1</div>
+        </div>
+        <div class="card-title">Cologne Closed-Loop Network</div>
+        <div class="card-desc">Original EBK entity relationship diagram.</div>
+        <div class="card-footer">
+            <div class="card-meta">Superseded by Network &amp; Governance</div>
+            <div class="card-arrow">&rarr;</div>
+        </div>
+    </a>
+
+    <a class="card card-legacy fade-up delay-6" href="Financial_Architecture.html">
+        <div class="card-top">
+            <div class="card-icon icon-legacy">&#9651;</div>
+            <div class="card-badge badge-legacy">V1</div>
+        </div>
+        <div class="card-title">7-Layer Financial Architecture</div>
+        <div class="card-desc">Original 7-layer visual decomposition.</div>
+        <div class="card-footer">
+            <div class="card-meta">Superseded by Consolidated Financial Analysis</div>
+            <div class="card-arrow">&rarr;</div>
+        </div>
+    </a>
+
+    <a class="card card-legacy fade-up delay-7" href="Governance_Network.html">
+        <div class="card-top">
+            <div class="card-icon icon-legacy">&#9733;</div>
+            <div class="card-badge badge-legacy">V1</div>
+        </div>
+        <div class="card-title">Governance Network Map</div>
+        <div class="card-desc">Original FD and banking relationship map.</div>
+        <div class="card-footer">
+            <div class="card-meta">Superseded by Network &amp; Governance</div>
+            <div class="card-arrow">&rarr;</div>
+        </div>
+    </a>
+
+</div>
+
+<div class="footer fade-up delay-8">
+    <div class="footer-brand">G2G Advisory</div>
+    <div class="footer-info">
+        <span class="pulse-dot"></span>Live Data &mdash; All 27 Dioceses Confirmed from Audited Sources<br>
+        <a href="mailto:admin@g2gadvisory.co.uk">admin@g2gadvisory.co.uk</a> &bull; G2G Advisory Limited &bull; 394 Source Documents
+    </div>
+</div>
+
 </div>
 </body>
 </html>

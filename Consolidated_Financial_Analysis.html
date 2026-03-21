@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G2G Advisory — Consolidated Financial Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #06080d; --surface: #0d1117; --card: #161b22; --border: #21262d;
+  --purple: #8b5cf6; --purple-dim: #6d28d9; --cyan: #22d3ee; --magenta: #d946ef;
+  --red: #ef4444; --amber: #f59e0b; --green: #22c55e; --blue: #3b82f6;
+  --text: #e6edf3; --text-dim: #8b949e; --text-muted: #484f58;
+  --navy: #1b2a4a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+.container { max-width: 1440px; margin: 0 auto; padding: 0 24px; }
+
+/* Header */
+.header { background: linear-gradient(135deg, #0d0520 0%, #1a0a3e 50%, #0d1117 100%); border-bottom: 1px solid var(--purple-dim); padding: 32px 0; }
+.header-inner { display: flex; justify-content: space-between; align-items: flex-end; }
+.logo { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+.logo span { color: var(--magenta); font-weight: 400; font-size: 14px; letter-spacing: 3px; display: block; margin-top: -4px; }
+.header-subtitle { font-size: 13px; color: var(--text-dim); text-align: right; }
+.header-subtitle strong { color: var(--cyan); }
+
+/* KPI Strip */
+.kpi-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin: 24px 0; }
+.kpi { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+.kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 4px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: var(--cyan); }
+.kpi-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.kpi.highlight { border-color: var(--purple); }
+.kpi.highlight .kpi-value { color: var(--magenta); }
+.kpi.warn .kpi-value { color: var(--amber); }
+
+/* Section Tabs */
+.tabs { display: flex; gap: 4px; margin: 24px 0 16px; border-bottom: 1px solid var(--border); padding-bottom: 0; overflow-x: auto; }
+.tab { padding: 10px 20px; font-size: 12px; font-weight: 600; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.section { display: none; }
+.section.active { display: block; }
+
+/* Cards & Charts */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+.card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); margin-bottom: 12px; }
+.card-note { font-size: 10px; color: var(--text-muted); margin-top: 8px; font-style: italic; }
+.chart-wrap { position: relative; height: 320px; }
+.chart-wrap.tall { height: 420px; }
+
+/* Tables */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th { background: var(--purple-dim); color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; cursor: pointer; white-space: nowrap; }
+th:hover { background: var(--purple); }
+td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+tr:hover td { background: rgba(139,92,246,0.05); }
+.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+.neg { color: var(--red); font-weight: 700; }
+.warn-cell { color: var(--amber); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-distressed { background: rgba(239,68,68,0.15); color: var(--red); }
+.badge-reforming { background: rgba(245,158,11,0.15); color: var(--amber); }
+.badge-stable { background: rgba(34,197,94,0.15); color: var(--green); }
+.badge-opaque { background: rgba(139,92,246,0.15); color: var(--purple); }
+
+/* Balance Sheet */
+.bs-container { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; }
+.bs-col { padding: 0; }
+.bs-divider { display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--text-muted); }
+.bs-row { display: flex; justify-content: space-between; padding: 6px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
+.bs-row.header { background: var(--purple-dim); color: #fff; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; border-radius: 4px 4px 0 0; }
+.bs-row.subtotal { background: rgba(139,92,246,0.1); font-weight: 700; border-top: 2px solid var(--purple); }
+.bs-row.total { background: var(--navy); color: var(--cyan); font-weight: 800; font-size: 14px; border-radius: 0 0 4px 4px; }
+.bs-row .val { font-variant-numeric: tabular-nums; }
+.bs-row.elim { color: var(--red); }
+
+/* Waterfall */
+.waterfall { display: flex; align-items: flex-end; gap: 4px; height: 300px; padding: 20px 0; }
+.wf-bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+.wf-bar .bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 4px; transition: height 0.5s; position: relative; }
+.wf-bar .bar.pos { background: linear-gradient(180deg, var(--cyan), var(--blue)); }
+.wf-bar .bar.neg { background: linear-gradient(180deg, var(--red), #b91c1c); border-radius: 0 0 3px 3px; }
+.wf-bar .bar.total { background: linear-gradient(180deg, var(--purple), var(--purple-dim)); }
+.wf-bar .label { font-size: 8px; color: var(--text-dim); text-align: center; margin-top: 6px; line-height: 1.2; max-width: 80px; }
+.wf-bar .amount { font-size: 10px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+
+/* Methodology */
+.method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.method-item { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px; }
+.method-item h4 { font-size: 11px; color: var(--cyan); text-transform: uppercase; margin-bottom: 6px; }
+.method-item p { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+
+/* Filter bar */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-btn { padding: 6px 14px; font-size: 11px; font-weight: 600; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
+.filter-btn:hover, .filter-btn.active { border-color: var(--cyan); color: var(--cyan); background: rgba(34,211,238,0.05); }
+
+/* Footer */
+.footer { border-top: 1px solid var(--border); padding: 20px 0; margin-top: 32px; text-align: center; font-size: 10px; color: var(--text-muted); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+  .grid-2, .grid-3, .bs-container, .method-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container header-inner">
+    <div>
+      <div class="logo">G2G<span>ADVISORY</span></div>
+      <div style="margin-top:8px;font-size:16px;font-weight:600;color:var(--text);">German Catholic Church — Consolidated Financial Analysis</div>
+    </div>
+    <div class="header-subtitle">
+      <div>Strictly Confidential · March 2026</div>
+      <div>27/27 Dioceses · 394 Source Documents</div>
+      <div style="margin-top:4px;"><strong>All figures: Consolidated Market Value basis unless stated</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- KPI Strip -->
+<div class="kpi-strip">
+  <div class="kpi highlight">
+    <div class="kpi-label">Consolidated MV Total Assets</div>
+    <div class="kpi-value">€121–130B</div>
+    <div class="kpi-sub">7 layers, fully consolidated</div>
+  </div>
+  <div class="kpi highlight">
+    <div class="kpi-label">Equity (Net Asset Value)</div>
+    <div class="kpi-value">€78–88B</div>
+    <div class="kpi-sub">63–68% equity ratio</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Leverage (Debt / TA)</div>
+    <div class="kpi-value">1.7%</div>
+    <div class="kpi-sub">vs. Vonovia 45%, Deutsche Bank 95%+</div>
+  </div>
+  <div class="kpi warn">
+    <div class="kpi-label">Pension Obligations (Buyout)</div>
+    <div class="kpi-value">€16–19B</div>
+    <div class="kpi-sub">HGB book: €7.0B (delta €9–12B)</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Kirchensteuer Revenue</div>
+    <div class="kpi-value">€6.8B/yr</div>
+    <div class="kpi-sub">Declining ~360K exits/yr</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Tax Rate</div>
+    <div class="kpi-value">0%</div>
+    <div class="kpi-sub">KdöR: exempt from corporate & CGT</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview')">Consolidated BS</div>
+  <div class="tab" onclick="showTab('layers')">7-Layer Breakdown</div>
+  <div class="tab" onclick="showTab('bridge')">HGB → MV Bridge</div>
+  <div class="tab" onclick="showTab('dioceses')">27 Dioceses</div>
+  <div class="tab" onclick="showTab('pensions')">Pension Analysis</div>
+  <div class="tab" onclick="showTab('kist')">KiSt & Revenue</div>
+  <div class="tab" onclick="showTab('ratios')">Ratios & Benchmarks</div>
+  <div class="tab" onclick="showTab('method')">Methodology</div>
+</div>
+
+<!-- ========== TAB 1: CONSOLIDATED BS ========== -->
+<div id="overview" class="section active">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Consolidated Market-Value Balance Sheet</div>
+      <div class="bs-container">
+        <div class="bs-col">
+          <div class="bs-row header"><span>Assets</span><span>€B</span></div>
+          <div class="bs-row"><span>Cash & bank deposits</span><span class="val">5.2</span></div>
+          <div class="bs-row"><span>Securities & fund investments (MTM)</span><span class="val">31.5</span></div>
+          <div class="bs-row"><span>Loans & receivables</span><span class="val">12.8</span></div>
+          <div class="bs-row"><span>Investment property (all layers, MV)</span><span class="val">48–55</span></div>
+          <div class="bs-row"><span>Land & forest (190K ha, BORIS/Destatis)</span><span class="val">32.1</span></div>
+          <div class="bs-row"><span>Erbbaurecht (~100K contracts, DCF)</span><span class="val">6.5–9.5</span></div>
+          <div class="bs-row"><span>PP&E net of restricted-use impairment</span><span class="val">3.5–5.5</span></div>
+          <div class="bs-row"><span>Church bank assets (gross)</span><span class="val">26.9</span></div>
+          <div class="bs-row"><span>Parish financial assets (est.)</span><span class="val">12.1</span></div>
+          <div class="bs-row"><span>Other assets</span><span class="val">3.1</span></div>
+          <div class="bs-row subtotal"><span>Total Assets (Gross)</span><span class="val">182–193</span></div>
+          <div class="bs-row elim"><span>Less: intercompany eliminations</span><span class="val">-56 to -59</span></div>
+          <div class="bs-row total"><span>Total Assets</span><span class="val">121–130</span></div>
+        </div>
+        <div class="bs-divider">|</div>
+        <div class="bs-col">
+          <div class="bs-row header"><span>Liabilities & Equity</span><span>€B</span></div>
+          <div class="bs-row"><span>Church bank deposits (3rd party)</span><span class="val">8.9</span></div>
+          <div class="bs-row"><span>Pension obligations (buyout basis)</span><span class="val">14–17</span></div>
+          <div class="bs-row"><span>Other provisions (Beihilfe, litigation)</span><span class="val">5.0–6.5</span></div>
+          <div class="bs-row"><span>Financial liabilities & leases</span><span class="val">3.6</span></div>
+          <div class="bs-row"><span>Trade payables, deferred income</span><span class="val">2.7</span></div>
+          <div class="bs-row"><span>Environmental / heritage obligations</span><span class="val">3–8</span></div>
+          <div class="bs-row subtotal"><span>Total Liabilities</span><span class="val">37–47</span></div>
+          <div class="bs-row" style="height:24px"></div>
+          <div class="bs-row" style="height:24px"></div>
+          <div class="bs-row" style="height:24px"></div>
+          <div class="bs-row" style="height:24px"></div>
+          <div class="bs-row" style="height:24px;border:none"></div>
+          <div class="bs-row total"><span>Equity (NAV)</span><span class="val">78–88</span></div>
+        </div>
+      </div>
+      <div class="card-note">All figures on a single basis: estimated market value, fully consolidated (IFRS 10 perimeter, intercompany eliminated). Ranges reflect genuine estimation uncertainty.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Asset Composition (MV Basis, Post-Elimination)</div>
+      <div class="chart-wrap"><canvas id="assetPie"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Consolidated MV Total Assets vs Peers (€B)</div>
+      <div class="chart-wrap"><canvas id="peerChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Key Ratios — All on Consolidated MV Basis</div>
+      <div style="padding:8px 0;">
+        <div class="bs-row"><span>Total Assets</span><span class="val" style="color:var(--cyan);font-weight:700">€121–130B</span></div>
+        <div class="bs-row"><span>Total Liabilities</span><span class="val">€37–47B</span></div>
+        <div class="bs-row"><span>Equity (NAV)</span><span class="val" style="color:var(--magenta);font-weight:700">€78–88B</span></div>
+        <div class="bs-row"><span>Equity Ratio</span><span class="val">63–68%</span></div>
+        <div class="bs-row"><span>Leverage (Debt / TA)</span><span class="val">1.6–1.7%</span></div>
+        <div class="bs-row"><span>Pensions / Equity</span><span class="val">18–22%</span></div>
+        <div class="bs-row"><span>NAV per Catholic (21.6M)</span><span class="val">€3,600–4,100</span></div>
+        <div class="bs-row"><span>RE + Land / Total Assets</span><span class="val">71–74%</span></div>
+        <div class="bs-row"><span>Annual KiSt Revenue</span><span class="val">€6.8B</span></div>
+        <div class="bs-row"><span>Tax Rate</span><span class="val">0%</span></div>
+        <div class="bs-row" style="margin-top:12px;border-top:2px solid var(--border);padding-top:12px"><span style="color:var(--text-dim);font-size:11px">Uncertainty Drivers:</span><span></span></div>
+        <div class="bs-row"><span>Investment property</span><span class="val">±€7B</span></div>
+        <div class="bs-row"><span>Erbbaurecht cap rate</span><span class="val">±€3B</span></div>
+        <div class="bs-row"><span>Pension buyout estimate</span><span class="val">±€3B</span></div>
+        <div class="bs-row"><span>Environmental / heritage</span><span class="val">±€5B</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 2: 7-LAYER BREAKDOWN ========== -->
+<div id="layers" class="section">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Seven Asset Layers — All on Estimated Market Value Basis</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:30px">L</th><th>Layer</th><th>Entities</th><th>Description</th>
+          <th class="num">MV (€B)</th><th style="text-align:center">Coverage</th><th>Data Source / Status</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="color:var(--cyan);font-weight:700">1</td><td><strong>Diocesan KdöR</strong></td><td>27</td><td>The 27 dioceses. Each a separate KdöR. Published Finanzberichte.</td><td class="num"><strong>~57</strong></td><td style="text-align:center">100%</td><td>All 27 exact from audited sources. Restated from HGB cost to MV.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">2</td><td><strong>Shadow KdöR</strong></td><td>~120</td><td>Bischöfliche Stühle, Domkapitel, Emeritenanstalt, Stiftungen. Off diocesan BS.</td><td class="num"><strong>~14</strong></td><td style="text-align:center">72%</td><td>49 confirmed. Est. 120 total. MV includes unrealised securities gains + property revaluation.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">3</td><td><strong>Church Banks</strong></td><td>4</td><td>Pax-Bank, BIB Essen, LIGA Bank, DKM Münster. All cooperatives.</td><td class="num"><strong>26.9</strong></td><td style="text-align:center">100%</td><td>4/4 confirmed. Bank assets largely at fair value already.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">4</td><td><strong>KZVK Pension</strong></td><td>1+</td><td>KZVK Köln: €35.9B AuM. 89.1% funded (German actuarial).</td><td class="num"><strong>35.9</strong></td><td style="text-align:center">85%</td><td>Confirmed. Largely eliminated in consolidation.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">5</td><td><strong>Housing GmbH</strong></td><td>~20</td><td>ASW (26,500 units), GSW Frankfurt, Rheinwohnungsbau, + others.</td><td class="num"><strong>~6</strong></td><td style="text-align:center">71%</td><td>6 confirmed, 14 estimated. MV reflects property revaluation.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">6</td><td><strong>Parishes</strong></td><td>~9,291</td><td>Kirchenstiftungen. Cash-basis (Kameralistik). No public filings.</td><td class="num"><strong>~30</strong></td><td style="text-align:center">2–14%</td><td>Triangulated from 5 methods. €12.1B financial + €18B property.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">7</td><td><strong>Land & Erbbaurecht</strong></td><td>n/a</td><td>190,000 ha + ~100,000 Erbbaurecht contracts. Booked at €0–1.</td><td class="num"><strong>~34</strong></td><td style="text-align:center">0%</td><td>Modelled from fowid.de, BORIS, Köln/Freiburg data.</td></tr>
+        </tbody>
+        <tfoot>
+          <tr style="background:var(--surface)"><td></td><td colspan="3"><strong>Gross Total (before eliminations)</strong></td><td class="num" style="color:var(--text-dim)"><strong>~204</strong></td><td colspan="2" style="font-size:10px;color:var(--text-muted)">Double-counts: deposits at church banks + KZVK overlap + other interco</td></tr>
+          <tr style="background:var(--surface)"><td></td><td colspan="3" style="color:var(--red)">Less: intercompany eliminations</td><td class="num" style="color:var(--red)">-56 to -59</td><td colspan="2" style="font-size:10px;color:var(--text-muted)">€18B deposits + €35.9B KZVK + €2–5B other interco</td></tr>
+          <tr style="background:var(--navy)"><td></td><td colspan="3" style="color:#fff;font-weight:800">Consolidated MV Total Assets</td><td class="num" style="color:var(--magenta);font-weight:800;font-size:14px">121–130</td><td colspan="2" style="color:var(--text-dim);font-size:10px">See Bridge tab for full reconciliation</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="card-note">All figures on a single basis: estimated market value per layer (pre-elimination). The consolidated total reflects full intercompany elimination.</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Market Value by Layer (€B, Pre-Elimination)</div>
+      <div class="chart-wrap"><canvas id="layerBar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Data Coverage by Layer</div>
+      <div class="chart-wrap"><canvas id="coverageChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 3: HGB → MV BRIDGE ========== -->
+<div id="bridge" class="section">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Bridge: Published HGB Book Values → Consolidated Market Value</div>
+    <div class="card-note" style="margin-bottom:12px;margin-top:0;font-style:normal;color:var(--amber)">⚠ This section bridges between two different accounting bases. HGB figures are shown ONLY as the starting point of the bridge — they are NOT comparable to the MV output.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Item</th><th class="num">€B</th><th class="num">Adjustment €B</th><th>Basis / Source</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(139,92,246,0.08)"><td colspan="4" style="font-weight:700;color:var(--purple);text-transform:uppercase;font-size:10px">Starting Point: Published HGB (Layers 1–5 only)</td></tr>
+          <tr><td style="padding-left:20px">Layer 1: 27 Diocesan KdöR</td><td class="num">34.8</td><td></td><td style="color:var(--text-dim);font-size:10px">Audited HGB Finanzberichte</td></tr>
+          <tr><td style="padding-left:20px">Layer 2: 49 confirmed Shadow KdöR</td><td class="num">9.9</td><td></td><td style="color:var(--text-dim);font-size:10px">Bundesanzeiger filings</td></tr>
+          <tr><td style="padding-left:20px">Layer 3: 4 Church Banks</td><td class="num">26.9</td><td></td><td style="color:var(--text-dim);font-size:10px">HGB + BaFin standard</td></tr>
+          <tr><td style="padding-left:20px">Layer 4: KZVK</td><td class="num">35.9</td><td></td><td style="color:var(--text-dim);font-size:10px">KZVK Geschäftsbericht</td></tr>
+          <tr><td style="padding-left:20px">Layer 5: 6 Housing Entities</td><td class="num">2.9</td><td></td><td style="color:var(--text-dim);font-size:10px">HGB corporate accounting</td></tr>
+          <tr style="background:rgba(139,92,246,0.05);font-weight:600"><td>Published HGB — L1–5 (gross)</td><td class="num">110.4</td><td></td><td style="color:var(--text-dim);font-size:10px">Sum of published entity book values</td></tr>
+          <tr style="color:var(--red)"><td>Less: HGB intercompany eliminations</td><td></td><td class="num">-53.9</td><td style="color:var(--text-dim);font-size:10px">Deposits €18B + KZVK overlap €35.9B</td></tr>
+          <tr style="background:rgba(139,92,246,0.05);font-weight:600"><td>HGB Aggregated Net (L1–5)</td><td class="num">56.5</td><td></td><td style="color:var(--text-dim);font-size:10px">Not a Konzernabschluss — no group accounts exist</td></tr>
+          <tr><td colspan="4" style="height:8px;border:none"></td></tr>
+          <tr style="background:rgba(34,211,238,0.08)"><td colspan="4" style="font-weight:700;color:var(--cyan);text-transform:uppercase;font-size:10px">Asset-Side Adjustments (HGB → Market Value)</td></tr>
+          <tr><td>Add: Layer 6 — Parish assets</td><td></td><td class="num" style="color:var(--green)">+30.0</td><td style="color:var(--text-dim);font-size:10px">€12.1B financial + €18B property. Zero in any published BS.</td></tr>
+          <tr><td>Add: Layer 7 — Land revaluation (190K ha)</td><td></td><td class="num" style="color:var(--green)">+30.1</td><td style="color:var(--text-dim);font-size:10px">MV €32.1B less ~€2B already in L1/L2</td></tr>
+          <tr><td>Add: Erbbaurecht capitalisation</td><td></td><td class="num" style="color:var(--green)">+6.5</td><td style="color:var(--text-dim);font-size:10px">~100K contracts × DCF at 15× cap rate</td></tr>
+          <tr><td>Add: Securities MTM uplift (unrealised gains)</td><td></td><td class="num" style="color:var(--green)">+3.1</td><td style="color:var(--text-dim);font-size:10px">Fulda €139M, Bamberg €38M, Aachen €56M, etc.</td></tr>
+          <tr><td>Add: Investment property revaluation</td><td></td><td class="num" style="color:var(--green)">+6 to 15</td><td style="color:var(--text-dim);font-size:10px">HGB cost → MV. Wide range (urban mix)</td></tr>
+          <tr><td>Less: PP&E write-down (restricted-use)</td><td></td><td class="num" style="color:var(--red)">-2 to -4</td><td style="color:var(--text-dim);font-size:10px">Churches & listed buildings impaired</td></tr>
+          <tr style="background:rgba(34,211,238,0.05);font-weight:600"><td>MV Total Assets (gross)</td><td class="num">182–193</td><td></td><td></td></tr>
+          <tr style="color:var(--red)"><td>Less: MV-basis eliminations</td><td></td><td class="num">-56 to -59</td><td style="color:var(--text-dim);font-size:10px">HGB elims + additional €2–5B at MV</td></tr>
+          <tr style="background:var(--navy);color:var(--cyan);font-weight:800"><td>MV Total Assets (Net)</td><td class="num" style="font-size:14px">121–130</td><td></td><td></td></tr>
+          <tr><td colspan="4" style="height:8px;border:none"></td></tr>
+          <tr style="background:rgba(239,68,68,0.08)"><td colspan="4" style="font-weight:700;color:var(--red);text-transform:uppercase;font-size:10px">Liability-Side Adjustments (HGB → Market Value)</td></tr>
+          <tr><td>HGB liabilities (L1–5, net of elims)</td><td class="num">~23</td><td></td><td style="color:var(--text-dim);font-size:10px">Pensions €7.0B, bank deposits €8.9B, other</td></tr>
+          <tr><td>Add: Pension remeasure to buyout basis</td><td></td><td class="num" style="color:var(--red)">+9 to 12</td><td style="color:var(--text-dim);font-size:10px">€7.0B HGB → €16–19B buyout</td></tr>
+          <tr><td>Add: Environmental / heritage (new)</td><td></td><td class="num" style="color:var(--red)">+3 to 8</td><td style="color:var(--text-dim);font-size:10px">24K listed buildings, conservation mandates</td></tr>
+          <tr><td>Add: Provision uplift (Beihilfe, maint.)</td><td></td><td class="num" style="color:var(--red)">+1 to 3</td><td style="color:var(--text-dim);font-size:10px">Open-ended healthcare marked to full term</td></tr>
+          <tr><td>Add: Parish & land liabilities</td><td></td><td class="num" style="color:var(--red)">+3</td><td style="color:var(--text-dim);font-size:10px">Deferred maintenance on parish property</td></tr>
+          <tr style="background:var(--navy);color:var(--cyan);font-weight:800"><td>MV Total Liabilities</td><td class="num" style="font-size:14px">37–47</td><td></td><td></td></tr>
+          <tr><td colspan="4" style="height:8px;border:none"></td></tr>
+          <tr style="background:linear-gradient(90deg,rgba(139,92,246,0.15),rgba(217,70,239,0.15));font-weight:800;font-size:13px"><td>MV Equity (TA – TL)</td><td class="num" style="color:var(--magenta);font-size:16px">78–88</td><td></td><td style="color:var(--text-dim);font-size:10px">Central case. Arithmetic extremes: €74–93B.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 4: 27 DIOCESES ========== -->
+<div id="dioceses" class="section">
+  <div class="filter-bar">
+    <div class="filter-btn active" onclick="filterDiocese('all')">All 27</div>
+    <div class="filter-btn" onclick="filterDiocese('distressed')">Distressed</div>
+    <div class="filter-btn" onclick="filterDiocese('reforming')">Reforming</div>
+    <div class="filter-btn" onclick="filterDiocese('stable')">Stable</div>
+    <div class="filter-btn" onclick="filterDiocese('opaque')">Opaque</div>
+  </div>
+  <div class="card">
+    <div class="card-title">27 Diocesan KdöR — HGB Total Assets (Layer 1 only, published book values)</div>
+    <div class="card-note" style="margin-top:0;margin-bottom:8px;font-style:normal;color:var(--amber)">⚠ Figures below are HGB book values for the KdöR entity only — NOT consolidated and NOT market value. They are the audited starting point. See the Bridge tab for MV conversion.</div>
+    <div class="tbl-wrap">
+      <table id="dioceseTable">
+        <thead><tr>
+          <th onclick="sortTable(0)">Diocese</th>
+          <th onclick="sortTable(1)">Class.</th>
+          <th onclick="sortTable(2)" class="num">KiSt (€M)</th>
+          <th onclick="sortTable(3)" class="num">HGB TA (€M)</th>
+          <th onclick="sortTable(4)" class="num">HGB EK (€M)</th>
+          <th onclick="sortTable(5)" class="num">EK %</th>
+          <th onclick="sortTable(6)" class="num">Pensions (€M)</th>
+          <th onclick="sortTable(7)" class="num">Pension/TA %</th>
+          <th>Year</th>
+          <th>Auditor</th>
+        </tr></thead>
+        <tbody id="dioceseBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card">
+      <div class="card-title">KdöR HGB Total Assets — All 27 Ranked (€M)</div>
+      <div class="chart-wrap tall"><canvas id="bsRankChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">KdöR Equity Ratio vs Pension/TA Ratio</div>
+      <div class="chart-wrap tall"><canvas id="scatterChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 5: PENSIONS ========== -->
+<div id="pensions" class="section">
+  <div class="grid-3">
+    <div class="kpi" style="background:var(--card)">
+      <div class="kpi-label">Layer A: KZVK AuM</div>
+      <div class="kpi-value" style="font-size:18px">€35.9B</div>
+      <div class="kpi-sub">89.1% funded (German actuarial). ~75–80% under IAS 19.</div>
+    </div>
+    <div class="kpi" style="background:var(--card)">
+      <div class="kpi-label">Layer B: Emeritenanstalt</div>
+      <div class="kpi-value" style="font-size:18px">€1.65B+</div>
+      <div class="kpi-sub">~15 entities. Priest pensions. Many EK = €1.</div>
+    </div>
+    <div class="kpi" style="background:var(--card)">
+      <div class="kpi-label">Layer C: On-BS Provisions</div>
+      <div class="kpi-value" style="font-size:18px">€7.0B</div>
+      <div class="kpi-sub">HGB book. Buyout basis: €16–19B (delta €9–12B).</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top 15 Dioceses by Pension Provisions / KdöR Total Assets (%)</div>
+      <div class="chart-wrap tall"><canvas id="pensionRatioChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Pension Bridge: HGB Book → Buyout Basis (€B)</div>
+      <div class="chart-wrap tall"><canvas id="pensionWaterfall"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Diocese Pension Detail (HGB Book Values — KdöR Only)</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Diocese</th><th class="num">HGB Pension Provisions (€M)</th><th class="num">KdöR TA (€M)</th><th class="num">Pension / TA</th><th class="num">HGB EK (€M)</th><th>Auditor</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Hamburg</td><td class="num neg">893.2</td><td class="num">940.1</td><td class="num neg">95.0%</td><td class="num neg">-182.0</td><td>KPMG</td><td>Negative equity. Teacher pensions €580M = 63% of provisions.</td></tr>
+          <tr><td>Magdeburg</td><td class="num neg">83.3</td><td class="num">105.5</td><td class="num neg">78.9%</td><td class="num warn-cell">4.6</td><td>PRC</td><td>Highest ratio. GERO AG scandal losses eroded equity.</td></tr>
+          <tr><td>Trier</td><td class="num warn-cell">758.0</td><td class="num">1,089.8</td><td class="num warn-cell">69.6%</td><td class="num">204.4</td><td>KPMG</td><td>TBT GmbH restructuring vehicle created.</td></tr>
+          <tr><td>R-Stuttgart</td><td class="num warn-cell">922.1</td><td class="num">1,495.7</td><td class="num warn-cell">61.6%</td><td class="num">356.5</td><td>Internal</td><td>Largest absolute provision. No external auditor.</td></tr>
+          <tr><td>Görlitz</td><td class="num">14.1</td><td class="num">32.2</td><td class="num warn-cell">43.9%</td><td class="num">12.5</td><td>PRC</td><td>Smallest diocese. 28K Catholics.</td></tr>
+          <tr><td>Osnabrück</td><td class="num">238.3</td><td class="num">573.9</td><td class="num">41.5%</td><td class="num">177.6</td><td>CURACON</td><td></td></tr>
+          <tr><td>Hildesheim</td><td class="num">296.9</td><td class="num">755.9</td><td class="num">39.3%</td><td class="num">195.2</td><td>Deloitte</td><td></td></tr>
+          <tr><td>Köln</td><td class="num">591.9</td><td class="num">4,397.0</td><td class="num">13.5%</td><td class="num">2,462.3</td><td>KPMG</td><td>Low ratio but large absolute number.</td></tr>
+          <tr><td>München</td><td class="num">14.1</td><td class="num">4,025.0</td><td class="num">0.4%</td><td class="num">3,255.0</td><td>KPMG</td><td>Emeritenanstalt (€421M, pensions €342M) is OFF this BS.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-note">Figures are HGB on-balance-sheet pension provisions for the KdöR entity only. Emeritenanstalt pension obligations (Layer 2) are separate. KZVK obligations (Layer 4) are system-wide, not diocese-allocated.</div>
+  </div>
+</div>
+
+<!-- ========== TAB 6: KiSt & Revenue ========== -->
+<div id="kist" class="section">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Kirchensteuer by Diocese (€M, 2024)</div>
+      <div class="chart-wrap tall"><canvas id="kistChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">KiSt per Catholic (€/member)</div>
+      <div class="chart-wrap tall"><canvas id="kistPerCapChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Revenue Decline Dynamics</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:8px 0">
+      <div style="text-align:center">
+        <div style="font-size:32px;font-weight:800;color:var(--red)">-360K</div>
+        <div style="font-size:11px;color:var(--text-dim)">Members leaving per year</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:32px;font-weight:800;color:var(--amber)">-50%</div>
+        <div style="font-size:11px;color:var(--text-dim)">McKinsey projected real KiSt decline by 2060</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:32px;font-weight:800;color:var(--red)">9,291→~4,500</div>
+        <div style="font-size:11px;color:var(--text-dim)">Parish merger pipeline (Köln: 180→50)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 7: RATIOS & BENCHMARKS ========== -->
+<div id="ratios" class="section">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Leverage: German Catholic Church vs Peers (Debt/TA)</div>
+      <div class="chart-wrap"><canvas id="leverageChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Consolidated MV Total Assets: Benchmark Comparison (€B)</div>
+      <div class="chart-wrap"><canvas id="benchmarkChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Institutional Benchmarks — All on Consolidated Basis Where Available</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Institution</th><th class="num">Total Assets</th><th class="num">Leverage</th><th>Basis</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(139,92,246,0.08)"><td><strong>German Catholic Church</strong></td><td class="num" style="color:var(--cyan)"><strong>€121–130B</strong></td><td class="num" style="color:var(--green)"><strong>1.7%</strong></td><td>MV consolidated (this analysis)</td><td>First ever. €6.8B revenue, 0% tax.</td></tr>
+          <tr><td>Vonovia</td><td class="num">€92B</td><td class="num">45%</td><td>IFRS (published)</td><td>Largest EU REIT.</td></tr>
+          <tr><td>Swiss Re</td><td class="num">€208B</td><td class="num">Pension-heavy</td><td>IFRS (published)</td><td>Insurance; pension-heavy BS.</td></tr>
+          <tr><td>Church of England</td><td class="num">~£10B</td><td class="num">Low</td><td>UK GAAP (published)</td><td>Published group accounts.</td></tr>
+          <tr><td>EKD (Protestant)</td><td class="num">€26B est.</td><td class="num">n/a</td><td>Partial estimate (Frerk)</td><td>No consolidated accounts.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 8: METHODOLOGY ========== -->
+<div id="method" class="section">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Measurement Approach</div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">We use IFRS 10 consolidation logic to define the perimeter (all 7 layers) but measure everything at estimated market value. IFRS fair value (IAS 40, IAS 19) is an accounting construct that serves auditors. For an institutional audience, we go straight to market value. The result: one consolidated MV balance sheet. No HGB column, no IFRS column.</p>
+    <div class="method-grid">
+      <div class="method-item">
+        <h4>Securities MTM (MKT_FA = 1.29×)</h4>
+        <p>Weighted average of 9 auditor Anhang disclosures. Range 1.03–1.45×. Paderborn 1.33×, Köln 1.33×, Fulda 1.19–1.45×, Bamberg 1.31×, Würzburg 1.03–1.06×, Aachen 1.06×.</p>
+      </div>
+      <div class="method-item">
+        <h4>Property Revaluation (MKT_SA = 2.5×)</h4>
+        <p>Conservative. No FV disclosed by any diocese. Derived from: Bamberg (1.0×, fully depreciated), cost-basis dioceses (2.0–3.5× uplift), Berlin €1.1B prime, München €1.6B Bavaria. Does NOT include Layer 7 land (separate).</p>
+      </div>
+      <div class="method-item">
+        <h4>Pension IAS 19 → Buyout (1.3× then +15–35%)</h4>
+        <p>HGB discount ~1.9%. IAS 19 uses iBoxx AA curve (~3.2%). Buyout adds 15–35% over IAS 19 DBO (Willis Towers Watson benchmarks). Three layers: KZVK deficit €3.5–4.5B, Emeritenanstalt €3.0–4.0B under IAS 19, on-BS provisions remeasured.</p>
+      </div>
+      <div class="method-item">
+        <h4>Land Valuation (190K ha)</h4>
+        <p>Destatis/BORIS per-hectare by type. Agricultural: ~€3/sqm avg. Forest: ~€1.5/sqm. Urban building (8% = 15K ha): €150–400/sqm location-adjusted. Erbbaurecht: DCF of perpetual, inflation-linked ground rent at 15–20× capitalisation.</p>
+      </div>
+      <div class="method-item">
+        <h4>Parish Triangulation (5 methods)</h4>
+        <p>Method 1: DBK employee-ratio scaling. Method 2: Freiburg disclosure extrapolation. Method 3: Köln parish-level IFRS reconstruction. Method 4: EKHN Protestant benchmark. Method 5: Frerk statistical model. Consensus: €12.1B financial (±€3.2B) + €18B property.</p>
+      </div>
+      <div class="method-item">
+        <h4>Intercompany Eliminations</h4>
+        <p>€18B diocesan deposits at church banks (asset for diocese, liability for bank). €35.9B KZVK overlap (AuM double-counted with diocesan pension provisions). €2–5B other interco (housing subsidiary equity, cross-entity receivables). Total: €56–59B eliminated.</p>
+      </div>
+      <div class="method-item">
+        <h4>Environmental / Heritage (New Line)</h4>
+        <p>24,000+ listed buildings × conservation mandates. Asbestos/remediation liabilities. Deferred maintenance backlog. Range €3–8B. No HGB equivalent — this liability does not appear in any published account.</p>
+      </div>
+      <div class="method-item">
+        <h4>Data Sources</h4>
+        <p>394 source documents. Diocesan Finanzberichte, Prüfberichte, Geschäftsberichte. Bundesanzeiger filings. KZVK Geschäftsbericht. BORIS/Destatis land data. Auditors: KPMG, Deloitte, PwC, RSM, CURACON, Forvis Mazars, PRC, Solidaris. All 27/27 dioceses EXACT from audited sources.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- container -->
+
+<div class="footer">
+  <div class="container">
+    G2G Advisory Limited · Strictly Confidential · March 2026 · 27/27 Dioceses · 394 Source Documents · admin@g2gadvisory.co.uk<br>
+    All figures consolidated market value basis unless explicitly stated otherwise. Ranges reflect genuine estimation uncertainty.
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const DIOCESES = [
+  {name:"Paderborn",cls:"stable",kist:281.3,bs:4993.0,ek:2811.0,pens:119.1,yr:2024,auditor:"Deloitte",cath:1436904},
+  {name:"Köln",cls:"reforming",kist:666.0,bs:4397.0,ek:2462.3,pens:591.9,yr:2024,auditor:"KPMG",cath:1773914},
+  {name:"München",cls:"stable",kist:636.4,bs:4025.0,ek:3255.0,pens:14.1,yr:2023,auditor:"KPMG",cath:1632289},
+  {name:"Münster",cls:"stable",kist:423.6,bs:2381.2,ek:1253.7,pens:342.5,yr:2023,auditor:"CURACON",cath:1710016},
+  {name:"Freiburg",cls:"reforming",kist:601.7,bs:1726.4,ek:1116.1,pens:268.5,yr:2023,auditor:"Forvis Mazars",cath:1731773},
+  {name:"Regensburg",cls:"stable",kist:135.2,bs:1718.0,ek:840.0,pens:153.1,yr:2023,auditor:"Solidaris",cath:1113825},
+  {name:"R-Stuttgart",cls:"opaque",kist:666.0,bs:1495.7,ek:356.5,pens:922.1,yr:2023,auditor:"Internal",cath:1620978},
+  {name:"Mainz",cls:"reforming",kist:278.2,bs:1509.6,ek:468.5,pens:353.2,yr:2023,auditor:"PwC",cath:642652},
+  {name:"Limburg",cls:"reforming",kist:277.5,bs:1358.0,ek:923.0,pens:192.0,yr:2023,auditor:"RSM",cath:583052},
+  {name:"Augsburg",cls:"opaque",kist:290.3,bs:828.0,ek:null,pens:null,yr:2023,auditor:"Unknown",cath:1206690},
+  {name:"Trier",cls:"reforming",kist:326.5,bs:1089.8,ek:204.4,pens:758.0,yr:2024,auditor:"KPMG",cath:1141615},
+  {name:"Hamburg",cls:"distressed",kist:142.8,bs:940.1,ek:-182.0,pens:893.2,yr:2024,auditor:"KPMG",cath:363838},
+  {name:"Bamberg",cls:"stable",kist:179.7,bs:867.7,ek:440.0,pens:103.0,yr:2023,auditor:"CURACON",cath:614709},
+  {name:"Würzburg",cls:"stable",kist:181.6,bs:318.9,ek:54.1,pens:124.3,yr:2024,auditor:"CURACON",cath:647218},
+  {name:"Essen",cls:"reforming",kist:201.2,bs:805.0,ek:320.0,pens:213.0,yr:2023,auditor:"PwC",cath:672133},
+  {name:"Berlin",cls:"reforming",kist:177.3,bs:725.0,ek:287.0,pens:162.0,yr:2023,auditor:"KPMG",cath:356413},
+  {name:"Aachen",cls:"stable",kist:264.7,bs:1070.0,ek:511.0,pens:225.0,yr:2023,auditor:"CURACON",cath:884270},
+  {name:"Hildesheim",cls:"stable",kist:137.1,bs:755.9,ek:195.2,pens:296.9,yr:2023,auditor:"Deloitte",cath:536782},
+  {name:"Osnabrück",cls:"stable",kist:130.3,bs:573.9,ek:177.6,pens:238.3,yr:2023,auditor:"CURACON",cath:486975},
+  {name:"Speyer",cls:"stable",kist:118.7,bs:244.6,ek:30.3,pens:88.4,yr:2024,auditor:"PRC",cath:471428},
+  {name:"Passau",cls:"stable",kist:86.5,bs:487.0,ek:160.0,pens:72.0,yr:2024,auditor:"Solidaris",cath:429400},
+  {name:"Fulda",cls:"stable",kist:110.1,bs:655.0,ek:266.0,pens:136.0,yr:2023,auditor:"PRC",cath:340800},
+  {name:"Eichstätt",cls:"opaque",kist:67.1,bs:400.0,ek:180.0,pens:55.0,yr:2023,auditor:"Solidaris",cath:352900},
+  {name:"Erfurt",cls:"stable",kist:31.2,bs:173.0,ek:68.0,pens:46.0,yr:2023,auditor:"PRC",cath:140200},
+  {name:"Magdeburg",cls:"distressed",kist:18.3,bs:105.5,ek:4.6,pens:83.3,yr:2024,auditor:"PRC",cath:70400},
+  {name:"Dresden-Meißen",cls:"opaque",kist:40.1,bs:222.0,ek:95.0,pens:48.0,yr:2021,auditor:"Unknown",cath:130900},
+  {name:"Görlitz",cls:"stable",kist:6.2,bs:32.2,ek:12.5,pens:14.1,yr:2023,auditor:"PRC",cath:27800},
+];
+
+const clsColors = {distressed:'var(--red)',reforming:'var(--amber)',stable:'var(--green)',opaque:'var(--purple)'};
+
+// ===================== TABS =====================
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===================== DIOCESE TABLE =====================
+let currentFilter = 'all';
+let sortCol = 3, sortDir = -1;
+
+function renderDioceseTable() {
+  let data = currentFilter === 'all' ? [...DIOCESES] : DIOCESES.filter(d => d.cls === currentFilter);
+  data.sort((a,b) => {
+    let va = [a.name,a.cls,a.kist,a.bs,a.ek,a.ek!==null?a.ek/a.bs*100:0,a.pens,a.pens!==null?a.pens/a.bs*100:0,a.yr,a.auditor][sortCol];
+    let vb = [b.name,b.cls,b.kist,b.bs,b.ek,b.ek!==null?b.ek/b.bs*100:0,b.pens,b.pens!==null?b.pens/b.bs*100:0,b.yr,b.auditor][sortCol];
+    if (va === null) return 1; if (vb === null) return -1;
+    return (va > vb ? 1 : va < vb ? -1 : 0) * sortDir;
+  });
+  const body = document.getElementById('dioceseBody');
+  body.innerHTML = data.map(d => {
+    const ekPct = d.ek !== null ? (d.ek/d.bs*100).toFixed(1)+'%' : '—';
+    const penPct = d.pens !== null ? (d.pens/d.bs*100).toFixed(1)+'%' : '—';
+    const ekClass = d.ek !== null && d.ek < 0 ? 'neg' : (d.ek !== null && d.ek/d.bs < 0.1 ? 'warn-cell' : '');
+    const penClass = d.pens !== null && d.pens/d.bs > 0.5 ? 'neg' : (d.pens !== null && d.pens/d.bs > 0.3 ? 'warn-cell' : '');
+    return `<tr>
+      <td><strong>${d.name}</strong></td>
+      <td><span class="badge badge-${d.cls}">${d.cls}</span></td>
+      <td class="num">${d.kist.toFixed(1)}</td>
+      <td class="num"><strong>${d.bs.toLocaleString('en',{maximumFractionDigits:1})}</strong></td>
+      <td class="num ${ekClass}">${d.ek !== null ? d.ek.toLocaleString('en',{maximumFractionDigits:1}) : '—'}</td>
+      <td class="num ${ekClass}">${ekPct}</td>
+      <td class="num ${penClass}">${d.pens !== null ? d.pens.toLocaleString('en',{maximumFractionDigits:1}) : '—'}</td>
+      <td class="num ${penClass}">${penPct}</td>
+      <td>${d.yr}</td>
+      <td style="font-size:10px;color:var(--text-dim)">${d.auditor}</td>
+    </tr>`;
+  }).join('');
+}
+function filterDiocese(cls) {
+  currentFilter = cls;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderDioceseTable();
+}
+function sortTable(col) {
+  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = -1; }
+  renderDioceseTable();
+}
+renderDioceseTable();
+
+// ===================== CHARTS =====================
+const chartDefaults = { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8b949e', font: { size: 10 } } } }, scales: { x: { ticks: { color: '#484f58', font: { size: 9 } }, grid: { color: '#21262d' } }, y: { ticks: { color: '#484f58', font: { size: 9 } }, grid: { color: '#21262d' } } } };
+
+// Asset Pie
+new Chart(document.getElementById('assetPie'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Real Estate & Land (MV)', 'Securities & Funds (MTM)', 'Erbbaurecht (DCF)', 'Parish Assets (est.)', 'Cash & Deposits', 'Other'],
+    datasets: [{
+      data: [68, 25, 6.5, 9.6, 4.1, 4.8],
+      backgroundColor: ['#8b5cf6','#22d3ee','#d946ef','#f59e0b','#22c55e','#6b7280'],
+      borderWidth: 0
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#8b949e', font: { size: 10 }, padding: 12 } } } }
+});
+
+// Peer Chart
+new Chart(document.getElementById('peerChart'), {
+  type: 'bar',
+  data: {
+    labels: ['German Catholic\nChurch','Swiss Re','Vonovia','Church of\nEngland','EKD\n(Protestant)'],
+    datasets: [{
+      label: 'Total Assets (€B)',
+      data: [125.5, 208, 92, 12, 26],
+      backgroundColor: ['#8b5cf6','#6b7280','#6b7280','#6b7280','#6b7280'],
+      borderRadius: 4
+    }]
+  },
+  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } } }
+});
+
+// Layer Bar
+new Chart(document.getElementById('layerBar'), {
+  type: 'bar',
+  data: {
+    labels: ['L1\nDiocesan\nKdöR','L2\nShadow\nKdöR','L3\nChurch\nBanks','L4\nKZVK','L5\nHousing','L6\nParishes','L7\nLand &\nErbbaurecht'],
+    datasets: [{
+      label: 'MV (€B, pre-elimination)',
+      data: [57, 14, 26.9, 35.9, 6, 30, 34],
+      backgroundColor: ['#8b5cf6','#a78bfa','#22d3ee','#06b6d4','#d946ef','#f59e0b','#22c55e'],
+      borderRadius: 4
+    }]
+  },
+  options: { ...chartDefaults, plugins: { legend: { display: false } } }
+});
+
+// Coverage
+new Chart(document.getElementById('coverageChart'), {
+  type: 'bar',
+  data: {
+    labels: ['L1 Dioceses','L2 Shadow','L3 Banks','L4 KZVK','L5 Housing','L6 Parishes','L7 Land'],
+    datasets: [
+      { label: 'Confirmed (%)', data: [100, 72, 100, 85, 71, 10, 0], backgroundColor: '#22c55e', borderRadius: 4 },
+      { label: 'Estimated (%)', data: [0, 28, 0, 15, 29, 90, 100], backgroundColor: '#f59e0b', borderRadius: 4 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, max: 100, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v+'%' } } }, plugins: { legend: { labels: { color: '#8b949e', font: { size: 10 } } } } }
+});
+
+// BS Rank Chart
+const sortedByBS = [...DIOCESES].sort((a,b) => b.bs - a.bs);
+new Chart(document.getElementById('bsRankChart'), {
+  type: 'bar',
+  data: {
+    labels: sortedByBS.map(d => d.name),
+    datasets: [{
+      label: 'KdöR HGB Total Assets (€M)',
+      data: sortedByBS.map(d => d.bs),
+      backgroundColor: sortedByBS.map(d => clsColors[d.cls]),
+      borderRadius: 3
+    }]
+  },
+  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } } }
+});
+
+// Scatter
+new Chart(document.getElementById('scatterChart'), {
+  type: 'scatter',
+  data: {
+    datasets: ['distressed','reforming','stable','opaque'].map(cls => ({
+      label: cls.charAt(0).toUpperCase()+cls.slice(1),
+      data: DIOCESES.filter(d => d.cls===cls && d.ek!==null && d.pens!==null).map(d => ({x:d.ek/d.bs*100, y:d.pens/d.bs*100, r:Math.sqrt(d.bs/80), name:d.name})),
+      backgroundColor: clsColors[cls]+'99',
+      borderColor: clsColors[cls],
+      pointRadius: ctx => ctx.raw ? Math.max(ctx.raw.r, 4) : 4,
+    }))
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { ...chartDefaults.scales.x, title: { display: true, text: 'Equity / Total Assets (%)', color: '#8b949e' } },
+      y: { ...chartDefaults.scales.y, title: { display: true, text: 'Pension Provisions / Total Assets (%)', color: '#8b949e' } }
+    },
+    plugins: {
+      legend: { labels: { color: '#8b949e', font: { size: 10 } } },
+      tooltip: { callbacks: { label: ctx => `${ctx.raw.name}: EK ${ctx.raw.x.toFixed(1)}%, Pension ${ctx.raw.y.toFixed(1)}%` } }
+    }
+  }
+});
+
+// Pension Ratio
+const pensionData = DIOCESES.filter(d => d.pens !== null).map(d => ({...d, ratio: d.pens/d.bs*100})).sort((a,b) => b.ratio - a.ratio).slice(0, 15);
+new Chart(document.getElementById('pensionRatioChart'), {
+  type: 'bar',
+  data: {
+    labels: pensionData.map(d => d.name),
+    datasets: [{
+      label: 'Pension Provisions / KdöR TA (%)',
+      data: pensionData.map(d => d.ratio),
+      backgroundColor: pensionData.map(d => d.ratio > 50 ? '#ef4444' : d.ratio > 30 ? '#f59e0b' : '#22c55e'),
+      borderRadius: 3
+    }]
+  },
+  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, callback: v => v+'%' } } } }
+});
+
+// Pension Waterfall
+new Chart(document.getElementById('pensionWaterfall'), {
+  type: 'bar',
+  data: {
+    labels: ['HGB On-BS\nProvisions','KZVK IAS 19\nDeficit','Emeritenanstalt\nIAS 19','Buyout\nPremium','Total\nBuyout Basis'],
+    datasets: [
+      { label: 'Base', data: [0, 7.0, 11.0, 14.0, 0], backgroundColor: 'transparent' },
+      { label: 'Amount', data: [7.0, 4.0, 3.0, 3.5, 17.5], backgroundColor: ['#8b5cf6','#ef4444','#ef4444','#ef4444','#d946ef'], borderRadius: 3 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, stacked: true }, y: { ...chartDefaults.scales.y, stacked: true, ticks: { ...chartDefaults.scales.y.ticks, callback: v => '€'+v+'B' } } }, plugins: { legend: { display: false } } }
+});
+
+// KiSt Chart
+const kistSorted = [...DIOCESES].sort((a,b) => b.kist - a.kist);
+new Chart(document.getElementById('kistChart'), {
+  type: 'bar',
+  data: {
+    labels: kistSorted.map(d => d.name),
+    datasets: [{
+      label: 'KiSt (€M)',
+      data: kistSorted.map(d => d.kist),
+      backgroundColor: '#8b5cf6',
+      borderRadius: 3
+    }]
+  },
+  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } } }
+});
+
+// KiSt per Capita
+const kistPC = DIOCESES.map(d => ({...d, pc: d.kist*1e6/d.cath})).sort((a,b) => b.pc - a.pc);
+new Chart(document.getElementById('kistPerCapChart'), {
+  type: 'bar',
+  data: {
+    labels: kistPC.map(d => d.name),
+    datasets: [{
+      label: '€ per Catholic',
+      data: kistPC.map(d => d.pc),
+      backgroundColor: '#22d3ee',
+      borderRadius: 3
+    }]
+  },
+  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, callback: v => '€'+Math.round(v) } } } }
+});
+
+// Leverage
+new Chart(document.getElementById('leverageChart'), {
+  type: 'bar',
+  data: {
+    labels: ['German Catholic\nChurch','Vonovia','Allianz','Deutsche Bank'],
+    datasets: [{
+      label: 'Debt / Total Assets (%)',
+      data: [1.7, 45, 55, 96],
+      backgroundColor: ['#22c55e','#f59e0b','#f59e0b','#ef4444'],
+      borderRadius: 4
+    }]
+  },
+  options: { ...chartDefaults, plugins: { legend: { display: false } }, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, max: 100, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v+'%' } } } }
+});
+
+// Benchmark
+new Chart(document.getElementById('benchmarkChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Swiss Re\n(IFRS)','German Catholic\nChurch (MV)','Vonovia\n(IFRS)','EKD\n(est.)','CoE\n(UK GAAP)'],
+    datasets: [{
+      label: 'Total Assets (€B)',
+      data: [208, 125.5, 92, 26, 12],
+      backgroundColor: ['#6b7280','#8b5cf6','#6b7280','#6b7280','#6b7280'],
+      borderRadius: 4
+    }]
+  },
+  options: { ...chartDefaults, plugins: { legend: { display: false } } }
+});
+</script>
+</body>
+</html>
