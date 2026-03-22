@@ -265,13 +265,13 @@ tr:hover td { background: rgba(139,92,246,0.05); }
           <tr><td style="color:var(--cyan);font-weight:700">3</td><td><strong>Church Banks</strong></td><td>4</td><td>Pax-Bank, BIB Essen, LIGA Bank, DKM Münster. All cooperatives.</td><td class="num"><strong>26.9</strong></td><td style="text-align:center">100%</td><td>4/4 confirmed. Bank assets largely at fair value already.</td></tr>
           <tr><td style="color:var(--cyan);font-weight:700">4</td><td><strong>KZVK Pension</strong></td><td>1+</td><td>KZVK Köln: €35.9B AuM. 89.1% funded (German actuarial).</td><td class="num"><strong>35.9</strong></td><td style="text-align:center">85%</td><td>Confirmed. Largely eliminated in consolidation.</td></tr>
           <tr><td style="color:var(--cyan);font-weight:700">5</td><td><strong>Housing GmbH</strong></td><td>~20</td><td>ASW (26,500 units), GSW Frankfurt, Rheinwohnungsbau, + others.</td><td class="num"><strong>~6</strong></td><td style="text-align:center">71%</td><td>6 confirmed, 14 estimated. MV reflects property revaluation.</td></tr>
-          <tr><td style="color:var(--cyan);font-weight:700">6</td><td><strong>Parishes</strong></td><td>~9,291</td><td>Kirchenstiftungen. Cash-basis (Kameralistik). No public filings.</td><td class="num"><strong>~30</strong></td><td style="text-align:center">2–14%</td><td>Triangulated from 5 methods. €12.1B financial + €18B property.</td></tr>
-          <tr><td style="color:var(--cyan);font-weight:700">7</td><td><strong>Land & Erbbaurecht</strong></td><td>n/a</td><td>190,000 ha + ~100,000 Erbbaurecht contracts. Booked at €0–1.</td><td class="num"><strong>~34</strong></td><td style="text-align:center">0%</td><td>Modelled from fowid.de, BORIS, Köln/Freiburg data.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">6</td><td><strong>Parishes</strong></td><td>~9,291</td><td>Kirchenstiftungen. v2.0: churches (16,700) at €0. All other buildings at 2026 market.</td><td class="num"><strong>~14</strong></td><td style="text-align:center">2–14%</td><td>v2.0: €10.5B non-church property + €3.9B financial. Churches = cultural heritage, zero MV.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">7</td><td><strong>Land & Erbbaurecht</strong></td><td>n/a</td><td>~186K ha (excl. 4,600 ha church footprint) + ~100K Erbbaurecht contracts.</td><td class="num"><strong>~31</strong></td><td style="text-align:center">0%</td><td>v2.0: Church footprint land at €0. Urban €19.4B, Agri €3.4B, Forest €1.1B, Erbbau €6.7B.</td></tr>
         </tbody>
         <tfoot>
-          <tr style="background:var(--surface)"><td></td><td colspan="3"><strong>Gross Total (before eliminations)</strong></td><td class="num" style="color:var(--text-dim)"><strong>~204</strong></td><td colspan="2" style="font-size:10px;color:var(--text-muted)">Double-counts: deposits at church banks + KZVK overlap + other interco</td></tr>
+          <tr style="background:var(--surface)"><td></td><td colspan="3"><strong>Gross Total (before eliminations) — v2.0</strong></td><td class="num" style="color:var(--text-dim)"><strong>~190</strong></td><td colspan="2" style="font-size:10px;color:var(--text-muted)">v2.0: Churches at €0. Double-counts: deposits + KZVK overlap + interco</td></tr>
           <tr style="background:var(--surface)"><td></td><td colspan="3" style="color:var(--red)">Less: intercompany eliminations</td><td class="num" style="color:var(--red)">-56 to -59</td><td colspan="2" style="font-size:10px;color:var(--text-muted)">€18B deposits + €35.9B KZVK + €2–5B other interco</td></tr>
-          <tr style="background:var(--navy)"><td></td><td colspan="3" style="color:#fff;font-weight:800">Consolidated MV Total Assets</td><td class="num" style="color:var(--magenta);font-weight:800;font-size:14px">121–130</td><td colspan="2" style="color:var(--text-dim);font-size:10px">See Bridge tab for full reconciliation</td></tr>
+          <tr style="background:var(--navy)"><td></td><td colspan="3" style="color:#fff;font-weight:800">Consolidated MV Total Assets — v2.0</td><td class="num" style="color:var(--magenta);font-weight:800;font-size:14px">116–126</td><td colspan="2" style="color:var(--text-dim);font-size:10px">v2.0: 16,700 churches + 4,600 ha footprint = €0 (cultural heritage)</td></tr>
         </tfoot>
       </table>
     </div>
@@ -309,15 +309,15 @@ tr:hover td { background: rgba(139,92,246,0.05); }
           <tr style="background:rgba(139,92,246,0.05);font-weight:600"><td>HGB Aggregated Net (L1–5)</td><td class="num">56.5</td><td></td><td style="color:var(--text-dim);font-size:10px">Not a Konzernabschluss — no group accounts exist</td></tr>
           <tr><td colspan="4" style="height:8px;border:none"></td></tr>
           <tr style="background:rgba(34,211,238,0.08)"><td colspan="4" style="font-weight:700;color:var(--cyan);text-transform:uppercase;font-size:10px">Asset-Side Adjustments (HGB → Market Value)</td></tr>
-          <tr><td>Add: Layer 6 — Parish assets</td><td></td><td class="num" style="color:var(--green)">+30.0</td><td style="color:var(--text-dim);font-size:10px">€12.1B financial + €18B property. Zero in any published BS.</td></tr>
-          <tr><td>Add: Layer 7 — Land revaluation (190K ha)</td><td></td><td class="num" style="color:var(--green)">+30.1</td><td style="color:var(--text-dim);font-size:10px">MV €32.1B less ~€2B already in L1/L2</td></tr>
+          <tr><td>Add: Layer 6 — Parish assets (v2.0: churches at €0)</td><td></td><td class="num" style="color:var(--green)">+14.4</td><td style="color:var(--text-dim);font-size:10px">v2.0: €10.5B non-church buildings (2026 MV) + €3.9B financial. 16,700 churches = €0.</td></tr>
+          <tr><td>Add: Layer 7 — Land revaluation (186K ha, excl. church footprint)</td><td></td><td class="num" style="color:var(--green)">+28.5</td><td style="color:var(--text-dim);font-size:10px">v2.0: MV €30.5B less ~€2B already in L1/L2. Church footprint 4,600 ha zeroed.</td></tr>
           <tr><td>Add: Erbbaurecht capitalisation</td><td></td><td class="num" style="color:var(--green)">+6.5</td><td style="color:var(--text-dim);font-size:10px">~100K contracts × DCF at 15× cap rate</td></tr>
           <tr><td>Add: Securities MTM uplift (unrealised gains)</td><td></td><td class="num" style="color:var(--green)">+3.1</td><td style="color:var(--text-dim);font-size:10px">Fulda €139M, Bamberg €38M, Aachen €56M, etc.</td></tr>
           <tr><td>Add: Investment property revaluation</td><td></td><td class="num" style="color:var(--green)">+6 to 15</td><td style="color:var(--text-dim);font-size:10px">HGB cost → MV. Wide range (urban mix)</td></tr>
-          <tr><td>Less: PP&E write-down (restricted-use)</td><td></td><td class="num" style="color:var(--red)">-2 to -4</td><td style="color:var(--text-dim);font-size:10px">Churches & listed buildings impaired</td></tr>
-          <tr style="background:rgba(34,211,238,0.05);font-weight:600"><td>MV Total Assets (gross)</td><td class="num">182–193</td><td></td><td></td></tr>
+          <tr><td>Less: PP&E write-down (restricted-use)</td><td></td><td class="num" style="color:var(--red)">-1 to -2</td><td style="color:var(--text-dim);font-size:10px">v2.0: Only listed non-church buildings. Churches already at €0 in L6/L7.</td></tr>
+          <tr style="background:rgba(34,211,238,0.05);font-weight:600"><td>MV Total Assets (gross)</td><td class="num">175–188</td><td></td><td></td></tr>
           <tr style="color:var(--red)"><td>Less: MV-basis eliminations</td><td></td><td class="num">-56 to -59</td><td style="color:var(--text-dim);font-size:10px">HGB elims + additional €2–5B at MV</td></tr>
-          <tr style="background:var(--navy);color:var(--cyan);font-weight:800"><td>MV Total Assets (Net)</td><td class="num" style="font-size:14px">121–130</td><td></td><td></td></tr>
+          <tr style="background:var(--navy);color:var(--cyan);font-weight:800"><td>MV Total Assets (Net)</td><td class="num" style="font-size:14px">116–126</td><td></td><td></td></tr>
           <tr><td colspan="4" style="height:8px;border:none"></td></tr>
           <tr style="background:rgba(239,68,68,0.08)"><td colspan="4" style="font-weight:700;color:var(--red);text-transform:uppercase;font-size:10px">Liability-Side Adjustments (HGB → Market Value)</td></tr>
           <tr><td>HGB liabilities (L1–5, net of elims)</td><td class="num">~23</td><td></td><td style="color:var(--text-dim);font-size:10px">Pensions €7.0B, bank deposits €8.9B, other</td></tr>
@@ -498,20 +498,20 @@ tr:hover td { background: rgba(139,92,246,0.05); }
         <p>Weighted average of 9 auditor Anhang disclosures. Range 1.03–1.45×. Paderborn 1.33×, Köln 1.33×, Fulda 1.19–1.45×, Bamberg 1.31×, Würzburg 1.03–1.06×, Aachen 1.06×.</p>
       </div>
       <div class="method-item">
-        <h4>Property Revaluation (MKT_SA = 2.5×)</h4>
-        <p>Conservative. No FV disclosed by any diocese. Derived from: Bamberg (1.0×, fully depreciated), cost-basis dioceses (2.0–3.5× uplift), Berlin €1.1B prime, München €1.6B Bavaria. Does NOT include Layer 7 land (separate).</p>
+        <h4>Property Revaluation (MKT_SA = 2.5× blended)</h4>
+        <p>v2.0: Split approach. Sakralgebäude (cathedrals, ~200 at diocesan level) at 0× (cultural heritage). All other diocesan property (offices, residential, commercial) at ~2.78× → blended ~2.5×. Source: Bamberg Verkehrswert, cost-basis dioceses 2.0–3.5× uplift. Does NOT include Layer 7 land.</p>
       </div>
       <div class="method-item">
         <h4>Pension IAS 19 → Buyout (1.3× then +15–35%)</h4>
         <p>HGB discount ~1.9%. IAS 19 uses iBoxx AA curve (~3.2%). Buyout adds 15–35% over IAS 19 DBO (Willis Towers Watson benchmarks). Three layers: KZVK deficit €3.5–4.5B, Emeritenanstalt €3.0–4.0B under IAS 19, on-BS provisions remeasured.</p>
       </div>
       <div class="method-item">
-        <h4>Land Valuation (190K ha)</h4>
-        <p>Destatis/BORIS per-hectare by type. Agricultural: ~€3/sqm avg. Forest: ~€1.5/sqm. Urban building (8% = 15K ha): €150–400/sqm location-adjusted. Erbbaurecht: DCF of perpetual, inflation-linked ground rent at 15–20× capitalisation.</p>
+        <h4>Land Valuation (v2.0: ~186K ha, excl. church footprint)</h4>
+        <p>v2.0: 4,600 ha church footprint (16,700 churches × ~2,500m² avg plot) zeroed — cultural heritage, unmarketable. Remaining: 112.5K ha agricultural @ €30K/ha, 75K ha forest @ €14K/ha, 12.9K ha urban @ €150/m². Erbbaurecht unchanged: DCF at 15–20× cap rate. Total Layer 7 mid: €30.5B (was €33.8B).</p>
       </div>
       <div class="method-item">
-        <h4>Parish Triangulation (5 methods)</h4>
-        <p>Method 1: DBK employee-ratio scaling. Method 2: Freiburg disclosure extrapolation. Method 3: Köln parish-level IFRS reconstruction. Method 4: EKHN Protestant benchmark. Method 5: Frerk statistical model. Consensus: €12.1B financial (±€3.2B) + €18B property.</p>
+        <h4>Parish Triangulation (v2.0: churches at €0)</h4>
+        <p>v2.0: 16,700 church buildings = €0 (cultural heritage). Non-church buildings (rectories, halls, Kitas, rental) valued at full 2026 market — no institutional discounts. Cross-checked: Cologne parishes (already €0 for churches), Augsburg KPV (church component stripped), Speyer (stripped). Consensus: €10.5B non-church property + €3.9B financial = €14.4B ±€3.0B.</p>
       </div>
       <div class="method-item">
         <h4>Intercompany Eliminations</h4>
@@ -663,7 +663,7 @@ new Chart(document.getElementById('layerBar'), {
     labels: ['L1\nDiocesan\nKdöR','L2\nShadow\nKdöR','L3\nChurch\nBanks','L4\nKZVK','L5\nHousing','L6\nParishes','L7\nLand &\nErbbaurecht'],
     datasets: [{
       label: 'MV (€B, pre-elimination)',
-      data: [57, 14, 26.9, 35.9, 6, 30, 34],
+      data: [57, 14, 26.9, 35.9, 6, 14.4, 30.5],
       backgroundColor: ['#8b5cf6','#a78bfa','#22d3ee','#06b6d4','#d946ef','#f59e0b','#22c55e'],
       borderRadius: 4
     }]

@@ -123,10 +123,11 @@ Würzburg Immobilienfonds 1.03x (€0.2M, 2024), Aachen Spezialfonds 1.06x (€5
 Bamberg Emeritenanstalt UIN-EMBA 1.31x (€37.7M, 2023).
 Total observed: €9,658M book → €12,498M market = 1.294x weighted average. Range: 1.03x – 1.45x.</p>
 
-<p><b style="color:#1b4965">Property (Sachanlagen) — MKT_SA = 2.5x</b><br>
-No diocese discloses property fair value. Derived from: (1) Bamberg valued Grundstücke at Verkehrswert in 2018 opening balance (≈1.0x already);
-(2) Würzburg/Fulda use Bodenrichtwert for land but churches at €1; (3) Berlin SA €1,054M at historical cost in prime market implies 3-5x;
-(4) München €1,600M (40% of BS) in Bavarian capital market. 2.5x is conservative national weighted average.
+<p><b style="color:#1b4965">Property (Sachanlagen) — MKT_SA = 2.5x blended (v2.0: split approach)</b><br>
+v2.0 methodology: Sakralgebäude (cathedrals, ~200 at diocesan level) valued at 0× — cultural heritage, unmarketable.
+All other diocesan property (offices, residential, commercial) at ~2.78× → blended effective ~2.5×.
+Source: Bamberg Verkehrswert (2018), cost-basis dioceses (2.0–3.5× uplift), Berlin €1.1B prime, München €1.6B Bavaria.
+At parish level: 16,700 church buildings = €0. Non-church buildings at full 2026 market, no institutional discounts.
 <span style="color:#d97706;font-style:italic">Sensitivity: ±0.5x SA multiplier = ±€3.0B on entity-level market value.</span></p>
 </div>
 <div>
@@ -150,9 +151,9 @@ These 9 represent €9,462M book value = 28% of total.</p>
 <b>Data sources:</b> Jahresabschlüsse/Prüfberichte (KPMG, CURACON, Solidaris, PRC Treuhand, ITT Audit, Deloitte, Forvis Mazars);
 Bundesanzeiger statutory filings; diocesan Finanzberichte; DBK Kirchensteuerstatistik; Frerk (2013) property study.
 394 source documents across 27 diocese folders. 27/27 EXACT — all dioceses confirmed from audited sources. Data vintage: 2021-2024 (majority 2023-2024).<br>
-<b>What is NOT included:</b> ~10,000 parish Kirchenstiftungen (each a separate KdöR, ~€5B est. financial assets + 140K buildings at €1);
-Erbbaurecht portfolio (~100K ground lease contracts, never appraised); agricultural/forest land (~825K hectares, Frerk);
-Caritas subsidiaries (thousands of gGmbH entities).
+<b>What is NOT included in entity-level data (but modelled in Layers 6-7):</b> ~9,291 parish Kirchenstiftungen: v2.0 consensus €14.4B (€10.5B non-church property at 2026 market + €3.9B financial; 16,700 churches = €0 cultural heritage);
+Land & Erbbaurecht: v2.0 €30.5B mid (~186K ha excl. 4,600 ha church footprint + ~100K contracts);
+Caritas subsidiaries (thousands of gGmbH entities, not yet modelled).
 </div>
 </div>
 
@@ -295,7 +296,7 @@ function rH(){
     // ── CARD 2: OFF-BALANCE-SHEET SYSTEM ──
     // Entities NOT on any diocese BS. Each confirmed from separate source.
     const offBank=26949, offKZVK=35900, offBavarian=4082, offNonBavStuhl=1000;
-    const offHousing=2833, offParish=5000;
+    const offHousing=2833, offParish=14400; // v2.0: €10.5B non-church property + €3.9B financial
     const offTotal=offBank+offKZVK+offBavarian+offNonBavStuhl+offHousing+offParish;
 
     // ── CARD 3: MARKET VALUE BRIDGE ──
@@ -331,13 +332,13 @@ function rH(){
         <div class="sc-row"><span class="sc-key">Bavarian off-BS entities ⁴</span><span class="sc-val">${fmM(offBavarian)}</span></div>
         <div class="sc-row"><span class="sc-key">Non-Bavarian Bischöfl. Stühle ⁵</span><span class="sc-val">${fmM(offNonBavStuhl)}</span></div>
         <div class="sc-row"><span class="sc-key">Housing entities (6 confirmed)</span><span class="sc-val">${fmM(offHousing)}</span></div>
-        <div class="sc-row"><span class="sc-key">~10,000 parish entities ⁶</span><span class="sc-val muted">~€5,000M</span></div>
+        <div class="sc-row"><span class="sc-key">~9,291 parish entities ⁶</span><span class="sc-val muted">~€14,400M</span></div>
         <div class="sc-total"><span class="sc-key">Total off-BS (HGB book)</span><span class="sc-val">${fmB(offTotal)}</span></div>
         <div style="font-size:8px;color:#999;margin-top:6px;line-height:1.4">
           ³ €35.9B assets covering €40.3B obligations (89.1% funded)<br>
           ⁴ Stühle €1.7B + Domkapitel/Emeritenanstalt €0.8B + KPV €1.6B<br>
           ⁵ Low confidence — Trier €84M, Essen €7M, Görlitz €9M confirmed; rest est.<br>
-          ⁶ Est. financial assets; ~140K buildings booked at €1 not included
+          ⁶ v2.0: €10.5B non-church property (2026 MV) + €3.9B financial. 16,700 churches = €0
         </div>
       </div>
       <div class="scard equity">
@@ -437,7 +438,7 @@ const _tBS7=S('b'),_tSA7=SN('sa')||0,_tFA7=SN('fa')||0;
 const _propUplift=Math.round(_tSA7*(MKT_SA-1));
 const _secUplift=Math.round(_tFA7*(MKT_FA-1));
 const _unextrUplift=Math.round(F.filter(d=>d.sa==null&&d.fa==null).reduce((a,d)=>a+(d.b||0),0)*0.5);
-const _offBS=4082+1000+2833+5000; // Bavarian + non-Bav Stühle + housing + parish
+const _offBS=4082+1000+2833+14400; // Bavarian + non-Bav Stühle + housing + parish (v2.0: €14.4B)
 const _banks=26949;
 const _kzvk=35900;
 const _penAdj7=Math.round((SN('p')||0)*(IAS19_MULT-1));
@@ -450,7 +451,7 @@ ch.c7=new Chart(document.getElementById('c7'),{type:'bar',data:{labels:waterLabe
     {label:'Invisible base',data:waterRunning.map((v,i)=>i===0||i===8?0:v),backgroundColor:'transparent',borderWidth:0,barPercentage:0.65},
     {label:'Value',data:waterData.map(Math.abs),backgroundColor:waterData.map((v,i)=>i===0?'#1b4965':i===8?'#0d1b2a':v<0?'#b91c1c':'#15803d'),borderRadius:3,barPercentage:0.65}
 ]},options:{...dlOff,plugins:{...dlOff.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',font:{size:8,weight:'bold'},color:'#333',formatter:(v,ctx)=>{if(ctx.datasetIndex===0)return '';const d=waterData[ctx.dataIndex];return(d<0?'−':'+')+' €'+(Math.abs(d)/1000).toFixed(1)+'B'}},tooltip:{callbacks:{label:c=>{if(c.datasetIndex===0)return '';return '€'+(Math.abs(waterData[c.dataIndex])/1000).toFixed(1)+'B'}}}},scales:{x:{stacked:true,ticks:{font:{size:8},maxRotation:0}},y:{stacked:true,display:false}}}});
-document.getElementById('x7').innerHTML=`<b>What this shows:</b> Waterfall from HGB book value (€${(_tBS7/1000).toFixed(1)}B, 27 KdöR) to total system value (€${(waterTotal/1000).toFixed(0)}B). Each bar = one source of hidden or off-balance-sheet value. Green = additions. Red = IAS 19 pension restatement.<br><span class="conc">Three walls of hidden value:</span> (1) Accounting gap: property at cost/€1 adds €${(_propUplift/1000).toFixed(1)}B, securities reserves add €${(_secUplift/1000).toFixed(1)}B. (2) Legal fragmentation: off-BS entities (Stühle, Emeritenanstalt, housing, parishes) add €${(_offBS/1000).toFixed(1)}B. (3) System infrastructure: banks €${(_banks/1000).toFixed(1)}B + KZVK €${(_kzvk/1000).toFixed(1)}B.<br><span class="q">Note: Parish property (~140K buildings at €1) and land (~825K ha at €0) are NOT included — adding these takes the range to €200-340B.</span>`;
+document.getElementById('x7').innerHTML=`<b>What this shows:</b> Waterfall from HGB book value (€${(_tBS7/1000).toFixed(1)}B, 27 KdöR) to total system value (€${(waterTotal/1000).toFixed(0)}B). Each bar = one source of hidden or off-balance-sheet value. Green = additions. Red = IAS 19 pension restatement.<br><span class="conc">Three walls of hidden value:</span> (1) Accounting gap: property at cost/€1 adds €${(_propUplift/1000).toFixed(1)}B, securities reserves add €${(_secUplift/1000).toFixed(1)}B. (2) Legal fragmentation: off-BS entities (Stühle, Emeritenanstalt, housing, parishes) add €${(_offBS/1000).toFixed(1)}B. (3) System infrastructure: banks €${(_banks/1000).toFixed(1)}B + KZVK €${(_kzvk/1000).toFixed(1)}B.<br><span class="q">v2.0: Parish entities (€14.4B) now included in off-BS. 16,700 churches = €0 (cultural heritage). Land (~186K ha excl. church footprint, €30.5B mid) modelled separately in Layer 7.</span>`;
 
 // C8: KiSt flow — where does revenue go (from forensic GuV analysis)
 const kistNat=S('k');
@@ -485,10 +486,10 @@ function rBS(){
         {c:'sub',r:[`Diocesan property (${nSA}/${n})`,fm(tSA),fm(Math.round(tSA*1.5)),fm(Math.round(tSA*MKT_SA)),'At cost or Bodenrichtwert. Bamberg at Verkehrswert since 2018. Berlin: 97% AV. MKT 2.5x (conservative). ±0.5x = ±€'+Math.round(tSA*0.5)+'M.']},
         {c:'sub',r:['Housing minorities (equity method)',fm(Math.round(hA*.3)),fm(Math.round(hA*.5)),fm(Math.round(hA*.8)),'55K units: ASW, RWB, GSW, etc. FV €6B nationally.']},
         {c:'sub',r:['Foundation assets',fm(Math.round(fA)),fm(Math.round(fA*1.15)),fm(Math.round(fA*1.3)),'Paderborn 7 foundations €2.65B. München 4 at €1.7B. Bavarian Stühle.']},
-        {c:'sub',r:['Parish property (~10,000 entities)','€1 total','—','€'+Math.round(70000*pct/1000)+'-'+Math.round(155000*pct/1000)+'B','At Erinnerungswert. ~140K buildings nationally.']},
-        {c:'sub',r:['Land & Erbbaurecht','€0','—','€'+Math.round(15000*pct/1000)+'-'+Math.round(45000*pct/1000)+'B','~825K ha + ~100K contracts. Never appraised.']},
+        {c:'sub',r:['Parish property (v2.0: churches €0)','€1 total','—','€10-18B','v2.0: 16,700 churches = €0 (cultural heritage). Non-church buildings (rectories, halls, Kitas) at 2026 full market. Mid €10.5B.']},
+        {c:'sub',r:['Land & Erbbaurecht (v2.0: excl church footprint)','€0','—','€21-42B','v2.0: ~186K ha (excl 4,600 ha church footprint). ~100K Erbbaurecht contracts. Mid €30.5B.']},
         {c:'sep',r:['','','','','']},
-        {c:'tot',r:['TOTAL ASSETS','€'+Math.round(tBS/1000)+'B','€'+Math.round((tBS*1.15+tSA*.8+tFA*.2+fA*.15+hA*.2)/1000)+'B','€'+Math.round((tSA*MKT_SA+tFA*MKT_FA+tOther+hA*.8+fA*1.3+70000*pct)/1000)+'-'+Math.round((tSA*MKT_SA+tFA*MKT_FA+tOther+hA*.8+fA*1.3+155000*pct+45000*pct)/1000)+'B','']},
+        {c:'tot',r:['TOTAL ASSETS','€'+Math.round(tBS/1000)+'B','€'+Math.round((tBS*1.15+tSA*.8+tFA*.2+fA*.15+hA*.2)/1000)+'B','€'+Math.round((tSA*MKT_SA+tFA*MKT_FA+tOther+hA*.8+fA*1.3+10000*pct)/1000)+'-'+Math.round((tSA*MKT_SA+tFA*MKT_FA+tOther+hA*.8+fA*1.3+18000*pct+42000*pct)/1000)+'B','v2.0: churches at €0, all other property at 2026 market']},
         {c:'sep',r:['','','','','']},
         {c:'hd',r:['LIABILITIES','','','','']},
         {c:'shd',r:['Current Liabilities','','','','']},
