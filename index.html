@@ -109,6 +109,37 @@ tr:hover td { background: rgba(139,92,246,0.05); }
   .kpi-strip { grid-template-columns: repeat(3, 1fr); }
   .grid-2, .grid-3, .bs-container, .method-grid { grid-template-columns: 1fr; }
 }
+
+/* Network Viz */
+.network-container{position:relative;width:100%;height:700px;background:var(--surface);border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.entity{position:absolute;background:var(--card);border:2px solid var(--border);border-radius:10px;padding:12px 16px;cursor:pointer;transition:all .3s;z-index:2}
+.entity:hover{transform:scale(1.05);border-color:var(--cyan);box-shadow:0 0 20px rgba(34,211,238,0.2);z-index:10}
+.entity .ename{font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px}
+.entity .edata{font-size:9px;color:var(--text-dim);line-height:1.4}
+.entity .etag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700;text-transform:uppercase;margin-top:4px}
+.entity.l0{border-color:#64748b}.entity.l0 .etag{background:rgba(100,116,139,.2);color:#94a3b8}
+.entity.l1{border-color:var(--purple)}.entity.l1 .etag{background:rgba(139,92,246,.2);color:var(--purple)}
+.entity.l2{border-color:#a78bfa}.entity.l2 .etag{background:rgba(167,139,250,.2);color:#a78bfa}
+.entity.l3{border-color:var(--cyan)}.entity.l3 .etag{background:rgba(34,211,238,.2);color:var(--cyan)}
+.entity.l4{border-color:#06b6d4}.entity.l4 .etag{background:rgba(6,182,212,.2);color:#06b6d4}
+.entity.l5{border-color:var(--magenta)}.entity.l5 .etag{background:rgba(217,70,239,.2);color:var(--magenta)}
+.entity.person{border-color:var(--amber);border-style:dashed}.entity.person .etag{background:rgba(245,158,11,.2);color:var(--amber)}
+svg.flows{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+svg.flows line{stroke-width:2;opacity:.6}
+svg.flows line.money{stroke:var(--green);stroke-dasharray:8 4}
+svg.flows line.deposit{stroke:var(--blue);stroke-dasharray:6 3}
+svg.flows line.debt{stroke:var(--red)}
+svg.flows line.guarantee{stroke:var(--magenta);stroke-dasharray:4 4}
+svg.flows line.governance{stroke:var(--amber);stroke-dasharray:2 6}
+svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
+.flow-label{position:absolute;font-size:8px;color:var(--text-muted);background:rgba(6,8,13,.85);padding:2px 6px;border-radius:3px;z-index:3;pointer-events:none;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:12px;padding:12px;background:var(--surface);border-radius:6px;border:1px solid var(--border);margin-bottom:16px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-dim)}
+.legend-line{width:24px;height:3px;border-radius:2px}
+.finding{background:var(--surface);border-left:3px solid var(--purple);padding:12px 16px;margin-bottom:10px;border-radius:0 6px 6px 0}
+.finding h4{font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:4px}
+.finding p{font-size:11px;color:var(--text-dim);line-height:1.5}
+.finding .fnum{font-weight:800;color:var(--magenta)}
 </style>
 </head>
 <body>
@@ -193,6 +224,9 @@ tr:hover td { background: rgba(139,92,246,0.05); }
   <div class="tab" onclick="showTab('kist')">KiSt & Revenue</div>
   <div class="tab" onclick="showTab('ratios')">Ratios & Benchmarks</div>
   <div class="tab" onclick="showTab('method')">Methodology</div>
+  <div class="tab" onclick="showTab('kolncase')">Köln Case Study</div>
+  <div class="tab" onclick="showTab('govself')">Governance & Self-Dealing</div>
+  <div class="tab" onclick="showTab('audnet')">Auditor Network</div>
 </div>
 
 <!-- ========== TAB 1: CONSOLIDATED BS ========== -->
@@ -252,10 +286,10 @@ tr:hover td { background: rgba(139,92,246,0.05); }
   </div>
   <div class="grid-2">
     <div class="card">
-      <div class="card-title">Largest German-Headquartered Non-Bank Asset Owners — Global Consolidated: Equity vs Liabilities (€B)</div>
+      <div class="card-title">Largest German-Domiciled Asset Owners — Equity vs Liabilities (€B)</div>
       <div class="chart-wrap" style="height:400px;padding-right:20px"><canvas id="peerChart"></canvas></div>
       <div style="margin-top:8px;font-size:9px;color:var(--text-muted);line-height:1.5">
-        <strong style="color:var(--cyan)">All on market-value basis. All figures are global consolidated</strong> — i.e. the full worldwide group balance sheet for each entity. Listed firms: equity = market capitalisation (Mar 2026); liabilities at IFRS book (≈ market for IG credit), <strong>inclusive of IFRS 16 lease liabilities</strong>. Total bar = MktCap + Total Liabilities. IFRS 16 material for Deutsche Telekom (~€35B) and E.ON (~€8B). Deutsche Bahn: HGB book (state-owned, no IFRS 16). <strong style="color:var(--amber)">The German Catholic Church is the only entity on this chart with 100% domestic (German) assets.</strong> All other entities derive significant value from non-German operations (e.g. Deutsche Telekom: ~75% from T-Mobile US; Siemens: ~85% non-German revenue). By German-domiciled assets alone, the church is likely the single largest non-bank asset owner in the country. Equity ratio: 67–69%, zero financial debt, zero tax.
+        <strong style="color:var(--cyan)">All on market-value basis.</strong> Peer set restricted to <strong style="color:var(--amber)">German-domiciled asset owners only</strong> — entities whose assets are predominantly or entirely located in Germany. This excludes global conglomerates (Siemens, Deutsche Telekom, BASF, E.ON) whose consolidated balance sheets are dominated by non-German operations. BVK and VBL are public pension funds (AuM, not equity in the corporate sense). BImA is the federal property agency (est. MV, no published MV balance sheet). Deutsche Bahn is HGB book (state-owned, no IFRS 16). <strong style="color:var(--amber)">The German Catholic Church is the only entity on this chart that is both 100% domestic AND not state-controlled.</strong> It is also the only entity with zero financial debt and a 67–69% equity ratio.
       </div>
     </div>
     <div class="card">
@@ -506,27 +540,26 @@ tr:hover td { background: rgba(139,92,246,0.05); }
 <div id="ratios" class="section">
   <div class="grid-2">
     <div class="card">
-      <div class="card-title">Equity Ratio: German Catholic Church vs Major German-HQ'd Groups (Global Consolidated, MV Basis)</div>
+      <div class="card-title">Equity Ratio: German Catholic Church vs German-Domiciled Asset Owners (MV Basis)</div>
       <div class="chart-wrap"><canvas id="leverageChart"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title">Total Assets Ranking: German-HQ'd Non-Bank Groups — Global Consolidated (€B)</div>
+      <div class="card-title">Total Assets / AuM Ranking: German-Domiciled Asset Owners (€B)</div>
       <div class="chart-wrap"><canvas id="benchmarkChart"></canvas></div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title">Institutional Benchmarks — Market-Value Basis, Global Consolidated (MktCap + Liabilities)</div>
+    <div class="card-title">Institutional Benchmarks — German-Domiciled Asset Owners (MV Basis)</div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Institution</th><th class="num">MV Total</th><th class="num">Equity (MktCap)</th><th class="num">Liabilities</th><th class="num">Eq %</th><th>Scope</th><th>Basis</th><th>Note</th></tr></thead>
+        <thead><tr><th>Institution</th><th class="num">TA / AuM</th><th class="num">Equity</th><th class="num">Liabilities</th><th class="num">Eq %</th><th>Scope</th><th>Basis</th><th>Note</th></tr></thead>
         <tbody>
-          <tr><td>Deutsche Telekom</td><td class="num">€371B</td><td class="num">€144B</td><td class="num">€227B</td><td class="num">39%</td><td>Global (DE ~25%)</td><td>MktCap + IFRS Liab</td><td>~€35B IFRS 16. P/B 1.6×. ~75% of value = T-Mobile US.</td></tr>
-          <tr><td>Siemens AG</td><td class="num">€251B</td><td class="num">€163B</td><td class="num">€88B</td><td class="num">65%</td><td>Global (DE ~15%)</td><td>MktCap + IFRS Liab</td><td>~€4B IFRS 16. P/B 2.3×. ~85% revenue non-German.</td></tr>
-          <tr style="background:rgba(139,92,246,0.12)"><td><strong>German Catholic Church</strong></td><td class="num" style="color:var(--cyan)"><strong>€134–155B</strong></td><td class="num" style="color:var(--magenta)"><strong>€90–107B</strong></td><td class="num"><strong>€38–48B</strong></td><td class="num" style="color:var(--green)"><strong>67–69%</strong></td><td style="color:var(--amber)"><strong>100% Germany</strong></td><td>MV consol. (v2.4)</td><td>No IFRS 16. 0% fin. debt. 0% tax. Pensions €17–21B buyout. Only 100% domestic entity.</td></tr>
-          <tr><td>E.ON SE</td><td class="num">€129B</td><td class="num">€42B</td><td class="num">€87B</td><td class="num">33%</td><td>Global (DE ~50%)</td><td>MktCap + IFRS Liab</td><td>~€8B IFRS 16. P/B 1.75×. DE/SE/UK/CEE.</td></tr>
-          <tr><td>BASF SE</td><td class="num">€93B</td><td class="num">€41B</td><td class="num">€52B</td><td class="num">44%</td><td>Global (DE ~20%)</td><td>MktCap + IFRS Liab</td><td>~€2B IFRS 16. P/B 1.2×. Ludwigshafen + global ops.</td></tr>
-          <tr><td>Deutsche Bahn*</td><td class="num">€84B</td><td class="num">€17B</td><td class="num">€67B</td><td class="num">20%</td><td>Global (DE ~80%)</td><td>HGB book 2024</td><td>No IFRS 16 (est. +€5–8B). No MktCap. Schenker sold.</td></tr>
-          <tr><td>Vonovia SE</td><td class="num">€81B</td><td class="num">€19B</td><td class="num">€62B</td><td class="num">23%</td><td>Global (DE ~90%)</td><td>MktCap + IFRS Liab</td><td>~€1B IFRS 16. P/B 0.68×. 545K apts (DE/SE/AT).</td></tr>
+          <tr><td>BVK (Bayerische Versorgungskammer)*</td><td class="num">~€110B</td><td class="num">n/a</td><td class="num">n/a</td><td class="num">n/a</td><td>100% Germany</td><td>AuM (public pension)</td><td>Largest DE public pension fund. 12 Versorgungsanstalten. ~€110B AuM (2024). Pure asset pool vs DB obligations.</td></tr>
+          <tr style="background:rgba(139,92,246,0.12)"><td><strong>German Catholic Church</strong></td><td class="num" style="color:var(--cyan)"><strong>€134–155B</strong></td><td class="num" style="color:var(--magenta)"><strong>€90–107B</strong></td><td class="num"><strong>€38–48B</strong></td><td class="num" style="color:var(--green)"><strong>67–69%</strong></td><td style="color:var(--amber)"><strong>100% Germany</strong></td><td>MV consol. (v2.4)</td><td>No IFRS 16. 0% fin. debt. 0% tax. Pensions €17–21B buyout. Only 100% domestic, non-state-controlled entity.</td></tr>
+          <tr><td>Deutsche Bahn</td><td class="num">€84B</td><td class="num">€17B</td><td class="num">€67B</td><td class="num">20%</td><td>~80% Germany</td><td>HGB book 2024</td><td>100% state-owned. No MktCap. No IFRS 16 (est. +€5–8B). Schenker sold. Rail infra at depreciated cost.</td></tr>
+          <tr><td>Vonovia SE</td><td class="num">€81B</td><td class="num">€19B</td><td class="num">€62B</td><td class="num">23%</td><td>~90% Germany</td><td>MktCap + IFRS Liab</td><td>545K apts (DE/SE/AT). P/B 0.68×. IAS 40 fair value. Market discounts book by 32%.</td></tr>
+          <tr><td>VBL (Versorgungsanstalt Bund/Länder)*</td><td class="num">~€66B</td><td class="num">n/a</td><td class="num">n/a</td><td class="num">n/a</td><td>100% Germany</td><td>AuM (public pension)</td><td>2nd-largest DE public pension fund. ~4.8M members (federal/Länder employees). ~€66B AuM (2024 est.).</td></tr>
+          <tr><td>BImA (Bundesanstalt f. Immobilienaufgaben)*</td><td class="num">€50–80B</td><td class="num">n/a</td><td class="num">n/a</td><td class="num">n/a</td><td>100% Germany</td><td>Est. MV (state-owned)</td><td>Federal property agency. ~37,000 properties, 483,000 ha. HGB book ~€15B. No published MV BS. Most comparable to Church on asset composition.</td></tr>
           <tr><td>LEG Immobilien</td><td class="num">€17B</td><td class="num">€5B</td><td class="num">€12B</td><td class="num">29%</td><td>100% Germany</td><td>MktCap + IFRS Liab</td><td>IFRS 16 immaterial. P/B 0.5×. 167K apts, NRW.</td></tr>
         </tbody>
       </table>
@@ -572,6 +605,184 @@ tr:hover td { background: rgba(139,92,246,0.05); }
         <h4>Data Sources</h4>
         <p>890+ source documents. Diocesan Finanzberichte, Prüfberichte, Geschäftsberichte. Bundesanzeiger filings. KZVK 2023 audited Geschäftsbericht (€34.129B confirmed) + 2024 GB (sub-entity €13.0B). Paderborn 2024 FB: TA €4.993B, EK €4.076B, Pensions €553M, Bewertungsreserven €1.49B (33.15%). Köln 2024 FB: TA €4.397B, EK €2.773B, Pensions €823M. VDD (€6.738B KiSt). 4 church bank 2024 ARs. BORIS/Destatis. Auditors: KPMG, Deloitte, PwC, RSM, CURACON, Forvis Mazars, PRC, Solidaris.</p>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== TAB 9: KÖLN CASE STUDY ========== -->
+<div id="kolncase" class="section">
+  <div class="kpi-strip" style="grid-template-columns:repeat(5,1fr)">
+    <div class="kpi"><div class="kpi-label">EBK Group MV (est.)</div><div class="kpi-value">€8.5–21.5B</div><div class="kpi-sub">KdöR + sub-entities + parishes</div></div>
+    <div class="kpi"><div class="kpi-label">KdöR HGB TA</div><div class="kpi-value">€4,397M</div><div class="kpi-sub">CURACON audited, 2024</div></div>
+    <div class="kpi"><div class="kpi-label">Annual KiSt</div><div class="kpi-value">€666M</div><div class="kpi-sub">Tied #1 with R-Stuttgart</div></div>
+    <div class="kpi"><div class="kpi-label">Pax-Bank BS</div><div class="kpi-value">€10,797M</div><div class="kpi-sub">Post-BKC merger, 2024 confirmed</div></div>
+    <div class="kpi"><div class="kpi-label">Erbbaurecht</div><div class="kpi-value">33,000</div><div class="kpi-sub">Contracts (largest disclosed)</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Erzbistum Köln — Closed-Loop Financial Architecture</div>
+    <div class="network-container" id="kolnNetwork">
+      <svg class="flows" id="kolnFlows"></svg>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-line" style="background:var(--green)"></div>KiSt / Money flow</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--blue)"></div>Deposits</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--red)"></div>Debt / Lending</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--magenta);border-style:dashed"></div>Guarantees</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--amber)"></div>Governance</div>
+      <div class="legend-item"><div class="legend-line" style="background:var(--cyan)"></div>Fund management</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div class="finding"><h4>1. Single-Counterparty Ecosystem</h4><p>Pax-Bank's <span class="fnum">€10.8B</span> balance sheet has effectively one client: the Catholic Church system. Diocesan deposits, parish deposits, and church-related lending constitute <span class="fnum">&gt;95%</span> of all activity. No diversification.</p></div>
+      <div class="finding"><h4>2. Circular Guarantees</h4><p>The diocese guarantees the debt of its own bank's borrowers. Pax-Bank lends to CBT (€66M), ASW (~€50M), VKKD (~€30M) — all bishop-controlled entities. The diocese provides guarantee or comfort letters. Total circular exposure: <span class="fnum">€83–133M</span>. Risk rotates within the system, never transfers out.</p></div>
+      <div class="finding"><h4>3. Governance Conflict: Sobbeck</h4><p>Gordon Sobbeck (FD, Generalvikar staff) sits on the Pax-Bank Aufsichtsrat (lender side) AND the CBT/ASW Verwaltungsrat (borrower side). He controls <span class="fnum">5+ board seats</span> spanning both sides of the lending relationship. This would be a disqualifying conflict in any regulated corporate.</p></div>
+    </div>
+    <div>
+      <div class="finding"><h4>4. Banking Secrecy Shield</h4><p>§26 KWG (German Banking Act) protects the loan book from external access. Even as a KdöR, the diocese cannot compel Pax-Bank to disclose individual loan positions. The cooperative (eG) structure adds a further governance layer — each member has one vote regardless of deposit size.</p></div>
+      <div class="finding"><h4>5. Accounting Basis Arbitrage</h4><p>Each entity files independently under HGB. The diocese books its Pax-Bank stake at cost (~€5M). Actual equity attributable: ~€110M. Parish property: HGB book €1, estimated MV per parish €3–5M. The Erbbaurecht portfolio (33,000 contracts) does not appear on any balance sheet at fair value.</p></div>
+      <div class="finding"><h4>6. Money Never Leaves</h4><p>KiSt (€666M/yr) → Diocese → deposits at Pax-Bank → Pax lends to CBT/ASW/VKKD (all bishop-controlled) → returns flow to diocese as rents, dividends, and parish grants. The entire system is a <span class="fnum">closed loop</span>. External capital markets play zero role.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 10: GOVERNANCE & SELF-DEALING ========== -->
+<div id="govself" class="section">
+  <div class="card">
+    <div class="card-title">Finanzdirektoren (FDs) — 22 of 27 Mapped</div>
+    <div class="card-note" style="margin-top:0;margin-bottom:8px;font-style:normal">The Finanzdirektor is the de facto CFO. Appointed by the Bishop (CIC Can. 492–494). Controls the budget, investment decisions, and property disposals. There is NO pan-diocesan CFO — each diocese is a standalone silo.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Diocese</th><th>Finanzdirektor</th><th>Since</th><th>Background</th><th class="num">KdöR HGB TA (€M)</th><th>Bank Board</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Köln</strong></td><td>Gordon Sobbeck</td><td>2021</td><td>Generalvikar staff</td><td class="num">4,397</td><td>Pax-Bank AR + CBT + ASW + Aachener</td><td>5+ board seats. Controls €50–73B system.</td></tr>
+          <tr><td><strong>Paderborn</strong></td><td>Dirk Wummel</td><td>2020</td><td>Corporate finance</td><td class="num">4,993</td><td>BIB Essen</td><td>€4.6B FA portfolio. CURA healthcare (24 hospitals).</td></tr>
+          <tr><td><strong>München</strong></td><td>Stephanie Herrmann</td><td>2023</td><td>Deloitte/BaFin</td><td class="num">4,025</td><td>LIGA Bank</td><td>First female FD. Professionalising treasury.</td></tr>
+          <tr><td><strong>Regensburg</strong></td><td>Erwin Saiko</td><td>2015</td><td>LIGA Bank (35yr)</td><td class="num">1,718</td><td>LIGA Bank (ex-board)</td><td>Only diocese with Konzernabschluss (16 entities).</td></tr>
+          <tr><td><strong>Freiburg</strong></td><td>Michael Metzler</td><td>2019</td><td>Public sector</td><td class="num">1,726</td><td>—</td><td>Most transparent diocese. Full Erbbaurecht disclosure (9K contracts).</td></tr>
+          <tr><td><strong>Limburg</strong></td><td>Thomas Frings</td><td>2022</td><td>METRO / Celesio</td><td class="num">1,358</td><td>—</td><td>Post-Tebartz reform. Ex-METRO CFO. JÜ swing from -€42M to +€95M.</td></tr>
+          <tr><td><strong>Trier</strong></td><td>Manfred Wagner</td><td>2025</td><td>Corporate</td><td class="num">1,090</td><td>—</td><td>New appointment Jan 2025. TBT GmbH restructuring vehicle.</td></tr>
+          <tr><td><strong>R-Stuttgart</strong></td><td><em>Unknown</em></td><td>—</td><td>—</td><td class="num">1,496</td><td>—</td><td style="color:var(--red)">No external auditor. Internal Stabsstelle Revision only.</td></tr>
+          <tr><td><strong>Hamburg</strong></td><td>Alexander Becker</td><td>2020</td><td>Accounting</td><td class="num">940</td><td>—</td><td style="color:var(--red)">Negative equity -€182M. Must sell assets.</td></tr>
+          <tr><td><strong>Magdeburg</strong></td><td><em>Post vacant?</em></td><td>—</td><td>—</td><td class="num">106</td><td>—</td><td style="color:var(--red)">EK €4.6M. GERO scandal. Smallest viable diocese.</td></tr>
+          <tr><td><strong>Eichstätt</strong></td><td>Christine Hüttinger</td><td>2018</td><td>Post-fraud hire</td><td class="num">400</td><td>LIGA Bank</td><td>Post-€60M+ fraud. 30 files, 7 entities × 4 years partially extracted.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Decision Chain — Who Controls What</div>
+      <div class="finding"><h4>Level 1: The Bishop (Diözesanbischof)</h4><p>CIC Can. 381: "all ordinary, proper, and immediate power." Legislative, executive, and judicial authority (Can. 391). Appoints the FD (Can. 492–494). Represents the diocese in all juridic affairs (Can. 393). He IS the Bischöflicher Stuhl.</p></div>
+      <div class="finding"><h4>Level 2: The Finanzdirektor</h4><p>De facto CFO. Controls budget, investments, property disposals. Sits on sub-entity boards. In Köln, the FD office controls 5+ board seats spanning €50–73B. No standardised qualification — ranges from ex-Big 4 to internal promotion.</p></div>
+      <div class="finding"><h4>Level 3: External Auditors</h4><p>20+ dioceses use Big 4 or major firms (KPMG: 4, Deloitte: 2, PwC: 2, RSM: 1, CURACON: 6, Forvis Mazars: 1). But the audit scope is entity-level HGB — no group audit, no consolidation, no going-concern test (KdöR cannot go insolvent by law).</p></div>
+      <div class="finding" style="border-left-color:var(--red)"><h4>No Pan-Diocesan Control</h4><p>There is NO group CFO, no group audit, no consolidated reporting. The DBK Finanzbericht is a voluntary summary with no audit trail. The VDD (administrative association) coordinates but cannot compel. Each diocese is a standalone silo.</p></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Interlocking Board Seats</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Person</th><th>Diocese</th><th>Board Seat 1</th><th>Board Seat 2</th><th>Board Seat 3</th><th>Conflict</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Gordon Sobbeck</strong></td><td>Köln</td><td>Pax-Bank AR</td><td>CBT VR</td><td>ASW VR</td><td style="color:var(--red)">Lender + Borrower</td></tr>
+            <tr><td><strong>Erwin Saiko</strong></td><td>Regensburg</td><td>LIGA Bank (ex)</td><td>Diöz. Finanzrat</td><td>Konzern oversight</td><td style="color:var(--amber)">Bank → FD pipeline</td></tr>
+            <tr><td><strong>Stephanie Herrmann</strong></td><td>München</td><td>LIGA Bank</td><td>EOM Finanzrat</td><td>—</td><td style="color:var(--green)">Lower risk</td></tr>
+            <tr><td><strong>Christine Hüttinger</strong></td><td>Eichstätt</td><td>LIGA Bank</td><td>Diöz. Finanzrat</td><td>—</td><td style="color:var(--amber)">Post-fraud context</td></tr>
+            <tr><td><strong>Dirk Wummel</strong></td><td>Paderborn</td><td>BIB Essen</td><td>CURA oversight</td><td>Stuhl foundations</td><td style="color:var(--amber)">€7.6B combined</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-note">Board seats identified from Bundesanzeiger auditor sign-offs, diocesan websites (Impressum/Organigramm), and press releases. 5 of 22 mapped FDs hold church bank board seats.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Structural Findings from Network & Governance Analysis</div>
+    <div class="grid-2" style="margin-bottom:0">
+      <div>
+        <div class="finding" style="border-left-color:var(--red)"><h4>1. No Consolidated Reporting Exists</h4><p>27 separate legal entities (KdöR), each with independent accounting, audit, and governance. The DBK Finanzbericht is a voluntary, unaudited summary. Only Regensburg produces a Konzernabschluss (16 entities). No other diocese consolidates even its own sub-entities.</p></div>
+        <div class="finding" style="border-left-color:var(--red)"><h4>2. Closed-Loop Capital Flows</h4><p>KiSt revenue (€6.8B/yr) flows into diocesan accounts → deposited at church banks (€18B interco) → banks lend to bishop-controlled entities → returns flow back as rents, dividends, and parish grants. External capital markets play zero role.</p></div>
+        <div class="finding" style="border-left-color:var(--amber)"><h4>3. FD Concentration Risk</h4><p>22/27 FDs mapped. In the largest dioceses, a single individual controls board seats spanning both sides of lending relationships (Köln: FD on Pax-Bank AR + borrower VR). No regulatory oversight — KdöR is exempt from commercial governance codes.</p></div>
+        <div class="finding" style="border-left-color:var(--amber)"><h4>4. Auditor Fragmentation</h4><p>8+ different audit firms across 27 dioceses. No group auditor. Each entity audited to its own HGB basis. Church specialists (CURACON, Solidaris) are economically dependent on church mandates — no genuine independence pressure.</p></div>
+      </div>
+      <div>
+        <div class="finding" style="border-left-color:var(--purple)"><h4>5. Legal Structure Prevents Transparency</h4><p>KdöR status (Art. 140 GG / Art. 137 WRV) exempts each entity from: commercial register filing, Bundesanzeiger mandatory disclosure, insolvency law, and Publizitätsgesetz thresholds. Even dioceses with €5B+ in assets have no legal obligation to publish a single page.</p></div>
+        <div class="finding" style="border-left-color:var(--purple)"><h4>6. Pension Obligations Across Three Structures</h4><p>KZVK (€35.9B AuM, system-wide), Emeritenanstalt (separate KdöR, ~15 entities, €1.65B+ assets), and on-BS provisions (€7.2B, diocese-level). No consolidated pension view exists. Buyout-basis gap (€10–14B) distributed across all three, with no single entity responsible.</p></div>
+        <div class="finding" style="border-left-color:var(--green)"><h4>7. Reform Signal: Professional FD Appointments</h4><p>Limburg hired ex-METRO CFO Thomas Frings → JÜ swing from -€42M to +€95M. München appointed Stephanie Herrmann (ex-Deloitte/BaFin). Trier brought in Manfred Wagner (corporate) Jan 2025. Professional FD = measurably better outcomes. But only ~30% of dioceses have made such appointments.</p></div>
+        <div class="finding" style="border-left-color:var(--green)"><h4>8. PE Opportunity = Structural Complexity</h4><p>The same features that prevent transparency (KdöR, 27 silos, no standardised data, canon law) also constitute an entry barrier. Any counterparty that can navigate this complexity has a structural advantage that conventional buyers cannot replicate.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 11: AUDITOR NETWORK ========== -->
+<div id="audnet" class="section">
+  <div class="card">
+    <div class="card-title">Auditor Coverage Across 27 Dioceses</div>
+    <div class="grid-3" style="margin-bottom:12px">
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:36px;font-weight:800;color:var(--cyan)">6</div>
+        <div style="font-size:11px;color:var(--text-dim)">CURACON — church sector specialist</div>
+        <div style="font-size:9px;color:var(--text-muted);margin-top:4px">Köln, Münster, Bamberg, Aachen, Osnabrück, Würzburg</div>
+      </div>
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:36px;font-weight:800;color:var(--purple)">4</div>
+        <div style="font-size:11px;color:var(--text-dim)">KPMG — largest Big 4 presence</div>
+        <div style="font-size:9px;color:var(--text-muted);margin-top:4px">Hamburg, München, Berlin, Trier</div>
+      </div>
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:36px;font-weight:800;color:var(--magenta)">4</div>
+        <div style="font-size:11px;color:var(--text-dim)">PRC — smaller dioceses</div>
+        <div style="font-size:9px;color:var(--text-muted);margin-top:4px">Speyer, Magdeburg, Görlitz, Erfurt, Fulda</div>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Auditor</th><th class="num">Dioceses</th><th class="num">Combined HGB TA (€M)</th><th>Type</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CURACON</strong></td><td class="num">6</td><td class="num">~15,400</td><td>Church specialist</td><td>Dominates mid-tier. Köln (2024 switch from KPMG), Münster, Bamberg, Aachen, Osnabrück, Würzburg.</td></tr>
+          <tr><td><strong>KPMG</strong></td><td class="num">4</td><td class="num">~6,000</td><td>Big 4</td><td>Hamburg (negative equity), München, Berlin, Trier.</td></tr>
+          <tr><td><strong>PRC</strong></td><td class="num">4–5</td><td class="num">~1,200</td><td>Mid-tier</td><td>Smaller East German dioceses + Speyer, Fulda.</td></tr>
+          <tr><td><strong>Solidaris</strong></td><td class="num">2–3</td><td class="num">~2,500</td><td>Church specialist</td><td>Regensburg (Konzern), Passau, Eichstätt.</td></tr>
+          <tr><td><strong>Deloitte</strong></td><td class="num">2</td><td class="num">~5,750</td><td>Big 4</td><td>Paderborn, Hildesheim.</td></tr>
+          <tr><td><strong>PwC</strong></td><td class="num">2</td><td class="num">~2,300</td><td>Big 4</td><td>Mainz, Essen.</td></tr>
+          <tr><td><strong>Forvis Mazars</strong></td><td class="num">1</td><td class="num">1,726</td><td>Mid-tier</td><td>Freiburg.</td></tr>
+          <tr><td><strong>RSM</strong></td><td class="num">1</td><td class="num">1,358</td><td>Mid-tier</td><td>Limburg.</td></tr>
+          <tr style="color:var(--red)"><td><strong>No external auditor</strong></td><td class="num">1</td><td class="num">1,496</td><td>—</td><td>R-Stuttgart: internal Stabsstelle Revision only.</td></tr>
+          <tr style="color:var(--amber)"><td><strong>Unknown / unconfirmed</strong></td><td class="num">2–3</td><td class="num">~1,100</td><td>—</td><td>Augsburg, Dresden-Meißen.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-note">Auditor assignments from Bundesanzeiger filings and diocesan Prüfvermerke. No diocese publishes a group audit — all audits are entity-level HGB only. Köln switched from KPMG to CURACON for 2024 reporting year.</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Four Church Banks — €28.7B Combined Total Assets (2024)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Bank</th><th>Domicile</th><th class="num">HGB TA (€M)</th><th>Year</th><th>Structure</th><th>Key Detail</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Pax-Bank eG</strong></td><td>Köln</td><td class="num"><strong>10,797</strong></td><td>2024</td><td>Cooperative (eG)</td><td>Post-BKC merger 2023. 648 parish accounts. €800M+ diocesan deposits from Köln alone.</td></tr>
+            <tr><td><strong>Bank im Bistum Essen eG</strong></td><td>Essen</td><td class="num"><strong>6,544</strong></td><td>2024</td><td>Cooperative (eG)</td><td>Bundesanzeiger confirmed. Dominant church cooperative in NRW.</td></tr>
+            <tr><td><strong>LIGA Bank eG</strong></td><td>Regensburg</td><td class="num"><strong>6,311</strong></td><td>2024</td><td>Cooperative (eG)</td><td>All 7 Bavarian dioceses. €4.7B diocesan deposits. FD Saiko: 35yr at LIGA.</td></tr>
+            <tr><td><strong>DKM Darlehnskasse Münster eG</strong></td><td>Münster</td><td class="num"><strong>5,094</strong></td><td>2024</td><td>Cooperative (eG)</td><td>Bundesanzeiger confirmed. Parish and social-sector lending.</td></tr>
+          </tbody>
+          <tfoot>
+            <tr style="background:var(--navy)"><td colspan="2" style="color:#fff;font-weight:700">TOTAL</td><td class="num" style="color:var(--cyan);font-weight:800;font-size:14px">28,746</td><td colspan="3" style="color:var(--text-dim);font-size:10px">~€18B eliminated in consolidation (interco deposits held by dioceses)</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Why This Matters for Consolidation</div>
+      <div class="finding"><h4>Deposit Overlap = €18B Elimination</h4><p>When dioceses deposit at church banks, the cash appears as an asset on the diocese's BS AND as a liability on the bank's BS. In a consolidated view, <span class="fnum">€18B</span> must be eliminated. Without elimination, you double-count.</p></div>
+      <div class="finding"><h4>No External Depositor Base</h4><p>Unlike Deutsche Bank or Commerzbank, these banks have virtually zero non-church depositors. When KiSt revenue falls (projected -50% real by 2060), the deposit base shrinks in lockstep. The banks cannot diversify their funding.</p></div>
+      <div class="finding"><h4>Cooperative Governance = No Takeover</h4><p>The eG structure (one member, one vote) means no diocese can acquire majority control, and no external party can take over. This protects the system but prevents any market discipline or consolidation pressure.</p></div>
     </div>
   </div>
 </div>
@@ -625,6 +836,7 @@ function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   event.target.classList.add('active');
+  if(id==='kolncase') setTimeout(renderKolnNetwork, 100);
 }
 
 // ===================== DIOCESE TABLE =====================
@@ -754,13 +966,12 @@ document.getElementById('assetPie').addEventListener('touchstart', function(e) {
 // Liabilities = book (≈ market for IG credit). Total = MktCap + Liabilities.
 // Church = MV consolidated. Deutsche Bahn = HGB book (no market pricing).
 const peers = [
-  { name: 'Deutsche\nTelekom', equity: 144, debt: 227, basis: 'MktCap + Liab', eqPct: 39, note: 'Market cap €144B (Mar 2026). Total liabilities €227B (IFRS 2024, incl. ~€35B IFRS 16 lease liabilities — cell towers, spectrum, fibre). Includes T-Mobile US (~75% of value). Net financial debt €132B. IFRS book equity €92B → P/B 1.6×. IFRS 16 is highly material here: stripping lease liabilities would reduce total liabilities to ~€192B and raise equity ratio to ~43%.' },
-  { name: 'Siemens AG', equity: 163, debt: 88, basis: 'MktCap + Liab', eqPct: 65, note: 'Market cap €163B (Mar 2026). Total liabilities €88B (IFRS 2024, incl. ~€4B IFRS 16 lease liabilities). IFRS book equity €72B → P/B 2.3×. Includes Healthineers, Financial Services. IFRS 16 less material (~5% of liabilities). Market premium reflects IP, brand, earnings power.' },
+  { name: 'BVK\n(Bavarian Pension)', equity: 110, debt: 0, basis: 'AuM (public pension)', eqPct: 100, note: 'Bayerische Versorgungskammer. ~€110B AuM (2024). Largest German public pension fund. Manages 12 Versorgungsanstalten for Bavarian civil servants, doctors, architects, pharmacists. 100% German-domiciled. No financial debt — pure asset pool against defined-benefit obligations. Not directly comparable on equity ratio (pension fund accounting), but included for scale.' },
   { name: 'German Catholic\nChurch (v2.4)', equity: 98.5, debt: 43, basis: 'MV consolidated', eqPct: 68, note: 'Full 7-layer system consolidation (this analysis). MV equity €90–107B (mid €98.5B). Liabilities €38–48B (mid €43B). Zero financial debt — all liabilities are pensions (€17–21B buyout basis, KZVK underfunding €6.9B), environmental/heritage provisions, deferred maintenance. No IFRS 16 impact: the church owns its property. Zero tax. €6.74B KiSt revenue (€6.738B confirmed 2023 per VDD). KZVK: €34.1B Bilanzsumme (audited 2023). Paderborn EK €4.1B, Köln EK €2.8B confirmed from 2024 FBs. L3 banks €28.7B (2024 actuals). This equity has never been market-tested.', highlight: true },
-  { name: 'E.ON SE', equity: 42, debt: 87, basis: 'MktCap + Liab', eqPct: 33, note: 'Market cap €42B (Mar 2026). Total liabilities €87B (IFRS 2024, incl. ~€8B IFRS 16 lease liabilities — grid infrastructure, meters, offices). IFRS book equity €24B → P/B 1.75×. Regulated utility. Excluding IFRS 16 leases: liabilities ~€79B, equity ratio ~35%. Pension provisions and regulatory obligations dominate.' },
-  { name: 'BASF SE', equity: 41, debt: 52, basis: 'MktCap + Liab', eqPct: 44, note: 'Market cap €41B (Mar 2026). Total liabilities €52B (IFRS 2024, incl. ~€2B IFRS 16 lease liabilities). IFRS book equity €35B → P/B 1.2×. IFRS 16 immaterial (<4% of liabilities). Revenue €69B.' },
   { name: 'Deutsche Bahn', equity: 17, debt: 67, basis: 'HGB 2024 book', eqPct: 20, note: '100% state-owned — no market cap exists. HGB book equity €17.2B, total liabilities €66.7B. Reports under HGB — does NOT capitalise operating leases (no IFRS 16). If IFRS 16 were applied, total liabilities would increase materially (est. +€5–8B for rolling stock, station, infrastructure leases). Net financial debt €32.6B. Rail infrastructure at depreciated cost — true MV likely multiples of book.' },
   { name: 'Vonovia SE', equity: 19, debt: 62, basis: 'MktCap + Liab', eqPct: 23, note: 'Market cap €19B (Mar 2026). Total liabilities €62B (IFRS 2024, incl. ~€1B IFRS 16 — minimal, as Vonovia owns rather than leases). IFRS book equity €28B → P/B 0.68× (32% discount to NAV). 545K apartments at IAS 40 fair value. Market does not believe the book values.' },
+  { name: 'VBL\n(Federal Pension)', equity: 66, debt: 0, basis: 'AuM (public pension)', eqPct: 100, note: 'Versorgungsanstalt des Bundes und der Länder. ~€66B AuM (2024 est.). Second-largest German public pension fund. Covers ~4.8M members (federal and Länder public employees). 100% German-domiciled. Like BVK, a pure asset pool against DB obligations. Included for scale comparison — demonstrates that the Church system rivals the federal government pension pool.' },
+  { name: 'BImA\n(Federal Property)', equity: 65, debt: 0, basis: 'Est. MV (state-owned)', eqPct: 100, note: 'Bundesanstalt für Immobilienaufgaben. Germany\'s federal property agency. ~€50–80B estimated MV (no published MV balance sheet — HGB book ~€15B). Manages ~37,000 properties, 483,000 ha. 100% German-domiciled. Most directly comparable to the Church on asset composition: both are predominantly German real estate, both carry assets at HGB cost far below MV, and neither has market-tested valuations.' },
   { name: 'LEG Immo.', equity: 5, debt: 12, basis: 'MktCap + Liab', eqPct: 29, note: 'Market cap €5B (Mar 2026). Total liabilities €12B (IFRS 2024, IFRS 16 immaterial — owns portfolio). IFRS book equity €10B → P/B 0.5× (50% discount to NAV). 167K apartments, NRW-focused. Market deeply skeptical of property valuations.' }
 ];
 peers.sort((a, b) => (b.equity + b.debt) - (a.equity + a.debt));
@@ -819,7 +1030,7 @@ new Chart(document.getElementById('peerChart'), {
       }
     },
     scales: {
-      x: { ...chartDefaults.scales.x, stacked: true, max: 440, title: { display: true, text: '€ Billions', font: { size: 9 }, color: '#484f58' } },
+      x: { ...chartDefaults.scales.x, stacked: true, max: 200, title: { display: true, text: '€ Billions', font: { size: 9 }, color: '#484f58' } },
       y: { ...chartDefaults.scales.y, stacked: true, ticks: { ...chartDefaults.scales.y.ticks, font: { size: 9 } } }
     },
     layout: { padding: { right: 30 } }
@@ -1050,11 +1261,11 @@ new Chart(document.getElementById('kistPerCapChart'), {
 new Chart(document.getElementById('leverageChart'), {
   type: 'bar',
   data: {
-    labels: ['German Catholic\nChurch','Siemens','BASF','Dt. Telekom','E.ON','LEG','Vonovia','Deutsche Bahn'],
+    labels: ['BVK*','German Catholic\nChurch','VBL*','BImA*','LEG','Vonovia','Deutsche Bahn'],
     datasets: [{
       label: 'Equity Ratio (%, MV basis)',
-      data: [68, 65, 44, 39, 33, 29, 23, 20],
-      backgroundColor: ['#8b5cf6','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280'],
+      data: [100, 68, 100, 100, 29, 23, 20],
+      backgroundColor: ['#6b7280','#8b5cf6','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280'],
       borderRadius: 4
     }]
   },
@@ -1065,16 +1276,91 @@ new Chart(document.getElementById('leverageChart'), {
 new Chart(document.getElementById('benchmarkChart'), {
   type: 'bar',
   data: {
-    labels: ['Dt. Telekom','Siemens','German Catholic\nChurch (v2.4)','E.ON','BASF','Deutsche\nBahn*','Vonovia','LEG Immo.'],
+    labels: ['BVK*','German Catholic\nChurch (v2.4)','Deutsche\nBahn','Vonovia','VBL*','BImA*','LEG Immo.'],
     datasets: [{
-      label: 'MktCap + Liabilities (€B)',
-      data: [371, 251, 142, 129, 93, 84, 81, 17],
-      backgroundColor: ['#6b7280','#6b7280','#8b5cf6','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280'],
+      label: 'Total Assets / AuM (€B)',
+      data: [110, 142, 84, 81, 66, 65, 17],
+      backgroundColor: ['#6b7280','#8b5cf6','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280'],
       borderRadius: 4
     }]
   },
   options: { ...chartDefaults, plugins: { legend: { display: false } } }
 });
+
+
+// Köln Network Diagram
+function renderKolnNetwork(){
+  var container=document.getElementById('kolnNetwork');
+  if(!container) return;
+  var W=container.offsetWidth, H=container.offsetHeight;
+  container.querySelectorAll('.entity,.flow-label').forEach(function(e){e.remove();});
+
+  var entities=[
+    {id:'finanzamt',x:.08,y:.08,w:180,cls:'l0',name:'16 Finanzämter',data:'KiSt collection: €800M/yr<br>to Erzbistum Köln',tag:'Layer 0'},
+    {id:'ebk',x:.35,y:.06,w:220,cls:'l1',name:'Erzbistum Köln (KdöR)',data:'HGB TA: €4,397M | EK: €2,773M<br>KiSt: €666M/yr | CURACON audited',tag:'Layer 1'},
+    {id:'stuhl',x:.7,y:.04,w:170,cls:'l2',name:'Bischöflicher Stuhl',data:'Est. €200–500M<br>Bishop\'s endowment',tag:'Layer 2'},
+    {id:'pax',x:.08,y:.38,w:200,cls:'l3',name:'Pax-Bank eG',data:'HGB TA: €10,797M<br>CET1: 15–21% | 648 parish accounts',tag:'Layer 3'},
+    {id:'aachener',x:.7,y:.35,w:180,cls:'l3',name:'Aachener GV KVG',data:'€355M AuM<br>Church securities fund',tag:'Fund Mgmt'},
+    {id:'kzvk',x:.38,y:.38,w:180,cls:'l4',name:'KZVK',data:'€2.2B liability (Köln share)<br>57,700 employees covered',tag:'Layer 4'},
+    {id:'asw',x:.08,y:.68,w:200,cls:'l5',name:'ASW (Augustinus)',data:'€1,378M TA | 26,500 units<br>Köln 41.5% ownership',tag:'Layer 5'},
+    {id:'cbt',x:.38,y:.68,w:180,cls:'l5',name:'CBT (Caritas)',data:'€137M assets | €66M bank debt<br>Care homes & social services',tag:'Layer 5'},
+    {id:'parishes',x:.7,y:.68,w:180,cls:'l2',name:'517 Kirchenstiftungen',data:'Est. MV: €6B | Book: €1<br>33,000 Erbbaurecht contracts',tag:'Parishes'},
+    {id:'sobbeck',x:.55,y:.2,w:160,cls:'person',name:'Gordon Sobbeck',data:'5+ board seats<br>Pax AR + CBT VR + ASW VR',tag:'Key Person'},
+  ];
+
+  entities.forEach(function(e){
+    var div=document.createElement('div');
+    div.className='entity '+e.cls;
+    div.style.cssText='left:'+e.x*W+'px;top:'+e.y*H+'px;width:'+e.w+'px';
+    div.innerHTML='<div class="ename">'+e.name+'</div><div class="edata">'+e.data+'</div><div class="etag">'+e.tag+'</div>';
+    div.dataset.id=e.id;
+    container.appendChild(div);
+  });
+
+  var svg=document.getElementById('kolnFlows');
+  svg.innerHTML='';
+  var flows=[
+    {from:'finanzamt',to:'ebk',cls:'money',label:'€800M/yr KiSt'},
+    {from:'ebk',to:'pax',cls:'deposit',label:'€800M+ deposits'},
+    {from:'ebk',to:'kzvk',cls:'money',label:'Pension contrib.'},
+    {from:'ebk',to:'aachener',cls:'fund',label:'Securities mandate'},
+    {from:'pax',to:'cbt',cls:'debt',label:'€66M debt'},
+    {from:'pax',to:'asw',cls:'debt',label:'~€50M debt'},
+    {from:'ebk',to:'asw',cls:'governance',label:'41.5% ownership'},
+    {from:'ebk',to:'cbt',cls:'governance',label:'Bishop controls'},
+    {from:'ebk',to:'parishes',cls:'money',label:'€350M/yr grants'},
+    {from:'parishes',to:'pax',cls:'deposit',label:'€1B+ deposits'},
+    {from:'sobbeck',to:'pax',cls:'governance',label:'AR seat'},
+    {from:'sobbeck',to:'cbt',cls:'governance',label:'VR seat'},
+    {from:'sobbeck',to:'asw',cls:'governance',label:'VR seat'},
+    {from:'ebk',to:'cbt',cls:'guarantee',label:'Guarantee €66M'},
+  ];
+
+  flows.forEach(function(f){
+    var fromEl=container.querySelector('[data-id="'+f.from+'"]');
+    var toEl=container.querySelector('[data-id="'+f.to+'"]');
+    if(!fromEl||!toEl)return;
+    var fx=fromEl.offsetLeft+fromEl.offsetWidth/2;
+    var fy=fromEl.offsetTop+fromEl.offsetHeight/2;
+    var tx=toEl.offsetLeft+toEl.offsetWidth/2;
+    var ty=toEl.offsetTop+toEl.offsetHeight/2;
+    var line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',fx);line.setAttribute('y1',fy);
+    line.setAttribute('x2',tx);line.setAttribute('y2',ty);
+    line.setAttribute('class',f.cls);
+    svg.appendChild(line);
+
+    if(f.label){
+      var lbl=document.createElement('div');
+      lbl.className='flow-label';
+      lbl.textContent=f.label;
+      lbl.style.left=((fx+tx)/2-30)+'px';
+      lbl.style.top=((fy+ty)/2-8)+'px';
+      container.appendChild(lbl);
+    }
+  });
+}
+window.addEventListener('resize', function(){ if(document.getElementById('kolncase').classList.contains('active')) renderKolnNetwork(); });
 </script>
 </body>
 </html>
