@@ -28,10 +28,10 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; back
 
 /* KPI Strip */
 .kpi-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin: 24px 0; }
-.kpi { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+.kpi { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; overflow: hidden; }
 .kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 4px; }
-.kpi-value { font-size: 22px; font-weight: 700; color: var(--cyan); }
-.kpi-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: var(--cyan); white-space: nowrap; }
+.kpi-sub { font-size: 9px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
 .kpi.highlight { border-color: var(--purple); }
 .kpi.highlight .kpi-value { color: var(--magenta); }
 .kpi.warn .kpi-value { color: var(--amber); }
@@ -47,14 +47,14 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; back
 /* Cards & Charts */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; overflow: hidden; }
 .card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); margin-bottom: 12px; }
 .card-note { font-size: 10px; color: var(--text-muted); margin-top: 8px; font-style: italic; }
-.chart-wrap { position: relative; height: 320px; }
+.chart-wrap { position: relative; height: 320px; overflow: hidden; }
 .chart-wrap.tall { height: 420px; }
 
 /* Tables */
-.tbl-wrap { overflow-x: auto; }
+.tbl-wrap { overflow-x: auto; max-width: 100%; }
 table { width: 100%; border-collapse: collapse; font-size: 11px; }
 th { background: var(--purple-dim); color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; cursor: pointer; white-space: nowrap; }
 th:hover { background: var(--purple); }
@@ -70,7 +70,7 @@ tr:hover td { background: rgba(139,92,246,0.05); }
 .badge-opaque { background: rgba(139,92,246,0.15); color: var(--purple); }
 
 /* Balance Sheet */
-.bs-container { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; }
+.bs-container { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; overflow: hidden; }
 .bs-col { padding: 0; }
 .bs-divider { display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--text-muted); }
 .bs-row { display: flex; justify-content: space-between; padding: 6px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
@@ -81,7 +81,7 @@ tr:hover td { background: rgba(139,92,246,0.05); }
 .bs-row.elim { color: var(--red); }
 
 /* Waterfall */
-.waterfall { display: flex; align-items: flex-end; gap: 4px; height: 300px; padding: 20px 0; }
+.waterfall { display: flex; align-items: flex-end; gap: 4px; height: 300px; padding: 20px 0; overflow: hidden; }
 .wf-bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
 .wf-bar .bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 4px; transition: height 0.5s; position: relative; }
 .wf-bar .bar.pos { background: linear-gradient(180deg, var(--cyan), var(--blue)); }
@@ -116,7 +116,7 @@ tr:hover td { background: rgba(139,92,246,0.05); }
 <div class="header">
   <div class="container header-inner">
     <div>
-      <div class="logo">G2G<span>ADVISORY</span></div>
+      <div class="logo" style="cursor:pointer" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('overview').classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab')[0].classList.add('active');window.scrollTo({top:0,behavior:'smooth'});">G2G<span>ADVISORY</span></div>
       <div style="margin-top:8px;font-size:16px;font-weight:600;color:var(--text);">German Catholic Church — Consolidated Financial Analysis</div>
     </div>
     <div class="header-subtitle">
@@ -253,7 +253,7 @@ tr:hover td { background: rgba(139,92,246,0.05); }
   <div class="grid-2">
     <div class="card">
       <div class="card-title">Largest German-Headquartered Non-Bank Asset Owners — Global Consolidated: Equity vs Liabilities (€B)</div>
-      <div class="chart-wrap" style="height:400px"><canvas id="peerChart"></canvas></div>
+      <div class="chart-wrap" style="height:400px;padding-right:20px"><canvas id="peerChart"></canvas></div>
       <div style="margin-top:8px;font-size:9px;color:var(--text-muted);line-height:1.5">
         <strong style="color:var(--cyan)">All on market-value basis. All figures are global consolidated</strong> — i.e. the full worldwide group balance sheet for each entity. Listed firms: equity = market capitalisation (Mar 2026); liabilities at IFRS book (≈ market for IG credit), <strong>inclusive of IFRS 16 lease liabilities</strong>. Total bar = MktCap + Total Liabilities. IFRS 16 material for Deutsche Telekom (~€35B) and E.ON (~€8B). Deutsche Bahn: HGB book (state-owned, no IFRS 16). <strong style="color:var(--amber)">The German Catholic Church is the only entity on this chart with 100% domestic (German) assets.</strong> All other entities derive significant value from non-German operations (e.g. Deutsche Telekom: ~75% from T-Mobile US; Siemens: ~85% non-German revenue). By German-domiciled assets alone, the church is likely the single largest non-bank asset owner in the country. Equity ratio: 67–69%, zero financial debt, zero tax.
       </div>
@@ -819,9 +819,10 @@ new Chart(document.getElementById('peerChart'), {
       }
     },
     scales: {
-      x: { ...chartDefaults.scales.x, stacked: true, title: { display: true, text: '€ Billions', font: { size: 9 }, color: '#484f58' } },
+      x: { ...chartDefaults.scales.x, stacked: true, max: 440, title: { display: true, text: '€ Billions', font: { size: 9 }, color: '#484f58' } },
       y: { ...chartDefaults.scales.y, stacked: true, ticks: { ...chartDefaults.scales.y.ticks, font: { size: 9 } } }
-    }
+    },
+    layout: { padding: { right: 30 } }
   }
 });
 
