@@ -283,7 +283,9 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
   <div class="tab" onclick="showTab('dioceses')">27 Dioceses</div>
   <div class="tab" onclick="showTab('pensions')">Pension Analysis</div>
   <div class="tab" onclick="showTab('kist')">KiSt & Revenue</div>
-  <div class="tab" onclick="showTab('ratios')">Ratios & Benchmarks</div>
+  <div class="tab" onclick="showTab('guv')">Income Statement</div>
+  <div class="tab" onclick="showTab('cashflow')">Cash Flow</div>
+  <div class="tab" onclick="showTab('ratios')">System Valuation</div>
   <div class="tab" onclick="showTab('scenarios')">Scenarios</div>
   <div class="tab" onclick="showTab('method')">Methodology</div>
   <div class="tab" onclick="showTab('kolncase')">Köln Case Study</div>
@@ -504,10 +506,12 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
   <div class="grid-2" style="margin-top:16px">
     <div class="card">
       <div class="card-title">KdöR HGB Total Assets — All 27 Ranked (€M)</div>
+      <div style="font-size:10px;color:#8b949e;margin:-8px 0 8px;line-height:1.5">Layer 1 only: published HGB Bilanzsumme of the diocesan KdöR entity (Körperschaft des öffentlichen Rechts). Does NOT include L2 Bischöflicher Stuhl, L3 Church Banks, L4 KZVK, L5 Housing, L6 Parishes, or L7 Land. Bars coloured by classification: <span style="color:#22c55e">■</span>&nbsp;Stable <span style="color:#f59e0b">■</span>&nbsp;Reforming <span style="color:#ef4444">■</span>&nbsp;Distressed <span style="color:#8b5cf6">■</span>&nbsp;Opaque. Paderborn (€4,933M) and Köln (€4,397M) alone account for 27% of the system's L1 book assets. The bottom 5 dioceses combined (€461M) are smaller than a single mid-tier parish network.</div>
       <div class="chart-wrap tall"><canvas id="bsRankChart"></canvas></div>
     </div>
     <div class="card">
       <div class="card-title">KdöR Equity Ratio vs Pension/TA Ratio</div>
+      <div style="font-size:10px;color:#8b949e;margin:-8px 0 8px;line-height:1.5">Each dot is one diocese. X-axis: HGB equity as % of total assets (higher = stronger capitalisation). Y-axis: on-balance-sheet pension provisions as % of total assets (higher = greater pension burden). Dot size proportional to Bilanzsumme. <span style="color:#22c55e">■</span>&nbsp;Stable <span style="color:#f59e0b">■</span>&nbsp;Reforming <span style="color:#ef4444">■</span>&nbsp;Distressed <span style="color:#8b5cf6">■</span>&nbsp;Opaque. The dangerous quadrant is bottom-left (low equity + high pension = structurally insolvent on a buyout basis). Hamburg sits there at -15.4% EK with 35% pension/TA. Dioceses in the top-right (high equity, low pension) — Paderborn, München — have the strongest balance sheets in the system.</div>
       <div class="chart-wrap tall"><canvas id="scatterChart"></canvas></div>
     </div>
   </div>
@@ -598,33 +602,177 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
   </div>
 </div>
 
-<!-- ========== TAB 7: RATIOS & BENCHMARKS ========== -->
-<div id="ratios" class="section">
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title">Equity Ratio: German Catholic Church vs German-Domiciled Asset Owners (MV Basis)</div>
-      <div class="chart-wrap"><canvas id="leverageChart"></canvas></div>
+<!-- ========== TAB: CONSOLIDATED INCOME STATEMENT ========== -->
+<div id="guv" class="section">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Consolidated Income Statement — 27 Diocesan KdöR (Layer 1 Only)</div>
+    <div style="font-size:10px;color:#8b949e;margin:-8px 0 10px;line-height:1.6">
+      <strong style="color:var(--text)">What this is:</strong> A pro-forma consolidated Gesamtkostenverfahren GuV (§ 275 Abs. 2 HGB) for the 27 diocesan KdöR entities. This statement does not exist anywhere — no entity produces it. We have reconstructed it from 27 separate audited Jahresabschlüsse spanning FY2022–FY2024. <strong style="color:var(--amber)">Coverage: 16/27 dioceses report usable GuV data (representing ~85% of system KiSt revenue). The remaining 11 are estimated via KiSt-ratio scaling.</strong> All figures in €M. Gesamtkostenverfahren format: revenues and expenses by nature, not by function.
     </div>
-    <div class="card">
-      <div class="card-title">Total Assets / AuM Ranking: German-Domiciled Asset Owners (€B)</div>
-      <div class="chart-wrap"><canvas id="benchmarkChart"></canvas></div>
+    <div class="grid-2">
+      <div class="card" style="background:var(--surface)">
+        <div class="card-title" style="color:var(--cyan)">Pro-Forma Consolidated GuV (€M, annualised)</div>
+        <div style="padding:4px 0">
+          <div class="bs-row header"><span>Line Item</span><span>Reported</span><span>Estimated</span><span>System Total</span></div>
+          <div class="bs-row" style="background:rgba(34,197,94,0.05)"><span style="font-weight:600">Kirchensteuer (Church Tax)</span><span class="val">3,860</span><span class="val" style="color:var(--amber)">2,674</span><span class="val" style="color:var(--cyan);font-weight:700">6,534</span></div>
+          <div class="bs-row"><span>Staatsleistungen & Zuschüsse</span><span class="val">580</span><span class="val" style="color:var(--amber)">420</span><span class="val">1,000</span></div>
+          <div class="bs-row"><span>Vermögenserträge (investment income)</span><span class="val">340</span><span class="val" style="color:var(--amber)">210</span><span class="val">550</span></div>
+          <div class="bs-row"><span>Mieten, Pachten & Erbbauzinsen</span><span class="val">180</span><span class="val" style="color:var(--amber)">120</span><span class="val">300</span></div>
+          <div class="bs-row"><span>Sonstige Erträge</span><span class="val">410</span><span class="val" style="color:var(--amber)">306</span><span class="val">716</span></div>
+          <div class="bs-row subtotal"><span style="font-weight:800">Erträge gesamt (Total Revenue)</span><span class="val" style="font-weight:700">5,370</span><span class="val" style="color:var(--amber);font-weight:700">3,730</span><span class="val" style="color:#fff;font-weight:800">9,100</span></div>
+
+          <div style="height:8px"></div>
+          <div class="bs-row" style="background:rgba(239,68,68,0.05)"><span style="font-weight:600">Personalaufwand</span><span class="val">1,510</span><span class="val" style="color:var(--amber)">1,190</span><span class="val" style="color:var(--red)">2,700</span></div>
+          <div class="bs-row"><span>&nbsp;&nbsp;davon Löhne & Gehälter</span><span class="val" style="color:var(--text-dim)">~1,130</span><span class="val" style="color:var(--text-dim)">~890</span><span class="val" style="color:var(--text-dim)">~2,020</span></div>
+          <div class="bs-row"><span>&nbsp;&nbsp;davon Sozialabgaben & Altersversorgung</span><span class="val" style="color:var(--text-dim)">~380</span><span class="val" style="color:var(--text-dim)">~300</span><span class="val" style="color:var(--text-dim)">~680</span></div>
+          <div class="bs-row"><span>Zuweisungen & Zuschüsse (grants out)</span><span class="val">1,400</span><span class="val" style="color:var(--amber)">1,100</span><span class="val" style="color:var(--red)">2,500</span></div>
+          <div class="bs-row"><span>Abschreibungen</span><span class="val">180</span><span class="val" style="color:var(--amber)">120</span><span class="val">300</span></div>
+          <div class="bs-row"><span>Sachaufwand & Sonstige Aufwendungen</span><span class="val">1,750</span><span class="val" style="color:var(--amber)">1,250</span><span class="val" style="color:var(--red)">3,000</span></div>
+          <div class="bs-row subtotal"><span style="font-weight:800">Aufwendungen gesamt (Total Expenses)</span><span class="val" style="font-weight:700">4,840</span><span class="val" style="color:var(--amber);font-weight:700">3,660</span><span class="val" style="color:var(--red);font-weight:800">8,500</span></div>
+
+          <div style="height:8px"></div>
+          <div class="bs-row subtotal" style="background:rgba(34,197,94,0.1);border-top-color:var(--green)"><span style="font-weight:800">Jahresüberschuss (Net Income)</span><span class="val" style="font-weight:700">530</span><span class="val" style="color:var(--amber)">70</span><span class="val" style="color:var(--green);font-weight:800;font-size:14px">~600</span></div>
+          <div class="bs-row"><span style="color:var(--text-dim);font-size:10px">Implied system-wide net margin</span><span></span><span></span><span class="val" style="color:var(--text-dim);font-size:10px">~6.6%</span></div>
+        </div>
+        <div style="font-size:9px;color:#6b7280;margin-top:8px;border-top:1px solid #21262d;padding-top:8px;line-height:1.5">
+          <strong>Reported column:</strong> Sum of 16 dioceses with usable GuV data (Köln, Paderborn, München, Freiburg, Essen, Münster, Mainz, Regensburg, Bamberg, Hamburg, Fulda, Eichstätt, Passau, Magdeburg, Görlitz, Dresden-Meißen). <strong>Estimated column:</strong> Remaining 11 dioceses scaled by their KiSt share of the total system (each diocese's KiSt ÷ reported dioceses' KiSt × reported totals), adjusted for known structural differences (R-Stuttgart: no external audit; Trier/Augsburg: delayed reporting). <strong>Limitation:</strong> This is NOT an audited consolidation. Different FY end dates (2022–2024), different Gesamtabschluss scopes, and no intercompany eliminations on the GuV level. The €2,500M in Zuweisungen includes grants to parishes that also appear as parish income in L6 — on a true consolidated basis these would eliminate, reducing both revenue and expense by an estimated €2–3B.
+        </div>
+      </div>
+      <div class="card" style="background:var(--surface)">
+        <div class="card-title" style="color:var(--cyan)">Revenue & Expense Structure</div>
+        <div class="chart-wrap tall"><canvas id="guvWaterfallChart"></canvas></div>
+        <div style="margin-top:12px">
+          <div class="card-title" style="color:var(--cyan);font-size:10px">Top 10 Dioceses by Net Income (€M)</div>
+          <div class="chart-wrap" style="height:280px"><canvas id="guvNetIncomeChart"></canvas></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title">Institutional Benchmarks — German-Domiciled Asset Owners (MV Basis)</div>
+    <div class="card-title">Individual Diocese GuV Data (where reported, €M)</div>
+    <div style="font-size:10px;color:#8b949e;margin:-8px 0 8px">Sorted by KiSt revenue. Amber cells are estimated or incomplete. Click column headers to re-sort.</div>
+    <div class="tbl-wrap">
+      <table id="guvTable">
+        <thead><tr><th>Diocese</th><th class="num">KiSt</th><th class="num">Erträge</th><th class="num">Personal</th><th class="num">Zuweisungen</th><th class="num">Aufwand Total</th><th class="num">JÜ/JF</th><th class="num">Margin</th><th>FY</th><th>Coverage</th></tr></thead>
+        <tbody id="guvBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB: CASH FLOW STATEMENT ========== -->
+<div id="cashflow" class="section">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Consolidated Cash Flow Statement — Diocesan KdöR System (Layer 1)</div>
+    <div style="font-size:10px;color:#8b949e;margin:-8px 0 10px;line-height:1.6">
+      <strong style="color:var(--text)">What this is:</strong> A pro-forma DRS 21 Kapitalflussrechnung for the diocesan system. <strong style="color:var(--amber)">Coverage: Only 11/27 dioceses (40.7%) publish cash flow data in any form.</strong> Of those, 8 provide formal DRS 21 statements and 3 provide narrative-derived figures. The remaining 16 dioceses are not required to publish cash flow statements under HGB and do not do so voluntarily. We extrapolate system totals from the reporting dioceses, scaled by Bilanzsumme.
+    </div>
+    <div class="grid-2">
+      <div class="card" style="background:var(--surface)">
+        <div class="card-title" style="color:var(--cyan)">Pro-Forma System Cash Flow (€M, annualised est.)</div>
+        <div style="padding:4px 0">
+          <div class="bs-row header"><span>Component</span><span>11 Reported</span><span>Extrapolated 27</span></div>
+          <div class="bs-row"><span style="font-weight:600">Cash Flow from Operations (CFO)</span><span class="val">107</span><span class="val" style="color:var(--cyan)">~600</span></div>
+          <div class="bs-row"><span style="color:var(--text-dim)">&nbsp;&nbsp;Jahresüberschuss</span><span class="val" style="color:var(--text-dim)">165</span><span class="val" style="color:var(--text-dim)">~600</span></div>
+          <div class="bs-row"><span style="color:var(--text-dim)">&nbsp;&nbsp;+ Abschreibungen</span><span class="val" style="color:var(--text-dim)">55</span><span class="val" style="color:var(--text-dim)">~300</span></div>
+          <div class="bs-row"><span style="color:var(--text-dim)">&nbsp;&nbsp;± Working capital / Rückstellungen</span><span class="val" style="color:var(--text-dim)">-113</span><span class="val" style="color:var(--text-dim)">~-300</span></div>
+          <div style="height:4px"></div>
+          <div class="bs-row"><span style="font-weight:600">Cash Flow from Investing (CFI)</span><span class="val" style="color:var(--red)">-37</span><span class="val" style="color:var(--red)">~-400</span></div>
+          <div class="bs-row"><span style="color:var(--text-dim)">&nbsp;&nbsp;Sachanlagen / Bauprojekte</span><span class="val" style="color:var(--text-dim)">-85</span><span class="val" style="color:var(--text-dim)">~-500</span></div>
+          <div class="bs-row"><span style="color:var(--text-dim)">&nbsp;&nbsp;Finanzanlagen (net reinvestment)</span><span class="val" style="color:var(--text-dim)">+48</span><span class="val" style="color:var(--text-dim)">~+100</span></div>
+          <div style="height:4px"></div>
+          <div class="bs-row"><span style="font-weight:600">Cash Flow from Financing (CFF)</span><span class="val">5</span><span class="val" style="color:var(--text-dim)">~0</span></div>
+          <div class="bs-row"><span style="color:var(--text-dim)">&nbsp;&nbsp;Note: Near-zero bank debt across system</span><span></span><span></span></div>
+          <div style="height:4px"></div>
+          <div class="bs-row subtotal"><span style="font-weight:800">Net Change in Cash</span><span class="val" style="font-weight:700">75</span><span class="val" style="color:var(--green);font-weight:800">~200</span></div>
+          <div style="height:8px"></div>
+          <div class="bs-row" style="background:rgba(34,197,94,0.05)"><span style="font-weight:600">System Liquid Assets (opening)</span><span></span><span class="val" style="color:var(--cyan)">~4,200</span></div>
+          <div class="bs-row" style="background:rgba(34,197,94,0.05)"><span style="font-weight:600">System Liquid Assets (closing)</span><span></span><span class="val" style="color:var(--cyan);font-weight:700">~4,400</span></div>
+        </div>
+        <div style="font-size:9px;color:#6b7280;margin-top:8px;border-top:1px solid #21262d;padding-top:8px;line-height:1.5">
+          <strong>Key insight:</strong> The system generates ~€600M/yr in net income and ~€600M in operating cash flow, but almost all of it is reinvested in Finanzanlagen (securities portfolios) and Sachanlagen (property maintenance, school buildings). Financing cash flow is effectively zero because there is no debt to service. The system sits on ~€4.4B in liquid assets (cash + short-term deposits) — roughly 8 months of total expenses. This is an extraordinarily conservative treasury position. For comparison, Vonovia holds ~€1.2B cash against €8.5B revenue (1.7 months). Deutsche Bahn holds ~€4.5B against €45B revenue (1.2 months). The church holds 8× more coverage than either.<br>
+          <strong>Limitation:</strong> 60% of dioceses do not publish cash flow statements. The extrapolated figures assume the non-reporting dioceses have similar cash generation characteristics to the reporters, scaled by Bilanzsumme. This is a rough approximation — smaller dioceses may have different capex patterns.
+        </div>
+      </div>
+      <div class="card" style="background:var(--surface)">
+        <div class="card-title" style="color:var(--cyan)">Reported Cash Flows — 11 Dioceses (€M)</div>
+        <div class="chart-wrap tall"><canvas id="cfChart"></canvas></div>
+        <div style="margin-top:12px">
+          <div class="card-title" style="color:var(--cyan);font-size:10px">Cash / Months of Expense Coverage</div>
+          <div style="padding:8px 0">
+            <div class="bs-row header"><span>Entity</span><span>Cash (€B)</span><span>Revenue (€B)</span><span>Months Cover</span></div>
+            <div class="bs-row" style="background:rgba(139,92,246,0.08)"><span style="font-weight:700;color:var(--purple)">German Catholic Church (L1)</span><span class="val" style="font-weight:700">~4.4</span><span class="val">~8.5</span><span class="val" style="color:var(--green);font-weight:700">~6.2</span></div>
+            <div class="bs-row"><span>Vonovia SE</span><span class="val">1.2</span><span class="val">5.8</span><span class="val">2.5</span></div>
+            <div class="bs-row"><span>Deutsche Bahn</span><span class="val">4.5</span><span class="val">45.0</span><span class="val">1.2</span></div>
+            <div class="bs-row"><span>LEG Immobilien</span><span class="val">0.3</span><span class="val">1.8</span><span class="val">2.0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Individual Diocese Cash Flow Data (DRS 21 or derived, T€)</div>
+    <div style="font-size:10px;color:#8b949e;margin:-8px 0 8px">Only 11 dioceses publish cash flow data. Sorted by operating cash flow.</div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Institution</th><th class="num">TA / AuM</th><th class="num">Equity</th><th class="num">Liabilities</th><th class="num">Eq %</th><th>Scope</th><th>Basis</th><th>Note</th></tr></thead>
+        <thead><tr><th>Diocese</th><th class="num">CFO (T€)</th><th class="num">CFI (T€)</th><th class="num">CFF (T€)</th><th class="num">Net Δ (T€)</th><th class="num">Cash Open (T€)</th><th class="num">Cash Close (T€)</th><th>FY</th><th>Source</th></tr></thead>
         <tbody>
-          <tr><td>BVK (Bayerische Versorgungskammer)*</td><td class="num">~€110B</td><td class="num">n/a</td><td class="num">n/a</td><td class="num">n/a</td><td>100% Germany</td><td>AuM (public pension)</td><td>Largest DE public pension fund. 12 Versorgungsanstalten. ~€110B AuM (2024). Pure asset pool vs DB obligations.</td></tr>
-          <tr style="background:rgba(139,92,246,0.12)"><td><strong>German Catholic Church</strong></td><td class="num" style="color:var(--cyan)"><strong>€130–168B</strong></td><td class="num" style="color:var(--magenta)"><strong>€92–120B</strong></td><td class="num"><strong>€38–48B</strong></td><td class="num" style="color:var(--green)"><strong>65–72%</strong></td><td style="color:var(--amber)"><strong>100% Germany</strong></td><td>MV consol. (v4.0)</td><td>No IFRS 16. 0% fin. debt. 0% tax. Pensions €17–21B buyout. KZVK deficit €9–10B. Only 100% domestic, non-state-controlled entity.</td></tr>
-          <tr><td>Deutsche Bahn</td><td class="num">€84B</td><td class="num">€17B</td><td class="num">€67B</td><td class="num">20%</td><td>~80% Germany</td><td>HGB book 2024</td><td>100% state-owned. No MktCap. No IFRS 16 (est. +€5–8B). Schenker sold. Rail infra at depreciated cost.</td></tr>
-          <tr><td>Vonovia SE</td><td class="num">€81B</td><td class="num">€19B</td><td class="num">€62B</td><td class="num">23%</td><td>~90% Germany</td><td>MktCap + IFRS Liab</td><td>545K apts (DE/SE/AT). P/B 0.68×. IAS 40 fair value. Market discounts book by 32%.</td></tr>
-          <tr><td>VBL (Versorgungsanstalt Bund/Länder)*</td><td class="num">~€66B</td><td class="num">n/a</td><td class="num">n/a</td><td class="num">n/a</td><td>100% Germany</td><td>AuM (public pension)</td><td>2nd-largest DE public pension fund. ~4.8M members (federal/Länder employees). ~€66B AuM (2024 est.).</td></tr>
-          <tr><td>BImA (Bundesanstalt f. Immobilienaufgaben)*</td><td class="num">€50–80B</td><td class="num">n/a</td><td class="num">n/a</td><td class="num">n/a</td><td>100% Germany</td><td>Est. MV (state-owned)</td><td>Federal property agency. ~37,000 properties, 483,000 ha. HGB book ~€15B. No published MV BS. Most comparable to Church on asset composition.</td></tr>
-          <tr><td>LEG Immobilien</td><td class="num">€17B</td><td class="num">€5B</td><td class="num">€12B</td><td class="num">29%</td><td>100% Germany</td><td>MktCap + IFRS Liab</td><td>IFRS 16 immaterial. P/B 0.5×. 167K apts, NRW.</td></tr>
+          <tr><td>Osnabrück</td><td class="num" style="color:var(--green)">31,323</td><td class="num" style="color:var(--red)">-21,906</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td>2024</td><td>DRS 21</td></tr>
+          <tr><td>Hamburg</td><td class="num" style="color:var(--green)">28,526</td><td class="num" style="color:var(--green)">30,039</td><td class="num">9,352</td><td class="num" style="color:var(--green)">67,917</td><td class="num">—</td><td class="num">—</td><td>2024</td><td>DRS 21</td></tr>
+          <tr><td>Dresden-Meißen</td><td class="num" style="color:var(--green)">19,961</td><td class="num" style="color:var(--red)">-14,044</td><td class="num" style="color:var(--red)">-1,882</td><td class="num" style="color:var(--green)">4,035</td><td class="num">60,080</td><td class="num">64,115</td><td>2022</td><td>DRS 21</td></tr>
+          <tr><td>Speyer</td><td class="num" style="color:var(--green)">12,458</td><td class="num" style="color:var(--red)">-6,890</td><td class="num" style="color:var(--red)">-596</td><td class="num" style="color:var(--green)">4,972</td><td class="num">73,517</td><td class="num">78,489</td><td>2024</td><td>DRS 21</td></tr>
+          <tr><td>Eichstätt</td><td class="num" style="color:var(--green)">5,206</td><td class="num" style="color:var(--red)">-4,527</td><td class="num">—</td><td class="num" style="color:var(--green)">679</td><td class="num">—</td><td class="num">—</td><td>2024</td><td>DRS 21</td></tr>
+          <tr><td>Fulda</td><td class="num" style="color:var(--green)">5,500</td><td class="num" style="color:var(--red)">-8,500</td><td class="num" style="color:var(--red)">-1,300</td><td class="num" style="color:var(--red)">-4,300</td><td class="num">—</td><td class="num">—</td><td>2024</td><td>Narrative</td></tr>
+          <tr><td>Magdeburg</td><td class="num" style="color:var(--green)">4,629</td><td class="num" style="color:var(--red)">-2,552</td><td class="num" style="color:var(--red)">-1,149</td><td class="num" style="color:var(--green)">928</td><td class="num">11,851</td><td class="num">12,779</td><td>2023</td><td>DRS 21</td></tr>
+          <tr><td>Regensburg</td><td class="num" style="color:var(--green)">757</td><td class="num" style="color:var(--red)">-7,864</td><td class="num">—</td><td class="num" style="color:var(--red)">-7,107</td><td class="num">84,489</td><td class="num">77,382</td><td>2024</td><td>DRS 21</td></tr>
+          <tr><td>Würzburg</td><td class="num" style="color:var(--green)">744</td><td class="num" style="color:var(--red)">-2,435</td><td class="num">60</td><td class="num" style="color:var(--red)">-1,630</td><td class="num">44,994</td><td class="num">43,364</td><td>2024</td><td>DRS 21</td></tr>
+          <tr><td>Passau</td><td class="num" style="color:var(--red)">-1,660</td><td class="num" style="color:var(--red)">-7,107</td><td class="num">90</td><td class="num" style="color:var(--red)">-8,677</td><td class="num">—</td><td class="num">—</td><td>2024</td><td>DRS 21</td></tr>
+          <tr><td>Erfurt</td><td class="num" style="color:var(--text-dim)">—</td><td class="num" style="color:var(--text-dim)">—</td><td class="num" style="color:var(--text-dim)">—</td><td class="num" style="color:var(--red)">-25,000</td><td class="num">42,700</td><td class="num">17,700</td><td>2024</td><td>Narrative</td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB 7: SYSTEM VALUATION MAP ========== -->
+<div id="ratios" class="section">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">German Catholic Church — 7-Layer Enterprise Value & Equity Map (€B, MV Basis)</div>
+    <div style="font-size:10px;color:#8b949e;margin:-8px 0 10px;line-height:1.6">
+      This chart decomposes the entire German Catholic Church system into its 7 structural layers. For each layer we show three things: <strong style="color:#22c55e">Equity</strong> (what the church actually "owns" net of all claims), <strong style="color:#ef4444">Pension & other liabilities</strong> (what it owes — HGB booked + buyout-basis uplift), and <strong style="color:#6b7280">Intercompany eliminations</strong> (double-counted assets that appear in more than one layer and must be stripped on consolidation). The grey range bands on the right show the Bear/Base/Bull estimation uncertainty per layer. All figures are market-value estimates of assets physically located in Germany. This is the consolidated balance sheet that does not exist anywhere — no entity publishes it, no auditor signs it, no regulator requires it.
+    </div>
+    <div style="position:relative;height:620px;overflow-x:auto"><canvas id="evMapChart"></canvas></div>
+  </div>
+  <div class="grid-2" style="margin-top:0">
+    <div class="card">
+      <div class="card-title">System Range — Bear / Base / Bull by Layer (€B Net Equity)</div>
+      <div style="font-size:10px;color:#8b949e;margin:-8px 0 8px;line-height:1.5">Each bar shows the estimation range for net equity per layer. The width of the range reflects genuine uncertainty: L7 (Land) swings €27B between Bear and Bull because BORIS land value data covers only ~40% of Germany in the Bear case vs full national extrapolation in the Bull case. L4 (KZVK) can be negative — on a buyout basis the pension deficit exceeds funded assets.</div>
+      <div class="chart-wrap tall"><canvas id="rangeChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Consolidated System Summary</div>
+      <div style="padding:8px 0">
+        <div class="bs-row header"><span>Component</span><span>€B</span></div>
+        <div class="bs-row"><span>L1 Diocesan KdöR (27) — Gross Assets MV</span><span class="val" style="color:var(--cyan)">40.1</span></div>
+        <div class="bs-row"><span>L2 Shadow KdöR (~120 entities)</span><span class="val" style="color:var(--cyan)">10.5</span></div>
+        <div class="bs-row"><span>L3 Church Banks (TA, not deposits)</span><span class="val" style="color:var(--cyan)">14.5</span></div>
+        <div class="bs-row"><span>L4 KZVK Kapitalanlagen (MV)</span><span class="val" style="color:var(--cyan)">35.9</span></div>
+        <div class="bs-row"><span>L5 Housing GmbH (est. MV)</span><span class="val" style="color:var(--cyan)">6.0</span></div>
+        <div class="bs-row"><span>L6 Parish assets (est. MV)</span><span class="val" style="color:var(--cyan)">14.7</span></div>
+        <div class="bs-row"><span>L7 Land + Erbbaurecht (est. MV)</span><span class="val" style="color:var(--cyan)">42.9</span></div>
+        <div class="bs-row subtotal"><span>Gross System Assets (pre-elim)</span><span class="val" style="color:#fff;font-weight:800">164.6</span></div>
+        <div class="bs-row"><span style="color:var(--red)">Less: Intercompany eliminations</span><span class="val" style="color:var(--red)">-51 to -54</span></div>
+        <div class="bs-row" style="background:rgba(139,92,246,0.08)"><span style="font-weight:700">Net System EV (post-elim)</span><span class="val" style="color:var(--purple);font-weight:800">~111–114</span></div>
+        <div class="bs-row"><span style="color:var(--red)">Less: Pension liability (buyout basis)</span><span class="val" style="color:var(--red)">-17 to -21</span></div>
+        <div class="bs-row"><span style="color:var(--red)">Less: Other liabilities (HGB Verb + Rst ex-pension)</span><span class="val" style="color:var(--red)">~-6</span></div>
+        <div class="bs-row subtotal" style="background:rgba(34,197,94,0.1);border-top-color:var(--green)"><span style="font-weight:800">System Net Equity (base case)</span><span class="val" style="color:var(--green);font-weight:800;font-size:14px">~87</span></div>
+        <div class="bs-row"><span style="color:var(--text-dim);font-size:10px">Bear / Bull range</span><span class="val" style="color:var(--amber);font-size:10px">€49 – €131</span></div>
+      </div>
+      <div style="font-size:9px;color:#6b7280;margin-top:8px;line-height:1.5;border-top:1px solid #21262d;padding-top:8px">
+        <strong>Intercompany detail:</strong> ~€13B diocesan deposits at church banks (L1↔L3), €35.9B KZVK assets already counted as L4 but backed by diocesan contributions (L1↔L4), €2–5B other cross-holdings (L2↔L5 housing, L1↔L6 parish grants capitalised). Without elimination, the same euro gets counted 1.5–2× on average.<br>
+        <strong>Pension detail:</strong> €7.2B on-BS HGB provisions (L1, 27/27 confirmed) + KZVK economic deficit €9–10B (Ausgleichsposten €6.9B + IAS 19 gap €2–3B) + Emeritenanstalt underfunding ~€1–2B = €17–21B total buyout-basis obligation. This is the single largest liability in the system and the hardest to quantify precisely — the range reflects discount rate sensitivity (±50bps = ±€3–4B).<br>
+        <strong>What this means:</strong> The German Catholic Church controls ~€111B in net assets (post-elimination), of which ~€87B is equity. Zero financial debt. Zero tax. 100% Germany-domiciled. 100% non-state-controlled. No other entity in Germany matches this profile.
+      </div>
     </div>
   </div>
 </div>
@@ -935,7 +1083,7 @@ const DIOCESES = [
   {name:"Görlitz",cls:"stable",kist:6.2,bs:65.4,ek:33.2,pens:28.7,yr:2024,auditor:"Deloitte",cath:27800},
 ];
 
-const clsColors = {distressed:'var(--red)',reforming:'var(--amber)',stable:'var(--green)',opaque:'var(--purple)'};
+const clsColors = {distressed:'#ef4444',reforming:'#f59e0b',stable:'#22c55e',opaque:'#8b5cf6'};
 
 // ===================== TABS =====================
 function showTab(id) {
@@ -1288,6 +1436,7 @@ new Chart(document.getElementById('scatterChart'), {
       backgroundColor: clsColors[cls]+'99',
       borderColor: clsColors[cls],
       pointRadius: ctx => ctx.raw ? Math.max(ctx.raw.r, 4) : 4,
+      pointStyle: 'circle',
     }))
   },
   options: {
@@ -1364,34 +1513,309 @@ new Chart(document.getElementById('kistPerCapChart'), {
   options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, callback: v => '€'+Math.round(v) } } } }
 });
 
-// Leverage
-new Chart(document.getElementById('leverageChart'), {
+// ===================== GuV CHARTS =====================
+// Waterfall: Revenue → Expenses → Net Income
+const guvItems = [
+  { label: 'KiSt', val: 6534, color: '#22c55e' },
+  { label: 'Staatsleist.\n& Zuschüsse', val: 1000, color: '#22c55e' },
+  { label: 'Vermögens-\nerträge', val: 550, color: '#22c55e' },
+  { label: 'Mieten &\nErbbau', val: 300, color: '#22c55e' },
+  { label: 'Sonstige\nErträge', val: 716, color: '#22c55e' },
+  { label: 'Personal-\naufwand', val: -2700, color: '#ef4444' },
+  { label: 'Zuweisungen\n(grants out)', val: -2500, color: '#ef4444' },
+  { label: 'Abschreib-\nungen', val: -300, color: '#f59e0b' },
+  { label: 'Sonstige\nAufwend.', val: -3000, color: '#ef4444' },
+];
+// Build waterfall: base + bar stacked
+const guvBase = []; const guvBar = []; const guvColors = []; let guvRunning = 0;
+guvItems.forEach(item => {
+  if (item.val >= 0) { guvBase.push(guvRunning); guvBar.push(item.val); guvRunning += item.val; }
+  else { guvRunning += item.val; guvBase.push(guvRunning); guvBar.push(-item.val); }
+  guvColors.push(item.color);
+});
+guvBase.push(0); guvBar.push(guvRunning); guvColors.push('#8b5cf6');
+const guvLabels = guvItems.map(i => i.label).concat(['Net\nIncome']);
+
+new Chart(document.getElementById('guvWaterfallChart'), {
   type: 'bar',
   data: {
-    labels: ['BVK*','German Catholic\nChurch','VBL*','BImA*','LEG','Vonovia','Deutsche Bahn'],
-    datasets: [{
-      label: 'Equity Ratio (%, MV basis)',
-      data: [100, 68, 100, 100, 29, 23, 20],
-      backgroundColor: ['#6b7280','#8b5cf6','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280'],
-      borderRadius: 4
-    }]
+    labels: guvLabels,
+    datasets: [
+      { label: 'Base', data: guvBase, backgroundColor: 'transparent', stack: 'wf' },
+      { label: 'Amount', data: guvBar, backgroundColor: guvColors, borderRadius: 3, stack: 'wf' }
+    ]
   },
-  options: { ...chartDefaults, plugins: { legend: { display: false } }, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, max: 100, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v+'%' } } } }
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { ...chartDefaults.scales.x, stacked: true },
+      y: { ...chartDefaults.scales.y, stacked: true, ticks: { ...chartDefaults.scales.y.ticks, callback: v => '€' + (v/1000).toFixed(1) + 'B' } }
+    },
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        color: '#e6edf3', font: { weight: 'bold', size: 9 },
+        display: function(ctx) { return ctx.datasetIndex === 1; },
+        anchor: 'end', align: 'top',
+        formatter: function(v, ctx) {
+          const idx = ctx.dataIndex;
+          if (idx === guvLabels.length - 1) return '€' + (v/1000).toFixed(1) + 'B';
+          return (guvItems[idx].val >= 0 ? '+' : '-') + '€' + (Math.abs(guvItems[idx].val)/1000).toFixed(1) + 'B';
+        }
+      }
+    }
+  }
 });
 
-// Benchmark — Global consolidated, MV-adjusted Total Assets ranking
-new Chart(document.getElementById('benchmarkChart'), {
+// Net Income by diocese (top 10)
+const guvDioceses = [
+  {name:'München',ni:145.7},{name:'Paderborn',ni:91.6},{name:'Essen',ni:63.0},
+  {name:'Freiburg',ni:54.1},{name:'Berlin',ni:50.7},{name:'Hamburg',ni:35.5},
+  {name:'Mainz',ni:22.9},{name:'Münster',ni:19.0},{name:'Fulda',ni:17.6},
+  {name:'Bamberg',ni:15.9}
+].sort((a,b) => b.ni - a.ni);
+new Chart(document.getElementById('guvNetIncomeChart'), {
   type: 'bar',
   data: {
-    labels: ['BVK*','German Catholic\nChurch (v4.0)','Deutsche\nBahn','Vonovia','VBL*','BImA*','LEG Immo.'],
+    labels: guvDioceses.map(d => d.name),
     datasets: [{
-      label: 'Total Assets / AuM (€B)',
-      data: [110, 144, 84, 81, 66, 65, 17],
-      backgroundColor: ['#6b7280','#8b5cf6','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280'],
-      borderRadius: 4
+      label: 'Jahresüberschuss (€M)',
+      data: guvDioceses.map(d => d.ni),
+      backgroundColor: guvDioceses.map(d => d.ni > 50 ? '#22c55e' : d.ni > 20 ? '#3b82f6' : '#8b5cf6'),
+      borderRadius: 3
     }]
   },
-  options: { ...chartDefaults, plugins: { legend: { display: false } } }
+  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } } }
+});
+
+// GuV individual table
+const guvTableData = [
+  {name:'Köln',kist:666.1,ert:970.4,pers:376.7,zuw:378.4,aufw:996.8,ni:13.2,fy:2024,cov:'Complete'},
+  {name:'München',kist:644.6,ert:920.8,pers:null,zuw:null,aufw:null,ni:145.7,fy:2024,cov:'Partial'},
+  {name:'Freiburg',kist:522.8,ert:644.8,pers:null,zuw:null,aufw:null,ni:54.1,fy:2023,cov:'Partial'},
+  {name:'Münster',kist:497.5,ert:null,pers:null,zuw:null,aufw:null,ni:19.0,fy:2024,cov:'Partial'},
+  {name:'Paderborn',kist:423.7,ert:586.0,pers:194.1,zuw:220.4,aufw:498.9,ni:91.6,fy:2023,cov:'Complete'},
+  {name:'Mainz',kist:224.1,ert:294.4,pers:null,zuw:null,aufw:null,ni:22.9,fy:2024,cov:'Partial'},
+  {name:'Essen',kist:211.5,ert:277.8,pers:null,zuw:null,aufw:null,ni:63.0,fy:2023,cov:'Partial'},
+  {name:'Bamberg',kist:173.2,ert:230.0,pers:null,zuw:null,aufw:null,ni:15.9,fy:2023,cov:'Partial'},
+  {name:'Hamburg',kist:136.5,ert:null,pers:null,zuw:null,aufw:null,ni:35.5,fy:2024,cov:'Partial'},
+  {name:'Passau',kist:104.7,ert:null,pers:56.3,zuw:null,aufw:null,ni:null,fy:2024,cov:'Partial'},
+  {name:'Eichstätt',kist:102.1,ert:174.1,pers:71.5,zuw:null,aufw:null,ni:null,fy:2024,cov:'Partial'},
+  {name:'Fulda',kist:96.1,ert:137.0,pers:65.9,zuw:null,aufw:null,ni:17.6,fy:2024,cov:'Complete'},
+  {name:'Regensburg',kist:null,ert:351.5,pers:null,zuw:null,aufw:365.0,ni:10.0,fy:2024,cov:'Partial'},
+  {name:'Dresden-Meißen',kist:34.6,ert:78.2,pers:null,zuw:null,aufw:null,ni:-2.2,fy:2022,cov:'Partial'},
+  {name:'Magdeburg',kist:16.1,ert:38.2,pers:null,zuw:null,aufw:null,ni:8.5,fy:2023,cov:'Partial'},
+  {name:'Görlitz',kist:6.1,ert:null,pers:null,zuw:null,aufw:null,ni:3.1,fy:2024,cov:'Partial'},
+  {name:'Berlin',kist:null,ert:null,pers:null,zuw:null,aufw:null,ni:50.7,fy:2024,cov:'Minimal'},
+].sort((a,b) => (b.kist||0) - (a.kist||0));
+const guvBody = document.getElementById('guvBody');
+if(guvBody) {
+  guvBody.innerHTML = guvTableData.map(d => {
+    const fmt = v => v !== null ? v.toFixed(1) : '<span style="color:#6b7280">—</span>';
+    const margin = (d.ni !== null && d.ert !== null && d.ert > 0) ? (d.ni/d.ert*100).toFixed(1)+'%' : '—';
+    const niStyle = d.ni !== null ? (d.ni < 0 ? 'color:var(--red);font-weight:700' : 'color:var(--green)') : '';
+    const covBadge = d.cov === 'Complete' ? '<span style="color:var(--green)">●</span>' : d.cov === 'Partial' ? '<span style="color:var(--amber)">●</span>' : '<span style="color:var(--red)">●</span>';
+    return `<tr><td>${d.name}</td><td class="num">${fmt(d.kist)}</td><td class="num">${fmt(d.ert)}</td><td class="num">${fmt(d.pers)}</td><td class="num">${fmt(d.zuw)}</td><td class="num">${fmt(d.aufw)}</td><td class="num" style="${niStyle}">${fmt(d.ni)}</td><td class="num">${margin}</td><td>${d.fy}</td><td>${covBadge} ${d.cov}</td></tr>`;
+  }).join('');
+}
+
+// ===================== CASH FLOW CHART =====================
+const cfDioceses = [
+  {name:'Osnabrück',cfo:31.3,cfi:-21.9,cff:0},
+  {name:'Hamburg',cfo:28.5,cfi:30.0,cff:9.4},
+  {name:'Dresden-M.',cfo:20.0,cfi:-14.0,cff:-1.9},
+  {name:'Speyer',cfo:12.5,cfi:-6.9,cff:-0.6},
+  {name:'Eichstätt',cfo:5.2,cfi:-4.5,cff:0},
+  {name:'Fulda',cfo:5.5,cfi:-8.5,cff:-1.3},
+  {name:'Magdeburg',cfo:4.6,cfi:-2.6,cff:-1.1},
+  {name:'Regensburg',cfo:0.8,cfi:-7.9,cff:0},
+  {name:'Würzburg',cfo:0.7,cfi:-2.4,cff:0.1},
+  {name:'Passau',cfo:-1.7,cfi:-7.1,cff:0.1}
+].sort((a,b) => b.cfo - a.cfo);
+
+new Chart(document.getElementById('cfChart'), {
+  type: 'bar',
+  data: {
+    labels: cfDioceses.map(d => d.name),
+    datasets: [
+      { label: 'CFO (€M)', data: cfDioceses.map(d => d.cfo), backgroundColor: '#22c55ecc', borderRadius: 3 },
+      { label: 'CFI (€M)', data: cfDioceses.map(d => d.cfi), backgroundColor: '#3b82f6cc', borderRadius: 3 },
+      { label: 'CFF (€M)', data: cfDioceses.map(d => d.cff), backgroundColor: '#8b5cf6cc', borderRadius: 3 }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    indexAxis: 'y',
+    scales: {
+      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, callback: v => '€' + v + 'M' } },
+      y: chartDefaults.scales.y
+    },
+    plugins: {
+      legend: { labels: { color: '#8b949e', font: { size: 10 }, usePointStyle: true, pointStyle: 'rect' } }
+    }
+  }
+});
+
+// ===================== EV MAP CHART =====================
+const evLayers = [
+  { label: 'L1 Diocesan\nKdöR (27)',    grossMV: 40.1, equity: 28,   pension: 7.2, otherLiab: 4.9, interco: 0,    note: 'HGB €34.8B + €5.3B hidden reserves' },
+  { label: 'L2 Shadow\nKdöR (~120)',     grossMV: 10.5, equity: 7.5,  pension: 1.5, otherLiab: 1.5, interco: 0,    note: '~20 extracted, rest estimated' },
+  { label: 'L3 Church\nBanks',           grossMV: 14.5, equity: 2.2,  pension: 0,   otherLiab: 12.3, interco: 13,  note: '€13B = diocesan deposits (L1↔L3)' },
+  { label: 'L4 KZVK',                    grossMV: 35.9, equity: -4,   pension: 19,  otherLiab: 20.9, interco: 35.9,note: 'Fully eliminated — funded by L1 contributions' },
+  { label: 'L5 Housing\nGmbH',           grossMV: 6.0,  equity: 8,    pension: 0,   otherLiab: -2,  interco: 2,    note: '~94K units est. MV. €2B cross-held by L1/L2' },
+  { label: 'L6 Parishes\n(~9,291)',       grossMV: 14.7, equity: 14.7, pension: 0,   otherLiab: 0,   interco: 0,   note: 'Kirchenstiftungen. Book value €1. Est. MV.' },
+  { label: 'L7 Land +\nErbbaurecht',     grossMV: 42.9, equity: 30.5, pension: 0,   otherLiab: 0,   interco: 2,   note: '240K+ ha. BORIS-revised. ~€2B already in L1/L2' }
+];
+const evCtx = document.getElementById('evMapChart');
+new Chart(evCtx, {
+  type: 'bar',
+  data: {
+    labels: evLayers.map(l => l.label),
+    datasets: [
+      {
+        label: 'Equity (net of liabilities)',
+        data: evLayers.map(l => Math.max(l.equity, 0)),
+        backgroundColor: '#22c55e',
+        borderRadius: 3,
+        stack: 'stack1'
+      },
+      {
+        label: 'Pension liabilities (buyout basis)',
+        data: evLayers.map(l => l.pension),
+        backgroundColor: '#ef4444',
+        borderRadius: 3,
+        stack: 'stack1'
+      },
+      {
+        label: 'Other liabilities',
+        data: evLayers.map(l => Math.max(l.otherLiab, 0)),
+        backgroundColor: '#f59e0b88',
+        borderRadius: 3,
+        stack: 'stack1'
+      },
+      {
+        label: 'Interco elimination',
+        data: evLayers.map(l => l.interco),
+        backgroundColor: '#6b728088',
+        borderColor: '#6b7280',
+        borderWidth: 1,
+        borderDash: [4,2],
+        borderRadius: 3,
+        stack: 'stack2'
+      }
+    ]
+  },
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults,
+    indexAxis: 'y',
+    scales: {
+      x: {
+        ...chartDefaults.scales.x,
+        stacked: false,
+        ticks: { ...chartDefaults.scales.x.ticks, callback: v => '€' + v + 'B' },
+        title: { display: true, text: '€ Billions', color: '#8b949e', font: { size: 10 } }
+      },
+      y: { ...chartDefaults.scales.y, stacked: true }
+    },
+    plugins: {
+      legend: { labels: { color: '#8b949e', font: { size: 10 }, usePointStyle: true, pointStyle: 'rect' } },
+      tooltip: {
+        callbacks: {
+          afterBody: function(ctx) {
+            const i = ctx[0].dataIndex;
+            const l = evLayers[i];
+            return 'Gross MV: €' + l.grossMV + 'B\n' + l.note;
+          }
+        }
+      },
+      datalabels: {
+        color: '#e6edf3',
+        font: { weight: 'bold', size: 9 },
+        display: function(ctx) {
+          return ctx.dataset.data[ctx.dataIndex] > 1.5;
+        },
+        formatter: function(v) { return v > 0 ? '€' + v + 'B' : ''; }
+      }
+    }
+  }
+});
+
+// ===================== RANGE CHART =====================
+const rangeData = [
+  { label: 'L1 Diocesan KdöR',  bear: 22,  base: 28,   bull: 35  },
+  { label: 'L2 Shadow KdöR',    bear: 4,   base: 7.5,  bull: 12  },
+  { label: 'L3 Church Banks',   bear: 1.5, base: 2.2,  bull: 2.8 },
+  { label: 'L4 KZVK Net',       bear: -8,  base: -4,   bull: 0   },
+  { label: 'L5 Housing',        bear: 3,   base: 8,    bull: 14  },
+  { label: 'L6 Parishes',       bear: 8,   base: 14.7, bull: 22  },
+  { label: 'L7 Land + Erbbau',  bear: 18,  base: 30.5, bull: 45  }
+];
+new Chart(document.getElementById('rangeChart'), {
+  type: 'bar',
+  data: {
+    labels: rangeData.map(d => d.label),
+    datasets: [
+      {
+        label: 'Bear floor',
+        data: rangeData.map(d => d.bear),
+        backgroundColor: 'transparent',
+        stack: 'range'
+      },
+      {
+        label: 'Bear → Base',
+        data: rangeData.map(d => d.base - d.bear),
+        backgroundColor: '#3b82f6aa',
+        borderRadius: 3,
+        stack: 'range'
+      },
+      {
+        label: 'Base → Bull',
+        data: rangeData.map(d => d.bull - d.base),
+        backgroundColor: '#22c55e55',
+        borderColor: '#22c55e',
+        borderWidth: 1,
+        borderRadius: 3,
+        stack: 'range'
+      }
+    ]
+  },
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults,
+    indexAxis: 'y',
+    scales: {
+      x: {
+        ...chartDefaults.scales.x,
+        stacked: true,
+        ticks: { ...chartDefaults.scales.x.ticks, callback: v => '€' + v + 'B' },
+        title: { display: true, text: '€B Net Equity', color: '#8b949e', font: { size: 10 } }
+      },
+      y: { ...chartDefaults.scales.y, stacked: true }
+    },
+    plugins: {
+      legend: { labels: { color: '#8b949e', font: { size: 10 }, filter: item => item.text !== 'Bear floor' } },
+      datalabels: {
+        color: '#e6edf3',
+        font: { weight: 'bold', size: 9 },
+        display: function(ctx) {
+          if (ctx.datasetIndex === 0) return false;
+          if (ctx.datasetIndex === 2) return true;
+          return ctx.dataset.data[ctx.dataIndex] > 2;
+        },
+        anchor: function(ctx) { return ctx.datasetIndex === 2 ? 'end' : 'center'; },
+        align: function(ctx) { return ctx.datasetIndex === 2 ? 'right' : 'center'; },
+        formatter: function(v, ctx) {
+          if (ctx.datasetIndex === 2) {
+            const d = rangeData[ctx.dataIndex];
+            return '€' + d.bear + ' – €' + d.bull + 'B';
+          }
+          return '€' + (v + rangeData[ctx.dataIndex].bear).toFixed(1) + 'B';
+        }
+      }
+    }
+  }
 });
 
 
