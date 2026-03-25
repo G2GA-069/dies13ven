@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cerberus | 7-Layer Financial Architecture — German Catholic Church</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e17; --card: #111827; --border: #1e293b; --text: #e2e8f0;
+    --muted: #94a3b8; --accent: #3b82f6; --green: #10b981; --amber: #f59e0b;
+    --red: #ef4444; --purple: #8b5cf6; --pink: #ec4899; --cyan: #06b6d4;
+    --l1: #3b82f6; --l2: #8b5cf6; --l3: #06b6d4; --l4: #f59e0b;
+    --l5: #10b981; --l6: #ec4899; --l7: #ef4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+  .container { max-width: 1600px; margin: 0 auto; padding: 24px; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+  .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .header .sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .badge { display: inline-block; background: rgba(59,130,246,0.15); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 4px; }
+
+  /* KPI row */
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+  .kpi .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 4px; }
+  .kpi .value { font-size: 28px; font-weight: 700; }
+  .kpi .unit { font-size: 12px; color: var(--muted); }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .full-width { grid-column: 1 / -1; }
+
+  /* Card */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+  .card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 16px; }
+  .card canvas { width: 100% !important; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--border); color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: rgba(59,130,246,0.05); }
+  .num { text-align: right; font-variant-numeric: tabular-nums; font-family: 'SF Mono', 'Fira Code', monospace; }
+  .bar-cell { position: relative; }
+  .bar { position: absolute; left: 0; top: 4px; bottom: 4px; border-radius: 2px; opacity: 0.25; }
+
+  /* Color dots */
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+  /* Commentary */
+  .commentary { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .commentary strong { color: var(--text); }
+
+  /* Confidence badges */
+  .conf-high { color: var(--green); }
+  .conf-mid { color: var(--amber); }
+  .conf-low { color: var(--red); }
+
+  /* Footer */
+  .footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 1200px) { .kpi-row { grid-template-columns: repeat(3, 1fr); } .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>7-Layer Financial Architecture — German Catholic Church</h1>
+  <div class="sub">
+    <span class="badge">Cerberus Research Division</span>
+    <span class="badge">G2G Advisory</span>
+    <span class="badge">27 Dioceses</span>
+    <span class="badge">v3.0 — 24 Mar 2026</span>
+  </div>
+  <div class="sub" style="margin-top:8px;">Disclosed · Estimated · Dark Number per layer &nbsp;|&nbsp; €100–168B aggregate system</div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="label">Visible Aggregate</div>
+    <div class="value" style="color:var(--accent);">€99.8B</div>
+    <div class="unit">sum of 7 layers (disclosed)</div>
+  </div>
+  <div class="kpi">
+    <div class="label">True MV Estimate</div>
+    <div class="value" style="color:var(--green);">€168.3B</div>
+    <div class="unit">mark-to-market adj.</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Dark Number</div>
+    <div class="value" style="color:var(--red);">€68.5B</div>
+    <div class="unit">unaccounted delta</div>
+  </div>
+  <div class="kpi">
+    <div class="label">L2 Known Floor</div>
+    <div class="value" style="color:var(--purple);">€5.9B</div>
+    <div class="unit">27/27 dioceses</div>
+  </div>
+  <div class="kpi">
+    <div class="label">L7 BORIS Zones</div>
+    <div class="value" style="color:var(--red);">257K</div>
+    <div class="unit">27/27 confirmed</div>
+  </div>
+</div>
+
+<!-- WATERFALL CHART -->
+<div class="card full-width" style="margin-bottom:24px;">
+  <h3>Waterfall: Layer-by-Layer Asset Buildup (€B)</h3>
+  <div style="height:380px;"><canvas id="waterfallChart"></canvas></div>
+</div>
+
+<!-- LAYER TABLE -->
+<div class="card" style="margin-bottom:24px;">
+  <h3>7-Layer Breakdown — Disclosed vs Estimated vs Dark</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Description</th>
+        <th class="num">Disclosed €B</th>
+        <th class="num">Estimated €B</th>
+        <th class="num">Dark Number €B</th>
+        <th class="num">True MV €B</th>
+        <th>Confidence</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="layerTableBody">
+    </tbody>
+    <tfoot>
+      <tr style="font-weight:700; border-top:2px solid var(--border);">
+        <td colspan="2">TOTAL</td>
+        <td class="num" id="totalDisclosed"></td>
+        <td class="num" id="totalEstimated"></td>
+        <td class="num" id="totalDark"></td>
+        <td class="num" id="totalMV"></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- DUAL CHARTS -->
+<div class="grid-2">
+  <div class="card">
+    <h3>Asset Distribution by Layer (Estimated MV)</h3>
+    <div style="height:300px;"><canvas id="pieChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Disclosure Gap: Disclosed vs True MV</h3>
+    <div style="height:300px;"><canvas id="gapChart"></canvas></div>
+  </div>
+</div>
+
+<!-- L2 DETAIL TABLE -->
+<div class="card" style="margin-bottom:24px;">
+  <h3>L2 Deep Dive — Shadow KdöR Entities (Bischöfliche Stühle)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Diocese</th>
+        <th class="num">Stuhl €M</th>
+        <th>Vintage</th>
+        <th>Confidence</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="l2TableBody">
+    </tbody>
+  </table>
+</div>
+
+<!-- COMMENTARY -->
+<div class="grid-2">
+  <div class="card">
+    <h3>Methodology Notes</h3>
+    <div class="commentary">
+      <strong>L1 Diocesan KdöR:</strong> 27 balance sheets extracted from audited Jahresabschlüsse. €34.8B total HGB Bilanzsumme (27/27 fully extracted, 100% HIGH confidence). Top 3: Paderborn €4.9B, Köln €4.4B, München €4.0B. EK €20.5B (59.8%), Rückstellungen €10.7B, Verbindlichkeiten €2.5B. Hidden reserves €5.3B identified. True MV ~€54B after mark-to-market.<br><br>
+      <strong>L2 Shadow KdöR:</strong> 27/27 dioceses now covered. €5.9B known floor (up from €4.96B). Erfurt surprise at €480M. Paderborn €2.7B still dominates. Berlin/Dresden-Meißen confirmed: no separate Stuhl assets. Regensburg €242M (audited). Est. €7–16B total.<br><br>
+      <strong>L3 Church Banks:</strong> CORRECTED. Liga €6.4B (prior €14.9B was managed volume, not BS), DKM €5.1B (up from €3.2B), Pax+BKC merged Jan 2025 = €8.7B, BIB Essen €4.5B (was missing). Total €24.7B. Intercompany deposits ~€13B (not €18B).<br><br>
+      <strong>L4 KZVK Pension:</strong> €35.9B total assets (2024, up from €34.1B). Funding ratio 89.1% (HGB). HIDDEN: Ausgleichsposten €6.9B deferred liability + IAS 19 gap €2-3B = total economic deficit €9-10B. 1.5M members, 244K pensioners, 5,000 employers.<br><br>
+      <strong>L5 Housing GmbH:</strong> 14 entities identified via KSD member registry. ~94,000 units. ASW (6 dioceses) = €1B BS + €8B AUM subsidiary. Joseph-Stiftung Bamberg €500M, Siedlungswerk R-S €400-600M. Confirmed BS €2.9B, estimated MV €10–20B.<br><br>
+      <strong>L6 Parishes:</strong> ~10,000 Kirchengemeinden with own legal personality. No consolidated data exists. Est. €14.7B based on extrapolation from disclosed diocese-level parish asset data.<br><br>
+      <strong>L7 Land & Erbbaurecht:</strong> 257,290 BORIS zones queried across 16 Bundesländer. Weighted mean €176/m². Church owns est. 500K–825K hectares. €30–42B at BORIS rates.
+    </div>
+  </div>
+  <div class="card">
+    <h3>Key Findings</h3>
+    <div class="commentary">
+      <strong>1. Paderborn dominance:</strong> Erzbischöflicher Stuhl alone holds €2.7B — 55% of all known L2 assets. Seven foundation structure obscures true concentration.<br><br>
+      <strong>2. Bundesanzeiger blind spot:</strong> KdöR bodies (Bischöfliche Stühle, Domkapitel) have ZERO filing obligation. Only 1 GmbH shell (EBV Berlin, EK €30M) files regularly. The Bundesanzeiger is structurally useless for L2 discovery.<br><br>
+      <strong>3. Book vs Market:</strong> Augsburg's Stuhl at €675M book could be €900M+ MV. Passau jumped from €190M (2013) to €416M (2019) — 119% growth in 6 years, largely mark-to-market.<br><br>
+      <strong>4. East German surprise:</strong> Erfurt Stuhl = €480M (4th largest in Germany). Berlin/Dresden-Meißen have NO separate Stuhl assets. Görlitz €56M (2014). The assumption that East German dioceses are uniformly small is wrong.<br><br>
+      <strong>5. Domkapitel are tiny:</strong> Only 3 published. Osnabrück €12M, Limburg €5.1M, Augsburg €3.7M. Not material to the aggregate.<br><br>
+      <strong>6. L5 Housing is massive:</strong> Prior €6-10B estimate was too low. ASW alone has €1B BS + €8B AUM. 14 entities, ~94K units. The church is one of Germany's largest residential landlords.<br><br>
+      <strong>7. L7 is the true dark asset:</strong> €30–42B in land, carried at historical cost or zero on parish balance sheets. BORIS data proves the value exists. Zero consolidated disclosure anywhere.
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  G2G Advisory · Cerberus Research Division · Compiled 24 March 2026 · Data vintage 2012–2026 · All figures EUR · Not investment advice
+</div>
+
+</div>
+
+<script>
+// ===== DATA =====
+const LAYERS = [
+  {
+    id: 'L1', name: 'Diocesan KdöR', color: '#3b82f6',
+    disclosed: 34.8, estimated: 54, dark: 19.2, trueMV: 54,
+    confidence: 'high', status: '27/27 extracted — €34.8B HGB, ~€54B MV',
+    detail: '27 diocesan balance sheets fully extracted. HGB €34.8B. EK €20.5B (59.8%). Hidden reserves €5.3B. Top: Paderborn €4.9B, Köln €4.4B, München €4.0B. 100% HIGH confidence.'
+  },
+  {
+    id: 'L2', name: 'Shadow KdöR', color: '#8b5cf6',
+    disclosed: 5.9, estimated: 10, dark: 4.1, trueMV: 10,
+    confidence: 'medium', status: '27/27 with data — €5.9B floor',
+    detail: 'Bischöfliche Stühle + Domkapitel. Known floor €5.9B. Paderborn €2.7B, Erfurt €480M surprise. Berlin/Dresden: no separate assets.'
+  },
+  {
+    id: 'L3', name: 'Church Banks', color: '#06b6d4',
+    disclosed: 24.7, estimated: 24.7, dark: 0, trueMV: 24.7,
+    confidence: 'high', status: '5 banks (Pax+BKC merged Jan 2025) — €24.7B',
+    detail: 'CORRECTED from €28.7B. Liga €6.4B (prior €14.9B was managed volume), DKM €5.1B, Pax-BKC merged €8.7B, BIB Essen €4.5B (was missing).'
+  },
+  {
+    id: 'L4', name: 'KZVK Pension', color: '#f59e0b',
+    disclosed: 35.9, estimated: 35.9, dark: 0, trueMV: 35.9,
+    confidence: 'high', status: 'KZVK 2024 Geschäftsbericht — €35.9B',
+    detail: '€35.9B total assets (2024). Funding ratio 89.1%. Hidden: Ausgleichsposten €6.9B + IAS19 gap €2-3B = €9-10B economic deficit.'
+  },
+  {
+    id: 'L5', name: 'Housing GmbH', color: '#10b981',
+    disclosed: 2.9, estimated: 14, dark: 11.1, trueMV: 14,
+    confidence: 'medium', status: '14 entities, ~94K units — €2.9B confirmed BS',
+    detail: '14 entities identified. ASW €1B (26,500 units) + €8B AUM subsidiary. Joseph-Stiftung €500M. ~94K units tracked. Prior €6-10B estimate was too low.'
+  },
+  {
+    id: 'L6', name: 'Parishes', color: '#ec4899',
+    disclosed: 0, estimated: 14.7, dark: 14.7, trueMV: 14.7,
+    confidence: 'low', status: 'No consolidation exists',
+    detail: '~10,000 Kirchengemeinden. Own legal personality. No aggregated data anywhere.'
+  },
+  {
+    id: 'L7', name: 'Land & Erbbaurecht', color: '#ef4444',
+    disclosed: 0, estimated: 36, dark: 36, trueMV: 36,
+    confidence: 'medium', status: '257K BORIS zones queried',
+    detail: '500K–825K ha est. Weighted mean €176/m². Carried at zero/historical cost on balance sheets.'
+  }
+];
+
+// ===== L2 DATA =====
+const L2_ENTITIES = [
+  {diocese:'Paderborn', eur_m:2700, year:'2024', conf:'high', note:'7 foundations. Largest in Germany by far.'},
+  {diocese:'Augsburg', eur_m:675.4, year:'2024', conf:'high', note:'Bilanzsumme. Priest pensions.'},
+  {diocese:'Würzburg', eur_m:423.8, year:'2023', conf:'high', note:'Positive result €12.7M.'},
+  {diocese:'Passau', eur_m:415.6, year:'2019', conf:'high', note:'EK €268.5M. Grew from €190M (2013).'},
+  {diocese:'Köln', eur_m:166.2, year:'2012', conf:'high', note:'Stale vintage — likely €250M+ now.'},
+  {diocese:'Trier', eur_m:132.1, year:'2018', conf:'high', note:'Bilanzsumme. Capital + loans + liquidity.'},
+  {diocese:'München-Freising', eur_m:111.7, year:'2024', conf:'high', note:'Separate from €3.9B Erzdiözese.'},
+  {diocese:'Osnabrück', eur_m:109.7, year:'2014', conf:'medium', note:'Gesamtbilanzsumme.'},
+  {diocese:'Limburg', eur_m:80.7, year:'2021', conf:'high', note:'Famous after residence scandal.'},
+  {diocese:'Speyer', eur_m:46.5, year:'2014', conf:'medium', note:'€40M pension gap (hpd.de).'},
+  {diocese:'Hamburg', eur_m:35.0, year:'2014', conf:'medium', note:'Incl. 3 hospital stakes.'},
+  {diocese:'Münster', eur_m:29.0, year:'2018', conf:'medium', note:'Gesamtvermögen. Rev €500K/yr.'},
+  {diocese:'Eichstätt', eur_m:10.0, year:'2018', conf:'medium', note:'Post-scandal disclosure.'},
+  {diocese:'Aachen', eur_m:6.5, year:'2019', conf:'medium', note:'Zweckkapital. ASW stake.'},
+  {diocese:'Essen', eur_m:6.7, year:'2024', conf:'high', note:'Incl. Wenner Treuhand €4.6M.'},
+  {diocese:'Fulda', eur_m:5.3, year:'2014', conf:'medium', note:'Liquid assets only.'},
+  {diocese:'Bamberg', eur_m:5.0, year:'2013', conf:'medium', note:'Buildings + financial.'},
+  {diocese:'Magdeburg', eur_m:2.9, year:'2015', conf:'medium', note:'Small East German diocese.'},
+  {diocese:'Erfurt', eur_m:480.1, year:'2023', conf:'high', note:'€480M surprise. FA €436M. Separate KdöR.'},
+  {diocese:'Regensburg', eur_m:242.0, year:'2021', conf:'high', note:'Consolidates 16-22 entities. EK ~€120M.'},
+  {diocese:'Hildesheim', eur_m:151.0, year:'2020', conf:'medium', note:'Securities FA €506M (2023). May incl. diocese.'},
+  {diocese:'Freiburg', eur_m:58.9, year:'2014', conf:'medium', note:'Stale data. Domkapitel €6.8M.'},
+  {diocese:'Görlitz', eur_m:56.0, year:'2014', conf:'medium', note:'Smallest diocese. 2023-24 PDFs exist.'},
+  {diocese:'Berlin', eur_m:0, year:'2023', conf:'high', note:'No separate assets. Combined w/ Erzbistum €1.08B.'},
+  {diocese:'Dresden-Meißen', eur_m:0, year:'2022', conf:'high', note:'No separate assets. Diocese €551M.'},
+  {diocese:'Mainz', eur_m:null, year:'2024', conf:'medium', note:'Consol. Diocese+Stuhl €1.5B. Stuhl: property + GSW only.'},
+  {diocese:'Rottenburg-Stuttgart', eur_m:null, year:'2014', conf:'medium', note:'Revenue €8.7M/yr. Diocese €1.50B. No separate BS.'}
+];
+
+// ===== RENDER TABLE =====
+function renderLayerTable() {
+  const tbody = document.getElementById('layerTableBody');
+  let totalD=0, totalE=0, totalDk=0, totalMV=0;
+  LAYERS.forEach(l => {
+    totalD += l.disclosed; totalE += l.estimated; totalDk += l.dark; totalMV += l.trueMV;
+    const confClass = l.confidence==='high'?'conf-high':l.confidence==='medium'?'conf-mid':'conf-low';
+    tbody.innerHTML += `<tr>
+      <td><span class="dot" style="background:${l.color}"></span>${l.id}</td>
+      <td>${l.name}</td>
+      <td class="num">€${l.disclosed.toFixed(1)}B</td>
+      <td class="num">€${l.estimated.toFixed(1)}B</td>
+      <td class="num" style="color:var(--red);">${l.dark>0?'€'+l.dark.toFixed(1)+'B':'—'}</td>
+      <td class="num" style="font-weight:600;">€${l.trueMV.toFixed(1)}B</td>
+      <td class="${confClass}">${l.confidence.toUpperCase()}</td>
+      <td style="font-size:11px;color:var(--muted);">${l.status}</td>
+    </tr>`;
+  });
+  document.getElementById('totalDisclosed').textContent = `€${totalD.toFixed(1)}B`;
+  document.getElementById('totalEstimated').textContent = `€${totalE.toFixed(1)}B`;
+  document.getElementById('totalDark').textContent = `€${totalDk.toFixed(1)}B`;
+  document.getElementById('totalMV').textContent = `€${totalMV.toFixed(1)}B`;
+}
+
+function renderL2Table() {
+  const tbody = document.getElementById('l2TableBody');
+  L2_ENTITIES.forEach(e => {
+    const confClass = e.conf==='high'?'conf-high':e.conf==='medium'?'conf-mid':'conf-low';
+    tbody.innerHTML += `<tr>
+      <td>${e.diocese}</td>
+      <td class="num">${e.eur_m ? '€'+e.eur_m.toLocaleString()+'M' : '<span style="color:var(--red);">—</span>'}</td>
+      <td>${e.year}</td>
+      <td class="${confClass}">${e.conf.toUpperCase()}</td>
+      <td style="font-size:11px;color:var(--muted);">${e.note}</td>
+    </tr>`;
+  });
+}
+
+// ===== CHARTS =====
+function renderWaterfall() {
+  const ctx = document.getElementById('waterfallChart').getContext('2d');
+
+  // Build waterfall data
+  const labels = LAYERS.map(l => l.id + ' ' + l.name);
+  labels.push('TOTAL');
+
+  // Stacked: disclosed (solid) + dark (striped)
+  const disclosedData = LAYERS.map(l => l.disclosed);
+  const darkData = LAYERS.map(l => l.dark);
+  disclosedData.push(0);
+  darkData.push(0);
+
+  const totalMV = LAYERS.reduce((s,l) => s + l.trueMV, 0);
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Disclosed',
+          data: [...LAYERS.map(l => l.disclosed), totalMV * 0.66],
+          backgroundColor: [...LAYERS.map(l => l.color), '#3b82f6'],
+          borderWidth: 0,
+          borderRadius: 3
+        },
+        {
+          label: 'Dark Number / Estimated Add-on',
+          data: [...LAYERS.map(l => l.estimated - l.disclosed), totalMV * 0.34],
+          backgroundColor: [...LAYERS.map(l => l.color + '55'), '#ef444488'],
+          borderWidth: 0,
+          borderRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: €${ctx.parsed.y.toFixed(1)}B`
+          }
+        }
+      },
+      scales: {
+        x: { stacked: true, ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+        y: { stacked: true, ticks: { color: '#94a3b8', callback: v => '€' + v + 'B' }, grid: { color: '#1e293b' },
+          title: { display: true, text: 'EUR Billions', color: '#94a3b8' }
+        }
+      }
+    }
+  });
+}
+
+function renderPie() {
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: LAYERS.map(l => l.id + ' ' + l.name),
+      datasets: [{
+        data: LAYERS.map(l => l.trueMV),
+        backgroundColor: LAYERS.map(l => l.color),
+        borderColor: '#111827',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 }, padding: 10 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+              const pct = ((ctx.parsed / total)*100).toFixed(1);
+              return `${ctx.label}: €${ctx.parsed}B (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderGap() {
+  const ctx = document.getElementById('gapChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: LAYERS.map(l => l.id),
+      datasets: [
+        {
+          label: 'Disclosed',
+          data: LAYERS.map(l => l.disclosed),
+          backgroundColor: LAYERS.map(l => l.color),
+          borderWidth: 0, borderRadius: 3
+        },
+        {
+          label: 'True MV (est.)',
+          data: LAYERS.map(l => l.trueMV),
+          backgroundColor: LAYERS.map(l => l.color + '44'),
+          borderColor: LAYERS.map(l => l.color),
+          borderWidth: 1.5, borderRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: €${ctx.parsed.y.toFixed(1)}B` } }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+        y: { ticks: { color: '#94a3b8', callback: v => '€'+v+'B' }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
+
+// ===== INIT =====
+renderLayerTable();
+renderL2Table();
+renderWaterfall();
+renderPie();
+renderGap();
+</script>
+</body>
+</html>
