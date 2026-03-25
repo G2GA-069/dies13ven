@@ -25,7 +25,7 @@
 <meta name="description" content="PE-grade forensic financial analysis of the German Catholic Church system. 7-layer balance sheet decomposition across 27 dioceses.">
 <meta name="theme-color" content="#8b5cf6">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%238b5cf6'/><text x='3' y='24' font-size='22' font-family='system-ui' font-weight='bold' fill='white'>G2</text></svg>">
-<link rel="apple-touch-icon" href="https://g2ga-069.github.io/dies13ven/og-image.png">
+<link rel="apple-touch-icon" href="og-image.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
@@ -168,9 +168,19 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
 
 <div class="header">
   <div class="container header-inner">
-    <div>
-      <div class="logo" style="cursor:pointer" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('overview').classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab')[0].classList.add('active');window.scrollTo({top:0,behavior:'smooth'});">G2G<span>ADVISORY</span></div>
-      <div style="margin-top:8px;font-size:16px;font-weight:600;color:var(--text);">German Catholic Church — Consolidated Financial Analysis</div>
+    <div style="display:flex;align-items:center;gap:20px">
+      <svg width="48" height="64" viewBox="0 0 48 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <rect x="17" y="0" width="14" height="64" fill="#ffffff" rx="1"/>
+        <rect x="0" y="16" width="48" height="14" fill="#ffffff" rx="1"/>
+        <rect x="18" y="1" width="12" height="62" fill="#f0f0f0" rx="1"/>
+        <rect x="1" y="17" width="46" height="12" fill="#f0f0f0" rx="1"/>
+        <rect x="17" y="0" width="14" height="64" stroke="#f59e0b" stroke-width="1.5" rx="1" fill="none"/>
+        <rect x="0" y="16" width="48" height="14" stroke="#f59e0b" stroke-width="1.5" rx="1" fill="none"/>
+      </svg>
+      <div>
+        <div class="logo" style="cursor:pointer" onclick="document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('overview').classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab')[0].classList.add('active');window.scrollTo({top:0,behavior:'smooth'});">G2G<span>ADVISORY</span></div>
+        <div style="margin-top:8px;font-size:16px;font-weight:600;color:var(--text);">German Catholic Church — Consolidated Financial Analysis</div>
+      </div>
     </div>
     <div class="header-subtitle">
       <div>Strictly Confidential · March 2026</div>
@@ -296,10 +306,10 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
     <div class="card">
       <div class="card-title">Asset Composition (MV Basis, Post-Elimination) — Mid-Case Point Estimate</div>
       <div style="position:relative">
-        <div class="chart-wrap"><canvas id="assetPie"></canvas></div>
-        <div id="pieCenter" style="position:absolute;top:50%;left:38%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-          <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Mid-Case</div>
-          <div style="font-size:22px;font-weight:800;color:var(--cyan)">€140B</div>
+        <div class="chart-wrap" style="height:360px"><canvas id="assetPie"></canvas></div>
+        <div id="pieCenter" style="position:absolute;top:48%;left:35%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;z-index:1">
+          <div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Mid-Case</div>
+          <div style="font-size:24px;font-weight:800;color:var(--cyan)">€140B</div>
           <div style="font-size:9px;color:var(--text-muted)">Range: €130–168B</div>
         </div>
       </div>
@@ -850,7 +860,7 @@ const DIOCESES = [
   {name:"Görlitz",cls:"stable",kist:6.2,bs:32.2,ek:12.5,pens:14.1,yr:2023,auditor:"PRC",cath:27800},
 ];
 
-const clsColors = {distressed:'var(--red)',reforming:'var(--amber)',stable:'var(--green)',opaque:'var(--purple)'};
+const clsColors = {distressed:'#ef4444',reforming:'#f59e0b',stable:'#22c55e',opaque:'#8b5cf6'};
 
 // ===================== TABS =====================
 function showTab(id) {
@@ -940,8 +950,9 @@ const assetPieChart = new Chart(document.getElementById('assetPie'), {
   plugins: [ChartDataLabels],
   options: {
     responsive: true, maintainAspectRatio: false, cutout: '55%',
+    layout: { padding: { top: 5, bottom: 5 } },
     plugins: {
-      legend: { position: 'right', labels: { color: '#8b949e', font: { size: 10 }, padding: 12, generateLabels: function(chart) {
+      legend: { position: window.innerWidth < 768 ? 'bottom' : 'right', labels: { color: '#8b949e', font: { size: window.innerWidth < 768 ? 9 : 10 }, padding: window.innerWidth < 768 ? 6 : 12, boxWidth: 12, generateLabels: function(chart) {
         const data = chart.data;
         return data.labels.map((label, i) => ({
           text: label + '  €' + data.datasets[0].data[i] + 'B',
@@ -952,7 +963,7 @@ const assetPieChart = new Chart(document.getElementById('assetPie'), {
       }}},
       tooltip: { enabled: false },
       datalabels: {
-        color: '#fff', font: { weight: 'bold', size: 11 },
+        color: '#fff', font: { weight: 'bold', size: window.innerWidth < 768 ? 9 : 11 },
         formatter: function(value) {
           const pct = Math.round(value / pieTotal * 100);
           return pct >= 5 ? pct + '%' : '';
@@ -1118,9 +1129,11 @@ new Chart(document.getElementById('layerBar'), {
         anchor: 'center', align: 'center',
         formatter: function(v, ctx) {
           const item = wfItems[ctx.dataIndex];
-          if (item.type === 'total') return '€' + v.toFixed(0) + 'B';
-          if (item.val < 0) return '(€' + Math.abs(item.val) + 'B)';
-          return '€' + item.val + 'B';
+          const absVal = Math.abs(item.type === 'total' ? v : item.val);
+          const fmt = absVal >= 10 ? '€' + absVal.toFixed(0) + 'B' : '€' + absVal.toFixed(1) + 'B';
+          if (item.type === 'total') return fmt;
+          if (item.val < 0) return '(' + fmt + ')';
+          return fmt;
         }
       }
     }
@@ -1170,7 +1183,8 @@ new Chart(document.getElementById('coverageChart'), {
         anchor: 'end', align: 'top',
         formatter: function(v, ctx) {
           const l = coverageLayers[ctx.dataIndex];
-          return '€' + l.total + 'B (' + l.confirmedPct + '% confirmed)';
+          const fmt = l.total >= 10 ? '€' + l.total.toFixed(0) + 'B' : '€' + l.total.toFixed(1) + 'B';
+          return fmt + ' (' + l.confirmedPct + '%)';
         }
       }
     }
@@ -1301,7 +1315,7 @@ new Chart(document.getElementById('kistChart'), {
     datasets: [{
       label: 'KiSt (€M)',
       data: kistSorted.map(d => d.kist),
-      backgroundColor: '#8b5cf6',
+      backgroundColor: kistSorted.map(d => clsColors[d.cls]),
       borderRadius: 3
     }]
   },
