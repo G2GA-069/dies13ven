@@ -4,6 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>G2G Advisory — Consolidated Financial Analysis</title>
+
+<!-- Open Graph / WhatsApp / Social Sharing -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="G2G Advisory — The German Catholic Church">
+<meta property="og:description" content="7-Layer Consolidated Financial Architecture · €196B Gross Assets · 27 Dioceses · PE-Grade Forensic Analysis">
+<meta property="og:image" content="https://g2ga-069.github.io/dies13ven/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://g2ga-069.github.io/dies13ven/">
+<meta property="og:site_name" content="G2G Advisory — Cerberus Research Division">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="G2G Advisory — The German Catholic Church">
+<meta name="twitter:description" content="7-Layer Consolidated Financial Architecture · €196B Gross Assets · 27 Dioceses">
+<meta name="twitter:image" content="https://g2ga-069.github.io/dies13ven/og-image.png">
+
+<!-- General meta -->
+<meta name="description" content="PE-grade forensic financial analysis of the German Catholic Church system. 7-layer balance sheet decomposition across 27 dioceses.">
+<meta name="theme-color" content="#8b5cf6">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%238b5cf6'/><text x='3' y='24' font-size='22' font-family='system-ui' font-weight='bold' fill='white'>G2</text></svg>">
+<link rel="apple-touch-icon" href="https://g2ga-069.github.io/dies13ven/og-image.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
@@ -1092,12 +1114,12 @@ new Chart(document.getElementById('layerBar'), {
       legend: { display: false },
       datalabels: {
         display: function(ctx) { return ctx.datasetIndex === 1; },
-        color: '#e6edf3', font: { weight: 'bold', size: 9 },
-        anchor: 'end', align: 'top',
+        color: '#ffffff', font: { weight: 'bold', size: 10 },
+        anchor: 'center', align: 'center',
         formatter: function(v, ctx) {
           const item = wfItems[ctx.dataIndex];
           if (item.type === 'total') return '€' + v.toFixed(0) + 'B';
-          if (item.val < 0) return '-€' + Math.abs(item.val) + 'B';
+          if (item.val < 0) return '(€' + Math.abs(item.val) + 'B)';
           return '€' + item.val + 'B';
         }
       }
@@ -1155,7 +1177,7 @@ new Chart(document.getElementById('coverageChart'), {
   }
 });
 
-// BS Rank Chart
+// BS Rank Chart — IB style with value labels
 const sortedByBS = [...DIOCESES].sort((a,b) => b.bs - a.bs);
 new Chart(document.getElementById('bsRankChart'), {
   type: 'bar',
@@ -1168,10 +1190,22 @@ new Chart(document.getElementById('bsRankChart'), {
       borderRadius: 3
     }]
   },
-  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } } }
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults, indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        color: '#e6edf3', font: { weight: 'bold', size: 9 },
+        anchor: 'end', align: 'right', offset: 4,
+        formatter: v => v >= 1000 ? '€' + (v/1000).toFixed(1) + 'B' : '€' + Math.round(v) + 'M'
+      }
+    },
+    layout: { padding: { right: 60 } }
+  }
 });
 
-// Scatter
+// Scatter — IB style with diocese name labels
 new Chart(document.getElementById('scatterChart'), {
   type: 'scatter',
   data: {
@@ -1183,6 +1217,7 @@ new Chart(document.getElementById('scatterChart'), {
       pointRadius: ctx => ctx.raw ? Math.max(ctx.raw.r, 4) : 4,
     }))
   },
+  plugins: [ChartDataLabels],
   options: {
     ...chartDefaults,
     scales: {
@@ -1191,12 +1226,17 @@ new Chart(document.getElementById('scatterChart'), {
     },
     plugins: {
       legend: { labels: { color: '#8b949e', font: { size: 10 } } },
-      tooltip: { callbacks: { label: ctx => `${ctx.raw.name}: EK ${ctx.raw.x.toFixed(1)}%, Pension ${ctx.raw.y.toFixed(1)}%` } }
+      tooltip: { callbacks: { label: ctx => `${ctx.raw.name}: EK ${ctx.raw.x.toFixed(1)}%, Pension ${ctx.raw.y.toFixed(1)}%` } },
+      datalabels: {
+        color: '#e6edf3', font: { size: 8 },
+        anchor: 'end', align: 'top', offset: 2,
+        formatter: (v, ctx) => ctx.dataset.data[ctx.dataIndex].name
+      }
     }
   }
 });
 
-// Pension Ratio
+// Pension Ratio — IB style with % labels
 const pensionData = DIOCESES.filter(d => d.pens !== null).map(d => ({...d, ratio: d.pens/d.bs*100})).sort((a,b) => b.ratio - a.ratio).slice(0, 15);
 new Chart(document.getElementById('pensionRatioChart'), {
   type: 'bar',
@@ -1209,23 +1249,50 @@ new Chart(document.getElementById('pensionRatioChart'), {
       borderRadius: 3
     }]
   },
-  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, callback: v => v+'%' } } } }
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults, indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        color: '#e6edf3', font: { weight: 'bold', size: 9 },
+        anchor: 'end', align: 'right', offset: 4,
+        formatter: v => v.toFixed(1) + '%'
+      }
+    },
+    scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, callback: v => v+'%' } } },
+    layout: { padding: { right: 50 } }
+  }
 });
 
-// Pension Waterfall
+// Pension Waterfall — IB style with €B labels
+const pensionWfVals = [7.2, 4.5, 3.0, 4.3, 19.0];
 new Chart(document.getElementById('pensionWaterfall'), {
   type: 'bar',
   data: {
     labels: ['HGB On-BS\nProvisions','KZVK IAS 19\nDeficit','Emeritenanstalt\nIAS 19','Buyout\nPremium','Total\nBuyout Basis'],
     datasets: [
-      { label: 'Base', data: [0, 7.2, 11.7, 14.7, 0], backgroundColor: 'transparent' },
-      { label: 'Amount', data: [7.2, 4.5, 3.0, 4.3, 19.0], backgroundColor: ['#8b5cf6','#ef4444','#ef4444','#ef4444','#d946ef'], borderRadius: 3 }
+      { label: 'Base', data: [0, 7.2, 11.7, 14.7, 0], backgroundColor: 'transparent', borderWidth: 0 },
+      { label: 'Amount', data: pensionWfVals, backgroundColor: ['#8b5cf6','#ef4444','#ef4444','#ef4444','#d946ef'], borderRadius: 3 }
     ]
   },
-  options: { ...chartDefaults, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, stacked: true }, y: { ...chartDefaults.scales.y, stacked: true, ticks: { ...chartDefaults.scales.y.ticks, callback: v => '€'+v+'B' } } }, plugins: { legend: { display: false } } }
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults,
+    scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, stacked: true }, y: { ...chartDefaults.scales.y, stacked: true, ticks: { ...chartDefaults.scales.y.ticks, callback: v => '€'+v+'B' } } },
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        display: function(ctx) { return ctx.datasetIndex === 1; },
+        color: '#ffffff', font: { weight: 'bold', size: 11 },
+        anchor: 'center', align: 'center',
+        formatter: v => '€' + v.toFixed(1) + 'B'
+      }
+    }
+  }
 });
 
-// KiSt Chart
+// KiSt Chart — IB style with €M labels
 const kistSorted = [...DIOCESES].sort((a,b) => b.kist - a.kist);
 new Chart(document.getElementById('kistChart'), {
   type: 'bar',
@@ -1238,10 +1305,22 @@ new Chart(document.getElementById('kistChart'), {
       borderRadius: 3
     }]
   },
-  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } } }
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults, indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        color: '#e6edf3', font: { weight: 'bold', size: 9 },
+        anchor: 'end', align: 'right', offset: 4,
+        formatter: v => '€' + Math.round(v) + 'M'
+      }
+    },
+    layout: { padding: { right: 60 } }
+  }
 });
 
-// KiSt per Capita
+// KiSt per Capita — IB style, rounded to nearest euro
 const kistPC = DIOCESES.map(d => ({...d, pc: d.kist*1e6/d.cath})).sort((a,b) => b.pc - a.pc);
 new Chart(document.getElementById('kistPerCapChart'), {
   type: 'bar',
@@ -1254,10 +1333,23 @@ new Chart(document.getElementById('kistPerCapChart'), {
       borderRadius: 3
     }]
   },
-  options: { ...chartDefaults, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, callback: v => '€'+Math.round(v) } } } }
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults, indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        color: '#e6edf3', font: { weight: 'bold', size: 9 },
+        anchor: 'end', align: 'right', offset: 4,
+        formatter: v => '€' + Math.round(v)
+      }
+    },
+    scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, callback: v => '€'+Math.round(v) } } },
+    layout: { padding: { right: 50 } }
+  }
 });
 
-// Leverage
+// Leverage — IB style with % labels
 new Chart(document.getElementById('leverageChart'), {
   type: 'bar',
   data: {
@@ -1269,10 +1361,23 @@ new Chart(document.getElementById('leverageChart'), {
       borderRadius: 4
     }]
   },
-  options: { ...chartDefaults, plugins: { legend: { display: false } }, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, max: 100, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v+'%' } } } }
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults,
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        color: '#e6edf3', font: { weight: 'bold', size: 11 },
+        anchor: 'end', align: 'top', offset: 2,
+        formatter: v => v + '%'
+      }
+    },
+    scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, max: 115, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v+'%' } } },
+    layout: { padding: { top: 20 } }
+  }
 });
 
-// Benchmark — Global consolidated, MV-adjusted Total Assets ranking
+// Benchmark — IB style with €B labels
 new Chart(document.getElementById('benchmarkChart'), {
   type: 'bar',
   data: {
@@ -1284,7 +1389,19 @@ new Chart(document.getElementById('benchmarkChart'), {
       borderRadius: 4
     }]
   },
-  options: { ...chartDefaults, plugins: { legend: { display: false } } }
+  plugins: [ChartDataLabels],
+  options: {
+    ...chartDefaults,
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        color: '#e6edf3', font: { weight: 'bold', size: 11 },
+        anchor: 'end', align: 'top', offset: 2,
+        formatter: v => '€' + v + 'B'
+      }
+    },
+    layout: { padding: { top: 20 } }
+  }
 });
 
 
