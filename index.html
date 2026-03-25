@@ -388,7 +388,7 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
           <th class="num">MV (€B)</th><th style="text-align:center">Coverage</th><th>Data Source / Status</th>
         </tr></thead>
         <tbody>
-          <tr><td style="color:var(--cyan);font-weight:700">1</td><td><strong>Diocesan KdöR</strong></td><td>27</td><td>The 27 dioceses. Each a separate KdöR. Published Finanzberichte.</td><td class="num"><strong>~54</strong></td><td style="text-align:center">100%</td><td>All 27 exact from audited sources. Restated from HGB cost to MV. HGB total €33.5B.</td></tr>
+          <tr><td style="color:var(--cyan);font-weight:700">1</td><td><strong>Diocesan KdöR</strong></td><td>27</td><td>The 27 dioceses. Each a separate KdöR. Published Finanzberichte.</td><td class="num"><strong>~54</strong></td><td style="text-align:center">100%</td><td>All 27 exact from audited sources. Restated from HGB cost to MV. HGB total €34.8B.</td></tr>
           <tr><td style="color:var(--cyan);font-weight:700">2</td><td><strong>Shadow KdöR</strong></td><td>~120</td><td>Bischöfliche Stühle, Domkapitel, Emeritenanstalt, Offizialate, Stiftungen. Off diocesan BS.</td><td class="num"><strong>~10</strong></td><td style="text-align:center">72%</td><td>27/27 dioceses covered. €5.9B disclosed floor. 150+ entities confirmed (incl. Münster Offizialat Vechta €323M, Erfurt €480M, Regensburg €242M). Est. 120+ total.</td></tr>
           <tr><td style="color:var(--cyan);font-weight:700">3</td><td><strong>Church Banks</strong></td><td>5</td><td>Liga Bank, DKM Münster, Pax-BKC (merged mid-2025), BIB Essen. All cooperatives.</td><td class="num"><strong>26.9</strong></td><td style="text-align:center">100%</td><td>CORRECTED from €28.7B. Liga €6.4B (prior was managed vol.), DKM €5.1B, Pax-BKC merged €8.7B, BIB €4.5B. Deposits ~€13B.</td></tr>
           <tr><td style="color:var(--cyan);font-weight:700">4</td><td><strong>KZVK Pension</strong></td><td>1+</td><td>KZVK Köln: €35.9B Bilanzsumme (2024 GB). €28.4B Kapitalanlagen. Funding ratio 80.16%. Hidden €6.9B Ausgleichsposten + €2-3B IAS 19 gap.</td><td class="num"><strong>35.9</strong></td><td style="text-align:center">95%</td><td>Updated to 2024 Geschäftsbericht. 1.5M members, 244K pensioners, 5,000 employers. Economic deficit €9-10B.</td></tr>
@@ -429,7 +429,7 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
         <thead><tr><th>Item</th><th class="num">€B</th><th class="num">Adjustment €B</th><th>Basis / Source</th></tr></thead>
         <tbody>
           <tr style="background:rgba(139,92,246,0.08)"><td colspan="4" style="font-weight:700;color:var(--purple);text-transform:uppercase;font-size:10px">Starting Point: Published HGB (Layers 1–5 only)</td></tr>
-          <tr><td style="padding-left:20px">Layer 1: 27 Diocesan KdöR</td><td class="num">33.5</td><td></td><td style="color:var(--text-dim);font-size:10px">Audited HGB Finanzberichte</td></tr>
+          <tr><td style="padding-left:20px">Layer 1: 27 Diocesan KdöR</td><td class="num">34.8</td><td></td><td style="color:var(--text-dim);font-size:10px">Audited HGB Finanzberichte</td></tr>
           <tr><td style="padding-left:20px">Layer 2: 20+ confirmed Shadow KdöR</td><td class="num">7.4</td><td></td><td style="color:var(--text-dim);font-size:10px">Bundesanzeiger filings</td></tr>
           <tr><td style="padding-left:20px">Layer 3: 4 Church Banks</td><td class="num">26.9</td><td></td><td style="color:var(--text-dim);font-size:10px">2024 verified. Pax-BKC €9.0B + BIB €6.5B + LIGA €6.3B + DKM €5.1B.</td></tr>
           <tr><td style="padding-left:20px">Layer 4: KZVK</td><td class="num">35.9</td><td></td><td style="color:var(--text-dim);font-size:10px">KZVK 2024 Geschäftsbericht (audited). €35.908B Bilanzsumme.</td></tr>
@@ -532,7 +532,7 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
     <div class="kpi" style="background:var(--card)">
       <div class="kpi-label">Layer C: On-BS Provisions — Liability</div>
       <div class="kpi-value" style="font-size:18px;color:var(--red)">€7.2B (HGB)</div>
-      <div class="kpi-sub">v4.0: Sum of 26/27 diocesan provisions (Augsburg undisclosed). Buyout: €17–21B (delta €10–14B). KZVK economic deficit: €9–10B.</div>
+      <div class="kpi-sub">v4.0: Sum of 27/27 diocesan provisions (Augsburg undisclosed). Buyout: €17–21B (delta €10–14B). KZVK economic deficit: €9–10B.</div>
     </div>
   </div>
   <div class="grid-2">
@@ -690,7 +690,7 @@ svg.flows line.fund{stroke:var(--cyan);stroke-dasharray:10 5}
       </div>
       <div class="method-item">
         <h4>Pension IAS 19 → Buyout (1.3× then +15–35%)</h4>
-        <p>HGB discount ~1.9%. IAS 19 uses iBoxx AA curve (~3.2%). Buyout adds 15–35% over IAS 19 DBO (Willis Towers Watson benchmarks). Three layers: KZVK economic deficit €9–10B (Ausgleichsposten €6.9B + IAS 19 gap €2–3B; funding ratio 80.16%), Emeritenanstalt €3.0–4.0B under IAS 19, on-BS provisions €7.2B remeasured (v4.0: sum of 26/27 diocesan provisions; Paderborn €553M, Köln €823M confirmed from 2024 FBs).</p>
+        <p>HGB discount ~1.9%. IAS 19 uses iBoxx AA curve (~3.2%). Buyout adds 15–35% over IAS 19 DBO (Willis Towers Watson benchmarks). Three layers: KZVK economic deficit €9–10B (Ausgleichsposten €6.9B + IAS 19 gap €2–3B; funding ratio 80.16%), Emeritenanstalt €3.0–4.0B under IAS 19, on-BS provisions €7.2B remeasured (v4.0: sum of 27/27 diocesan provisions; Paderborn €553M, Köln €823M confirmed from 2024 FBs).</p>
       </div>
       <div class="method-item">
         <h4>Land Valuation (v2.1: ~240K+ ha, excl. church footprint)</h4>
@@ -921,7 +921,7 @@ const DIOCESES = [
   {name:"Bamberg",cls:"stable",kist:179.7,bs:867.7,ek:440.0,pens:103.0,yr:2023,auditor:"CURACON",cath:614709},
   {name:"Würzburg",cls:"stable",kist:181.6,bs:318.9,ek:54.1,pens:124.3,yr:2024,auditor:"CURACON",cath:647218},
   {name:"Essen",cls:"reforming",kist:201.2,bs:805.0,ek:320.0,pens:213.0,yr:2023,auditor:"PwC",cath:672133},
-  {name:"Berlin",cls:"reforming",kist:177.3,bs:725.0,ek:287.0,pens:162.0,yr:2023,auditor:"KPMG",cath:356413},
+  {name:"Berlin",cls:"reforming",kist:172.3,bs:1166.0,ek:598.1,pens:534.3,yr:2024,auditor:"RSM Ebner Stolz",cath:356413},
   {name:"Aachen",cls:"stable",kist:264.7,bs:1070.0,ek:511.0,pens:225.0,yr:2023,auditor:"CURACON",cath:884270},
   {name:"Hildesheim",cls:"stable",kist:137.1,bs:755.9,ek:195.2,pens:296.9,yr:2023,auditor:"Deloitte",cath:536782},
   {name:"Osnabrück",cls:"stable",kist:130.3,bs:573.9,ek:177.6,pens:238.3,yr:2023,auditor:"CURACON",cath:486975},
@@ -931,7 +931,7 @@ const DIOCESES = [
   {name:"Eichstätt",cls:"opaque",kist:67.1,bs:400.0,ek:180.0,pens:55.0,yr:2023,auditor:"Solidaris",cath:352900},
   {name:"Erfurt",cls:"stable",kist:32.2,bs:318.5,ek:185.2,pens:78.9,yr:2024,auditor:"PwC",cath:140200},
   {name:"Magdeburg",cls:"distressed",kist:18.3,bs:105.5,ek:4.6,pens:83.3,yr:2024,auditor:"PRC",cath:70400},
-  {name:"Dresden-Meißen",cls:"opaque",kist:40.1,bs:222.0,ek:95.0,pens:48.0,yr:2021,auditor:"Unknown",cath:130900},
+  {name:"Dresden-Meißen",cls:"opaque",kist:34.6,bs:550.6,ek:403.9,pens:132.6,yr:2022,auditor:"KPMG",cath:130900},
   {name:"Görlitz",cls:"stable",kist:6.2,bs:65.4,ek:33.2,pens:28.7,yr:2024,auditor:"Deloitte",cath:27800},
 ];
 
@@ -1383,91 +1383,4 @@ new Chart(document.getElementById('leverageChart'), {
 new Chart(document.getElementById('benchmarkChart'), {
   type: 'bar',
   data: {
-    labels: ['BVK*','German Catholic\nChurch (v4.0)','Deutsche\nBahn','Vonovia','VBL*','BImA*','LEG Immo.'],
-    datasets: [{
-      label: 'Total Assets / AuM (€B)',
-      data: [110, 144, 84, 81, 66, 65, 17],
-      backgroundColor: ['#6b7280','#8b5cf6','#6b7280','#6b7280','#6b7280','#6b7280','#6b7280'],
-      borderRadius: 4
-    }]
-  },
-  options: { ...chartDefaults, plugins: { legend: { display: false } } }
-});
-
-
-// Köln Network Diagram
-function renderKolnNetwork(){
-  var container=document.getElementById('kolnNetwork');
-  if(!container) return;
-  var W=container.offsetWidth, H=container.offsetHeight;
-  container.querySelectorAll('.entity,.flow-label').forEach(function(e){e.remove();});
-
-  var entities=[
-    {id:'finanzamt',x:.08,y:.08,w:180,cls:'l0',name:'16 Finanzämter',data:'KiSt collection: €800M/yr<br>to Erzbistum Köln',tag:'Layer 0'},
-    {id:'ebk',x:.35,y:.06,w:220,cls:'l1',name:'Erzbistum Köln (KdöR)',data:'HGB TA: €4,397M | EK: €2,773M<br>KiSt: €666M/yr | CURACON audited',tag:'Layer 1'},
-    {id:'stuhl',x:.7,y:.04,w:170,cls:'l2',name:'Bischöflicher Stuhl',data:'Est. €200–500M<br>Bishop\'s endowment',tag:'Layer 2'},
-    {id:'pax',x:.08,y:.38,w:200,cls:'l3',name:'Pax-Bank eG',data:'HGB TA: €10,797M<br>CET1: 15–21% | 648 parish accounts',tag:'Layer 3'},
-    {id:'aachener',x:.7,y:.35,w:180,cls:'l3',name:'Aachener GV KVG',data:'€355M AuM<br>Church securities fund',tag:'Fund Mgmt'},
-    {id:'kzvk',x:.38,y:.38,w:180,cls:'l4',name:'KZVK',data:'€2.2B liability (Köln share)<br>57,700 employees covered',tag:'Layer 4'},
-    {id:'asw',x:.08,y:.68,w:200,cls:'l5',name:'ASW (Augustinus)',data:'€1,378M TA | 26,500 units<br>Köln 41.5% ownership',tag:'Layer 5'},
-    {id:'cbt',x:.38,y:.68,w:180,cls:'l5',name:'CBT (Caritas)',data:'€137M assets | €66M bank debt<br>Care homes & social services',tag:'Layer 5'},
-    {id:'parishes',x:.7,y:.68,w:180,cls:'l2',name:'517 Kirchenstiftungen',data:'Est. MV: €6B | Book: €1<br>33,000 Erbbaurecht contracts',tag:'Parishes'},
-    {id:'sobbeck',x:.55,y:.2,w:160,cls:'person',name:'Gordon Sobbeck',data:'5+ board seats<br>Pax AR + CBT VR + ASW VR',tag:'Key Person'},
-  ];
-
-  entities.forEach(function(e){
-    var div=document.createElement('div');
-    div.className='entity '+e.cls;
-    div.style.cssText='left:'+e.x*W+'px;top:'+e.y*H+'px;width:'+e.w+'px';
-    div.innerHTML='<div class="ename">'+e.name+'</div><div class="edata">'+e.data+'</div><div class="etag">'+e.tag+'</div>';
-    div.dataset.id=e.id;
-    container.appendChild(div);
-  });
-
-  var svg=document.getElementById('kolnFlows');
-  svg.innerHTML='';
-  var flows=[
-    {from:'finanzamt',to:'ebk',cls:'money',label:'€800M/yr KiSt'},
-    {from:'ebk',to:'pax',cls:'deposit',label:'€800M+ deposits'},
-    {from:'ebk',to:'kzvk',cls:'money',label:'Pension contrib.'},
-    {from:'ebk',to:'aachener',cls:'fund',label:'Securities mandate'},
-    {from:'pax',to:'cbt',cls:'debt',label:'€66M debt'},
-    {from:'pax',to:'asw',cls:'debt',label:'~€50M debt'},
-    {from:'ebk',to:'asw',cls:'governance',label:'41.5% ownership'},
-    {from:'ebk',to:'cbt',cls:'governance',label:'Bishop controls'},
-    {from:'ebk',to:'parishes',cls:'money',label:'€350M/yr grants'},
-    {from:'parishes',to:'pax',cls:'deposit',label:'€1B+ deposits'},
-    {from:'sobbeck',to:'pax',cls:'governance',label:'AR seat'},
-    {from:'sobbeck',to:'cbt',cls:'governance',label:'VR seat'},
-    {from:'sobbeck',to:'asw',cls:'governance',label:'VR seat'},
-    {from:'ebk',to:'cbt',cls:'guarantee',label:'Guarantee €66M'},
-  ];
-
-  flows.forEach(function(f){
-    var fromEl=container.querySelector('[data-id="'+f.from+'"]');
-    var toEl=container.querySelector('[data-id="'+f.to+'"]');
-    if(!fromEl||!toEl)return;
-    var fx=fromEl.offsetLeft+fromEl.offsetWidth/2;
-    var fy=fromEl.offsetTop+fromEl.offsetHeight/2;
-    var tx=toEl.offsetLeft+toEl.offsetWidth/2;
-    var ty=toEl.offsetTop+toEl.offsetHeight/2;
-    var line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',fx);line.setAttribute('y1',fy);
-    line.setAttribute('x2',tx);line.setAttribute('y2',ty);
-    line.setAttribute('class',f.cls);
-    svg.appendChild(line);
-
-    if(f.label){
-      var lbl=document.createElement('div');
-      lbl.className='flow-label';
-      lbl.textContent=f.label;
-      lbl.style.left=((fx+tx)/2-30)+'px';
-      lbl.style.top=((fy+ty)/2-8)+'px';
-      container.appendChild(lbl);
-    }
-  });
-}
-window.addEventListener('resize', function(){ if(document.getElementById('kolncase').classList.contains('active')) renderKolnNetwork(); });
-</script>
-</body>
-</html>
+    labels: ['BVK*','German Catholic\nChurch (v4.
