@@ -443,4 +443,22 @@ function renderGap() {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
-     
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: €${ctx.parsed.y.toFixed(1)}B` } }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+        y: { ticks: { color: '#94a3b8', callback: v => '€'+v+'B' }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
+
+// ===== INIT =====
+renderLayerTable();
+renderL2Table();
+renderWaterfall();
+renderPie();
+renderGap();
+</script>
+</body>
+</html>
